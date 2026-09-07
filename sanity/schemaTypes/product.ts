@@ -1,5 +1,5 @@
 import { Package } from 'lucide-react';
-import { defineField, defineType } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 
 export const product = defineType({
   name: 'product',
@@ -7,12 +7,18 @@ export const product = defineType({
   type: 'document',
   icon: Package,
 
+  groups: [
+    { name: 'content', title: 'Nội dung', default: true },
+    { name: 'seo', title: 'SEO' },
+  ],
+
   fields: [
     defineField({
       name: 'title',
       title: 'Tên sản phẩm',
       description: 'Vd: "Bếp từ đôi LV79DI"',
       type: 'string',
+      group: 'content',
       validation: (rule) => rule.required().error('Tên sản phẩm bắt buộc'),
     }),
 
@@ -22,6 +28,7 @@ export const product = defineType({
       description:
         'Dùng làm đường dẫn URL (vd: "lv79di" → /product/lv79di). Chỉ chữ thường, số, dấu gạch ngang.',
       type: 'string',
+      group: 'content',
       validation: (rule) =>
         rule
           .required()
@@ -36,6 +43,7 @@ export const product = defineType({
       name: 'category',
       title: 'Danh mục',
       type: 'reference',
+      group: 'content',
       to: [{ type: 'category' }],
       validation: (rule) => rule.required(),
     }),
@@ -44,6 +52,7 @@ export const product = defineType({
       name: 'price',
       title: 'Giá niêm yết (VNĐ)',
       type: 'number',
+      group: 'content',
       validation: (rule) => rule.positive(),
     }),
 
@@ -53,6 +62,7 @@ export const product = defineType({
       description:
         'Khối trả lời đầu bài cho GEO/AEO — đủ ngắn để AI trích nguyên khối',
       type: 'text',
+      group: 'content',
       rows: 3,
       validation: (rule) => rule.required(),
     }),
@@ -61,6 +71,7 @@ export const product = defineType({
       name: 'gallery',
       title: 'Thư viện ảnh',
       type: 'array',
+      group: 'content',
       of: [
         {
           type: 'image',
@@ -81,6 +92,7 @@ export const product = defineType({
       title: 'Thông số kỹ thuật',
       description: 'Mỗi dòng là một cặp thông số (tên — giá trị)',
       type: 'array',
+      group: 'content',
       of: [
         {
           type: 'object',
@@ -111,8 +123,18 @@ export const product = defineType({
       description:
         'Nội dung tự do: tính năng, vì sao hợp món Việt, thiết kế AI, an toàn, chứng nhận…',
       type: 'array',
+      group: 'content',
       of: [
-        { type: 'block' },
+        defineArrayMember({
+          type: 'block',
+          styles: [
+            { title: 'Đoạn văn', value: 'normal' },
+            { title: 'Tiêu đề 2', value: 'h2' },
+            { title: 'Tiêu đề 3', value: 'h3' },
+            { title: 'Tiêu đề 4', value: 'h4' },
+            { title: 'Trích dẫn', value: 'blockquote' },
+          ],
+        }),
         {
           type: 'image',
           options: { hotspot: true },
@@ -137,6 +159,7 @@ export const product = defineType({
       title: 'SEO tiêu đề',
       description: 'Nếu để trống sẽ dùng tên sản phẩm',
       type: 'string',
+      group: 'seo',
       validation: (rule) => rule.max(70),
     }),
 
@@ -144,6 +167,7 @@ export const product = defineType({
       name: 'seoDescription',
       title: 'SEO mô tả',
       type: 'string',
+      group: 'seo',
       validation: (rule) => rule.max(160),
     }),
   ],

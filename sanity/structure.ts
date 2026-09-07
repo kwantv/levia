@@ -1,4 +1,4 @@
-import type {StructureResolver} from 'sanity/structure'
+import type { StructureResolver } from 'sanity/structure';
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure: StructureResolver = (S) =>
@@ -6,8 +6,8 @@ export const structure: StructureResolver = (S) =>
     .title('Levia')
     .items([
       S.documentTypeListItem('product').title('Sản phẩm'),
+      S.documentTypeListItem('article').title('Bài viết'),
       S.divider(),
-      ...S.documentTypeListItems().filter(
-        (item) => item.getId() && !['product'].includes(item.getId()!),
-      ),
-    ])
+      S.documentTypeListItem('category').title('Danh mục'),
+      S.documentTypeListItem('tag').title('Thẻ (Tag)'),
+    ]);
