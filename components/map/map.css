@@ -1,0 +1,47 @@
+.mapboxgl-ctrl-group {
+  background-color: var(--color-muted) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.mapboxgl-ctrl-group button {
+  background-color: transparent !important;
+}
+
+.mapboxgl-ctrl-group button + button {
+  border-top: 1px solid var(--color-border) !important;
+}
+
+.mapboxgl-ctrl-group button:hover {
+  background-color: var(--color-border) !important;
+}
+
+/* Icon color — Mapbox renders icons as SVG background-images with a fixed dark fill,
+   so we invert + tint to get a warm off-white rather than pure white */
+.mapboxgl-ctrl-icon {
+  filter: invert(80%) saturate(300%) hue-rotate(38deg);
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-attrib {
+  background-color: transparent;
+  padding: 0.25rem 0.5rem;
+
+  a {
+    color: var(--color-muted-foreground);
+  }
+}
+
+.mapboxgl-user-location-dot {
+  background-color: var(--color-primary) !important;
+}
+.mapboxgl-user-location-dot::before {
+  background-color: var(--color-primary) !important;
+}
+.mapboxgl-user-location-accuracy-circle {
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary) 15%,
+    transparent
+  ) !important;
+}
