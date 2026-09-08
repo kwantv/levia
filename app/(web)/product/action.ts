@@ -1,5 +1,5 @@
-import { client } from '@/sanity/lib/client';
 import { SanityImage } from '@/sanity/lib/image';
+import { sanityFetch } from '@/sanity/lib/live';
 import { groq } from 'next-sanity';
 
 // ─── Types ───────────────────────────────────────────────────
@@ -46,9 +46,11 @@ const categoriesQuery = groq`*[_type == "category"] | order(title asc) {
 // ─── Actions ─────────────────────────────────────────────────
 
 export async function getAllProducts(): Promise<ProductListItem[]> {
-  return await client.fetch<ProductListItem[]>(allProductsQuery);
+  const { data } = await sanityFetch({ query: allProductsQuery });
+  return data as ProductListItem[];
 }
 
 export async function getCategories(): Promise<CategoryGroup[]> {
-  return await client.fetch<CategoryGroup[]>(categoriesQuery);
+  const { data } = await sanityFetch({ query: categoriesQuery });
+  return data as CategoryGroup[];
 }

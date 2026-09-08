@@ -1,5 +1,5 @@
-import { client } from '@/sanity/lib/client';
 import { SanityImage } from '@/sanity/lib/image';
+import { sanityFetch } from '@/sanity/lib/live';
 import { groq } from 'next-sanity';
 import { PortableTextBlock } from 'sanity';
 
@@ -46,9 +46,14 @@ export async function getProductBySku(
   sku: string,
 ): Promise<ProductDetail | null> {
   if (!sku) return null;
-  return await client.fetch<ProductDetail | null>(productBySkuQuery, { sku });
+  const { data } = await sanityFetch({
+    query: productBySkuQuery,
+    params: { sku },
+  });
+  return data as ProductDetail | null;
 }
 
 export async function getAllProductSkus(): Promise<string[]> {
-  return await client.fetch<string[]>(allProductSkusQuery);
+  const { data } = await sanityFetch({ query: allProductSkusQuery });
+  return data as string[];
 }

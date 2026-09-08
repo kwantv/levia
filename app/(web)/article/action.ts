@@ -1,5 +1,5 @@
-import { client } from '@/sanity/lib/client';
 import { SanityImage } from '@/sanity/lib/image';
+import { sanityFetch } from '@/sanity/lib/live';
 import { groq } from 'next-sanity';
 
 // ─── Types ───────────────────────────────────────────────────
@@ -45,9 +45,11 @@ const articleTagsQuery = groq`*[_type == "tag" && count(*[_type == "article" && 
 // ─── Actions ─────────────────────────────────────────────────
 
 export async function getAllArticles(): Promise<ArticleListItem[]> {
-  return await client.fetch<ArticleListItem[]>(allArticlesQuery);
+  const { data } = await sanityFetch({ query: allArticlesQuery });
+  return data as ArticleListItem[];
 }
 
 export async function getArticleTags(): Promise<TagGroup[]> {
-  return await client.fetch<TagGroup[]>(articleTagsQuery);
+  const { data } = await sanityFetch({ query: articleTagsQuery });
+  return data as TagGroup[];
 }
