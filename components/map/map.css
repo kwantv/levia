@@ -1,8 +1,25 @@
+.mapboxgl-map {
+  width: 100%;
+  height: min(70vh, 720px);
+}
+
 .mapboxgl-ctrl-group {
   background-color: var(--color-muted) !important;
   border: 1px solid var(--color-border) !important;
-  border-radius: 6px !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
+}
+
+.mapboxgl-popup-content {
+  background-color: var(--color-popover) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0.75rem !important;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: var(--color-popover) !important;
 }
 
 .mapboxgl-ctrl-group button {

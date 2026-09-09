@@ -7,6 +7,7 @@ export const structure: StructureResolver = (S) =>
     .items([
       S.documentTypeListItem('product').title('Sản phẩm'),
       S.documentTypeListItem('article').title('Bài viết'),
+      S.documentTypeListItem('agency').title('Đại lý'),
       S.divider(),
       S.documentTypeListItem('category').title('Danh mục'),
       S.documentTypeListItem('tag').title('Thẻ (Tag)'),

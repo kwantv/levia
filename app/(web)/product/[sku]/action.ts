@@ -1,3 +1,4 @@
+import { client } from '@/sanity/lib/client';
 import { SanityImage } from '@/sanity/lib/image';
 import { sanityFetch } from '@/sanity/lib/live';
 import { groq } from 'next-sanity';
@@ -54,6 +55,6 @@ export async function getProductBySku(
 }
 
 export async function getAllProductSkus(): Promise<string[]> {
-  const { data } = await sanityFetch({ query: allProductSkusQuery });
+  const data = await client.fetch(allProductSkusQuery);
   return data as string[];
 }

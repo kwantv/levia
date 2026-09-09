@@ -1,3 +1,4 @@
+import { client } from '@/sanity/lib/client';
 import { SanityImage } from '@/sanity/lib/image';
 import { sanityFetch } from '@/sanity/lib/live';
 import { groq } from 'next-sanity';
@@ -57,6 +58,6 @@ export async function getArticleBySlug(
 }
 
 export async function getAllArticleSlugs(): Promise<string[]> {
-  const { data } = await sanityFetch({ query: allArticleSlugsQuery });
+  const data = await client.fetch(allArticleSlugsQuery);
   return data as string[];
 }

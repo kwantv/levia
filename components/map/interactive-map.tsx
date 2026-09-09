@@ -1,27 +1,77 @@
 'use client';
 
-import { Store } from '@/types/store';
 import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Map, {
   GeolocateControl,
   MapRef,
   Marker,
   NavigationControl,
+  Popup,
 } from 'react-map-gl/mapbox';
 import './map.css';
+import { Agency } from '@/app/(web)/agency/[slug]/action';
 
-export default function StoreLocator({ stores }: { stores: Store[] }) {
+const VIETNAM_VIEW = {
+  latitude: 21.1,
+  longitude: 106.5,
+  zoom: 8.2,
+  pitch: 30,
+};
+
+interface StoreLocatorProps {
+  agencies: Agency[];
+  selectedAgencyId?: string;
+  onAgencySelect?: (agencyId: string) => void;
+}
+
+export default function StoreLocator({
+  agencies,
+  selectedAgencyId,
+  onAgencySelect,
+}: StoreLocatorProps) {
   const mapRef = useRef<MapRef>(null);
-  const [viewState, setViewState] = useState({
-    latitude: 21.1,
-    longitude: 106.5,
-    zoom: 8.2,
-    pitch: 45,
-  });
+  const [viewState, setViewState] = useState(VIETNAM_VIEW);
 
-  // customize map
+  const selectedAgency = agencies.find(
+    (agency) => agency._id === selectedAgencyId,
+  );
+
+  useEffect(() => {
+    if (!selectedAgency) return;
+
+    mapRef.current?.flyTo({
+      center: [selectedAgency.lng, selectedAgency.lat],
+      zoom: 13,
+      duration: 1000,
+    });
+  }, [selectedAgency]);
+
+  useEffect(() => {
+    if (agencies.length === 0 || selectedAgency) return;
+
+    if (agencies.length === 1) {
+      mapRef.current?.flyTo({
+        center: [agencies[0].lng, agencies[0].lat],
+        zoom: 12,
+        duration: 800,
+      });
+      return;
+    }
+
+    const lngs = agencies.map((agency) => agency.lng);
+    const lats = agencies.map((agency) => agency.lat);
+
+    mapRef.current?.fitBounds(
+      [
+        [Math.min(...lngs), Math.min(...lats)],
+        [Math.max(...lngs), Math.max(...lats)],
+      ],
+      { padding: 56, maxZoom: 11, duration: 800 },
+    );
+  }, [selectedAgency, agencies]);
+
   function handleMapLoad() {
     const map = mapRef.current;
     if (!map) return;
@@ -34,39 +84,75 @@ export default function StoreLocator({ stores }: { stores: Store[] }) {
     mapAdd3dBuildings(map);
   }
 
+  if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
+    return (
+      <div className="flex justify-center items-center bg-muted/30 min-h-96 text-center">
+        <div className="p-6 max-w-sm">
+          <MapPin className="mx-auto size-7 text-primary" />
+          <p className="mt-3 font-medium">Bản đồ chưa được cấu hình</p>
+          <p className="mt-2 text-muted-foreground text-sm">
+            Thêm NEXT_PUBLIC_MAPBOX_TOKEN để hiển thị vị trí đại lý.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex place-content-center">
-      <Map
-        ref={mapRef}
-        {...viewState}
-        onMove={(evt) => setViewState(evt.viewState)}
-        onLoad={handleMapLoad}
-        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-        mapStyle="mapbox://styles/mapbox/dark-v11"
-        style={{ width: '90vw', height: 900 }}
-      >
-        <NavigationControl
-          position="bottom-right"
-          showCompass={true}
-          showZoom={false}
-          visualizePitch={true}
-        />
-        <GeolocateControl
-          position="bottom-right"
-          trackUserLocation={true}
-          showUserHeading={true}
-        />
-        {stores.map((s) => (
-          <Marker key={s._id} longitude={s.lng} latitude={s.lat}>
-            <MapPin
-              className="size-8"
-              fill="var(--color-primary)"
-              absoluteStrokeWidth
-            />
+    <Map
+      ref={mapRef}
+      {...viewState}
+      onMove={(event) => setViewState(event.viewState)}
+      onLoad={handleMapLoad}
+      mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+      mapStyle="mapbox://styles/mapbox/dark-v11"
+    >
+      <NavigationControl showZoom={false} position="bottom-right" />
+      <GeolocateControl
+        position="bottom-right"
+        trackUserLocation
+        showUserHeading
+      />
+
+      {agencies.map((agency) => {
+        const isSelected = selectedAgencyId === agency._id;
+
+        return (
+          <Marker key={agency._id} longitude={agency.lng} latitude={agency.lat}>
+            <button
+              type="button"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-primary hover:scale-110 transition-transform"
+              aria-label={`Chọn ${agency.name}`}
+              onClick={() => onAgencySelect?.(agency._id)}
+            >
+              <MapPin
+                className={isSelected ? 'size-10' : 'size-8'}
+                fill="currentColor"
+                strokeWidth={1.5}
+              />
+            </button>
           </Marker>
-        ))}
-      </Map>
-    </div>
+        );
+      })}
+
+      {selectedAgency && (
+        <Popup
+          longitude={selectedAgency.lng}
+          latitude={selectedAgency.lat}
+          offset={24}
+          closeButton={false}
+          closeOnClick={false}
+          anchor="bottom"
+        >
+          <div className="max-w-56 text-foreground">
+            <p className="font-semibold text-sm">{selectedAgency.name}</p>
+            <p className="mt-1 text-muted-foreground text-xs">
+              {selectedAgency.address}
+            </p>
+          </div>
+        </Popup>
+      )}
+    </Map>
   );
 }
 
@@ -89,6 +175,8 @@ function mapSetCustomFont(mapRef: MapRef) {
 
 function mapAddIslands(mapRef: MapRef) {
   const map = mapRef.getMap();
+
+  if (map.getSource('vn-islands-label')) return;
 
   map.addSource('vn-islands-label', {
     type: 'geojson',
@@ -116,7 +204,7 @@ function mapAddIslands(mapRef: MapRef) {
     minzoom: 4,
     layout: {
       'text-field': ['get', 'name'],
-      'text-font': ['DIN Pro Regular', 'Arial Unicode MS Regular'], // match dark-v11's country-label font stack
+      'text-font': ['DIN Pro Regular', 'Arial Unicode MS Regular'],
       'text-size': 11,
       'text-letter-spacing': 0.05,
     },
@@ -129,28 +217,28 @@ function mapAddIslands(mapRef: MapRef) {
 }
 
 function mapAddStarryBackground(mapRef: MapRef) {
-  const map = mapRef.getMap();
-
-  map.setFog({
-    'space-color': 'rgb(5, 5, 8)', // deep space background
-    'star-intensity': 0.2, // 0 = no stars, 1 = max density
-    'horizon-blend': 0.05, // atmosphere thickness at the edge of the globe
-    color: 'rgb(30, 26, 20)', // atmosphere glow color near the horizon — tuned warm to match your gold theme
-    'high-color': 'rgb(20, 18, 22)', // upper atmosphere color
+  mapRef.getMap().setFog({
+    'space-color': 'rgb(5, 5, 8)',
+    'star-intensity': 0.2,
+    'horizon-blend': 0.05,
+    color: 'rgb(30, 26, 20)',
+    'high-color': 'rgb(20, 18, 22)',
   });
 }
 
 function mapAdd3dBuildings(mapRef: MapRef) {
   const map = mapRef.getMap();
 
+  if (map.getLayer('3d-buildings')) return;
+
   map.addLayer({
     id: '3d-buildings',
     source: 'composite',
     'source-layer': 'building',
     type: 'fill-extrusion',
-    minzoom: 14, // buildings only make sense at street-level zoom
+    minzoom: 14,
     paint: {
-      'fill-extrusion-color': '#1A1816', // matches your dark panel tone
+      'fill-extrusion-color': '#1A1816',
       'fill-extrusion-height': ['get', 'height'],
       'fill-extrusion-base': ['get', 'min_height'],
       'fill-extrusion-opacity': 0.85,
@@ -193,7 +281,6 @@ function mapAddMask(mapRef: MapRef) {
     'bridge-rail',
     'admin-1-boundary',
     'admin-1-boundary-bg',
-
     'state-label',
     'settlement-major-label',
     'settlement-minor-label',
@@ -209,8 +296,9 @@ function mapAddMask(mapRef: MapRef) {
   ];
 
   detailLayers.forEach((id) => {
-    const layer = map.getStyle().layers.find((l) => l.id === id);
+    const layer = map.getStyle().layers.find((item) => item.id === id);
     if (!layer) return;
+
     map.setFilter(id, [
       'all',
       layer.filter ?? true,
