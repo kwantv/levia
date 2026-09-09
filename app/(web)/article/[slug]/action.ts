@@ -14,7 +14,7 @@ export interface ArticleDetail {
   coverImage: SanityImage | null;
   content: PortableTextBlock[] | null;
   tags: { _id: string; title: string; slug: string }[];
-  faqs: { _key: string; question: string; answer: string }[] | null;
+  faqs: { _key: string; label: string; value: string }[] | null;
   publishedAt: string | null;
   updatedAt: string | null;
   author: string | null;
@@ -35,7 +35,7 @@ const articleBySlugQuery = groq`*[_type == "article" && slug.current == $slug][0
   tags[]-> { _id, title, "slug": slug.current },
   faqs,
   publishedAt,
-  updatedAt,
+  "updatedAt": _updatedAt,
   author,
   seoTitle,
   seoDescription,

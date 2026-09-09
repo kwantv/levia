@@ -7,6 +7,19 @@ export const agency = defineType({
   type: 'document',
   icon: MapPin,
 
+  fieldsets: [
+    {
+      name: 'location',
+      title: 'Toạ độ',
+      options: { columns: 2 },
+    },
+    {
+      name: 'regionInfo',
+      title: ' ',
+      options: { columns: 2 },
+    },
+  ],
+
   fields: [
     defineField({
       name: 'name',
@@ -35,6 +48,7 @@ export const agency = defineType({
       name: 'province',
       title: 'Tỉnh/thành',
       type: 'string',
+      fieldset: 'regionInfo',
       validation: (rule) => rule.required(),
     }),
 
@@ -42,6 +56,7 @@ export const agency = defineType({
       name: 'zip',
       title: 'Mã bưu chính (zip code)',
       type: 'string',
+      fieldset: 'regionInfo',
     }),
 
     defineField({
@@ -68,15 +83,19 @@ export const agency = defineType({
 
     defineField({
       name: 'lat',
-      title: 'Vĩ độ',
+      title: ' ',
       type: 'number',
+      placeholder: 'Vĩ độ (lat)',
+      fieldset: 'location',
       validation: (rule) => rule.required().min(-90).max(90),
     }),
 
     defineField({
       name: 'lng',
-      title: 'Kinh độ',
+      title: ' ',
       type: 'number',
+      placeholder: 'Kinh độ (long)',
+      fieldset: 'location',
       validation: (rule) => rule.required().min(-180).max(180),
     }),
 
@@ -84,6 +103,7 @@ export const agency = defineType({
       name: 'photos',
       title: 'Ảnh cửa hàng',
       type: 'array',
+      options: { layout: 'grid' },
       of: [
         defineArrayMember({
           type: 'image',

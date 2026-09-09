@@ -156,10 +156,10 @@ export default async function ArticleDetailPage({ params }: PageProps) {
               {article.faqs.map((faq) => (
                 <div key={faq._key} className="pb-6 border-border border-b">
                   <h3 className="mb-2 font-semibold text-foreground">
-                    {faq.question}
+                    {faq.label}
                   </h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    {faq.answer}
+                    {faq.value}
                   </p>
                 </div>
               ))}

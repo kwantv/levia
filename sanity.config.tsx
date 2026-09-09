@@ -12,11 +12,11 @@ import { structureTool } from 'sanity/structure';
 import { apiVersion, dataset, projectId } from './sanity/env';
 import { schema } from './sanity/schemaTypes';
 import { structure } from './sanity/structure';
+import { viVNLocale } from '@sanity/locale-vi-vn';
 import {
   richTablePlugin,
   RichTablePastePlugin,
 } from 'sanity-plugin-rich-table';
-import { viVNLocale } from '@sanity/locale-vi-vn';
 
 export default defineConfig({
   basePath: '/studio',

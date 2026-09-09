@@ -1,5 +1,7 @@
 import { PenTool } from 'lucide-react';
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import LabelValueListInput from '../components/label-value-list-input';
+import { TagChipsInput } from '../components/tag-chip-input';
 
 export const article = defineType({
   name: 'article',
@@ -33,9 +35,23 @@ export const article = defineType({
     }),
 
     defineField({
+      name: 'tags',
+      title: 'Thẻ (Tags)',
+      type: 'array',
+      group: 'content',
+      components: { input: TagChipsInput },
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{ type: 'tag' }],
+        }),
+      ],
+    }),
+
+    defineField({
       name: 'excerpt',
-      title: 'Tóm tắt (40–60 chữ)',
-      description: 'Khối trả lời đầu bài cho GEO/AEO',
+      title: 'Tóm tắt',
+      description: 'Khoảng 40–60 chữ. Trả lời ngắn đầu bài cho GEO/AEO',
       type: 'text',
       rows: 3,
       group: 'content',
@@ -53,6 +69,7 @@ export const article = defineType({
           name: 'alt',
           title: 'Alt text',
           type: 'string',
+          placeholder: 'Mô tả ngắn hình ảnh',
         }),
       ],
     }),
@@ -98,38 +115,22 @@ export const article = defineType({
     }),
 
     defineField({
-      name: 'tags',
-      title: 'Thẻ (Tags)',
-      type: 'array',
-      group: 'content',
-      of: [
-        defineArrayMember({
-          type: 'reference',
-          to: [{ type: 'tag' }],
-        }),
-      ],
-    }),
-
-    defineField({
       name: 'faqs',
-      title: 'FAQ',
+      title: 'FAQ (Câu hỏi liên quan)',
       type: 'array',
       group: 'content',
+      components: { input: LabelValueListInput },
       of: [
         defineArrayMember({
           type: 'object',
           fields: [
-            defineField({ name: 'question', title: 'Hỏi', type: 'string' }),
+            defineField({ name: 'label', title: 'Hỏi', type: 'string' }),
             defineField({
-              name: 'answer',
+              name: 'value',
               title: 'Đáp',
               type: 'text',
-              rows: 3,
             }),
           ],
-          preview: {
-            select: { title: 'question' },
-          },
         }),
       ],
     }),
@@ -137,18 +138,19 @@ export const article = defineType({
     defineField({
       name: 'publishedAt',
       title: 'Ngày đăng',
-      type: 'datetime',
+      type: 'date',
       group: 'content',
+      options: { dateFormat: 'DD/MM/YYYY' },
       initialValue: () => new Date().toISOString(),
     }),
 
-    defineField({
-      name: 'updatedAt',
-      title: 'Ngày cập nhật',
-      description: 'Cập nhật mỗi lần chỉnh bài',
-      type: 'datetime',
-      group: 'content',
-    }),
+    // defineField({
+    //   name: 'updatedAt',
+    //   title: 'Ngày cập nhật',
+    //   description: 'Cập nhật mỗi lần chỉnh bài',
+    //   type: 'datetime',
+    //   group: 'content',
+    // }),
 
     defineField({
       name: 'author',

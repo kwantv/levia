@@ -1,5 +1,6 @@
 import { Package } from 'lucide-react';
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import LabelValueListInput from '../components/label-value-list-input';
 
 export const product = defineType({
   name: 'product',
@@ -16,7 +17,6 @@ export const product = defineType({
     defineField({
       name: 'title',
       title: 'Tên sản phẩm',
-      description: 'Vd: "Bếp từ đôi LV79DI"',
       type: 'string',
       group: 'content',
       validation: (rule) => rule.required().error('Tên sản phẩm bắt buộc'),
@@ -26,7 +26,7 @@ export const product = defineType({
       name: 'sku',
       title: 'Mã sản phẩm (SKU)',
       description:
-        'Dùng làm đường dẫn URL (vd: "lv79di" → /product/lv79di). Chỉ chữ thường, số, dấu gạch ngang.',
+        'Chỉ chữ thường, số, dấu gạch ngang. Dùng làm đường dẫn URL (vd: "lv79di" → /product/lv79di)',
       type: 'string',
       group: 'content',
       validation: (rule) =>
@@ -41,7 +41,7 @@ export const product = defineType({
 
     defineField({
       name: 'category',
-      title: 'Danh mục',
+      title: 'Danh mục sản phẩm',
       type: 'reference',
       group: 'content',
       to: [{ type: 'category' }],
@@ -58,20 +58,22 @@ export const product = defineType({
 
     defineField({
       name: 'desc',
-      title: 'Mô tả ngắn (40–60 chữ)',
+      title: 'Mô tả ngắn',
       description:
-        'Khối trả lời đầu bài cho GEO/AEO — đủ ngắn để AI trích nguyên khối',
+        'Khoảng 40-60 chữ. Khối trả lời đầu bài cho GEO/AEO (AI trích dẫn)',
       type: 'text',
       group: 'content',
-      rows: 3,
+      rows: 4,
       validation: (rule) => rule.required(),
     }),
 
     defineField({
       name: 'gallery',
       title: 'Thư viện ảnh',
+      description: 'Ảnh đầu tiên được sử dụng làm ảnh thumbnail',
       type: 'array',
       group: 'content',
+      options: { layout: 'grid' },
       of: [
         {
           type: 'image',
@@ -90,9 +92,9 @@ export const product = defineType({
     defineField({
       name: 'specs',
       title: 'Thông số kỹ thuật',
-      description: 'Mỗi dòng là một cặp thông số (tên — giá trị)',
       type: 'array',
       group: 'content',
+      components: { input: LabelValueListInput },
       of: [
         {
           type: 'object',
@@ -110,9 +112,6 @@ export const product = defineType({
               validation: (rule) => rule.required(),
             }),
           ],
-          preview: {
-            select: { title: 'label', subtitle: 'value' },
-          },
         },
       ],
     }),
@@ -120,8 +119,6 @@ export const product = defineType({
     defineField({
       name: 'content',
       title: 'Nội dung chi tiết',
-      description:
-        'Nội dung tự do: tính năng, vì sao hợp món Việt, thiết kế AI, an toàn, chứng nhận…',
       type: 'array',
       group: 'content',
       of: [

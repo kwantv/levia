@@ -7,6 +7,14 @@ export const recipe = defineType({
   type: 'document',
   icon: CookingPot,
 
+  fieldsets: [
+    {
+      name: 'recipeInfo',
+      title: ' ',
+      options: { columns: 3 },
+    },
+  ],
+
   fields: [
     defineField({
       name: 'name',
@@ -33,6 +41,30 @@ export const recipe = defineType({
     }),
 
     defineField({
+      name: 'servings',
+      title: 'Khẩu phần',
+      type: 'number',
+      fieldset: 'recipeInfo',
+      validation: (rule) => rule.required().integer().positive(),
+    }),
+
+    defineField({
+      name: 'prepTime',
+      title: 'Chuẩn bị (phút)',
+      type: 'number',
+      fieldset: 'recipeInfo',
+      validation: (rule) => rule.required().integer().min(0),
+    }),
+
+    defineField({
+      name: 'cookTime',
+      title: 'Thời gian nấu (phút)',
+      type: 'number',
+      fieldset: 'recipeInfo',
+      validation: (rule) => rule.required().integer().positive(),
+    }),
+
+    defineField({
       name: 'coverImage',
       title: 'Ảnh bìa',
       type: 'image',
@@ -44,30 +76,6 @@ export const recipe = defineType({
           type: 'string',
         }),
       ],
-    }),
-
-    defineField({
-      name: 'servings',
-      title: 'Khẩu phần',
-      description: 'Số người ăn',
-      type: 'number',
-      validation: (rule) => rule.required().integer().positive(),
-    }),
-
-    defineField({
-      name: 'prepTime',
-      title: 'Thời gian chuẩn bị',
-      description: 'Tính bằng phút',
-      type: 'number',
-      validation: (rule) => rule.required().integer().min(0),
-    }),
-
-    defineField({
-      name: 'cookTime',
-      title: 'Thời gian nấu',
-      description: 'Tính bằng phút',
-      type: 'number',
-      validation: (rule) => rule.required().integer().positive(),
     }),
 
     defineField({
