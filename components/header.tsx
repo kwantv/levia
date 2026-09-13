@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
+  ...(process.env.NODE_ENV === 'development'
+    ? [{ href: '/test', label: 'Test' }]
+    : []),
   { href: '/about', label: 'About' },
   { href: '/product', label: 'Product' },
   { href: '/agency', label: 'Agency' },
@@ -17,25 +20,25 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="top-0 z-50 sticky bg-background/80 backdrop-blur-md border-border border-b">
+      <div className="flex justify-between items-center mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl h-16">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tight text-foreground">
+          <span className="font-bold text-foreground text-xl tracking-tight">
             LEVIA
           </span>
-          <span className="hidden text-xs text-muted-foreground sm:inline">
+          <span className="hidden sm:inline text-muted-foreground text-xs">
             Thông minh từ bên trong.
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="px-3 py-2 text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               {link.label}
             </Link>
@@ -50,7 +53,7 @@ export function Header() {
         {/* Mobile toggle */}
         <button
           type="button"
-          className="inline-flex items-center justify-center p-2 text-muted-foreground hover:text-foreground md:hidden"
+          className="md:hidden inline-flex justify-center items-center p-2 text-muted-foreground hover:text-foreground"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -61,7 +64,7 @@ export function Header() {
       {/* Mobile menu */}
       <div
         className={cn(
-          'overflow-hidden border-t border-border transition-all duration-300 md:hidden',
+          'md:hidden border-border border-t overflow-hidden transition-all duration-300',
           mobileOpen ? 'max-h-80' : 'max-h-0 border-t-0',
         )}
       >
@@ -70,7 +73,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="hover:bg-muted px-3 py-2 text-muted-foreground hover:text-foreground text-sm transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               {link.label}
