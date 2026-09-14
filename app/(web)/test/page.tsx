@@ -1,19 +1,21 @@
 'use client';
 
+import { useStore } from '@/lib/store';
+import { cn } from '@/lib/utils';
 import { Environment } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { InteractiveObject } from './component/interactive-object';
-import { StageSection } from './stage-section';
-import { useStore } from '@/lib/store';
-import { cn } from '@/lib/utils';
+import HeroSection from './section/hero-section';
+import { ShowcaseSection } from './section/showcase-section';
 
 function DebugHud() {
   const stage = useStore((s) => s.stage);
   const orbitEnabled = useStore((s) => s.orbit);
   const dragging = useStore((s) => s.dragging);
+  const animating = useStore((s) => s.animating);
 
   return (
-    <div className="bottom-4 left-1/3 z-10 fixed font-mono text-xs">
+    <div className="bottom-4 left-1/3 z-10 fixed gap-10 columns-2 font-mono text-xs">
       <p>
         orbit:{' '}
         <strong
@@ -26,6 +28,14 @@ function DebugHud() {
         dragging:{' '}
         <strong className={cn(dragging ? 'text-emerald-600' : 'text-rose-600')}>
           {String(dragging)}
+        </strong>
+      </p>
+      <p>
+        animating:{' '}
+        <strong
+          className={cn(animating ? 'text-emerald-600' : 'text-rose-600')}
+        >
+          {String(animating)}
         </strong>
       </p>
       <p>
@@ -42,7 +52,8 @@ const Page = () => {
         style={{
           position: 'fixed',
           inset: '0',
-          zIndex: 1,
+          zIndex: 0,
+          pointerEvents: 'none',
         }}
         camera={{ position: [0, 0, 5], fov: 45 }}
         dpr={[1, 2]}
@@ -53,61 +64,8 @@ const Page = () => {
         <InteractiveObject />
       </Canvas>
 
-      <div className="">
-        <StageSection id="hero" className="items-center grid grid-cols-2 px-24">
-          <div>
-            <h1 className="font-semibold text-6xl">The Object</h1>
-            <p className="mt-4 text-white/70">
-              Drag to orbit, move your mouse to tilt.
-            </p>
-          </div>
-        </StageSection>
-
-        <StageSection id="material">
-          <p className="bottom-24 left-1/2 absolute text-white/50 text-sm uppercase tracking-widest -translate-x-1/2">
-            01 / 05
-          </p>
-          <h3 className="bottom-16 left-1/2 absolute font-semibold text-white text-2xl -translate-x-1/2">
-            Aerospace-grade shell
-          </h3>
-        </StageSection>
-
-        <StageSection id="sensor">
-          <p className="bottom-24 left-1/2 absolute text-white/50 text-sm uppercase tracking-widest -translate-x-1/2">
-            02 / 05
-          </p>
-          <h3 className="bottom-16 left-1/2 absolute font-semibold text-white text-2xl -translate-x-1/2">
-            Precision sensor array
-          </h3>
-        </StageSection>
-
-        <StageSection id="battery">
-          <p className="bottom-24 left-1/2 absolute text-white/50 text-sm uppercase tracking-widest -translate-x-1/2">
-            03 / 05
-          </p>
-          <h3 className="bottom-16 left-1/2 absolute font-semibold text-white text-2xl -translate-x-1/2">
-            Cell architecture
-          </h3>
-        </StageSection>
-
-        <StageSection id="chip">
-          <p className="bottom-24 left-1/2 absolute text-white/50 text-sm uppercase tracking-widest -translate-x-1/2">
-            04 / 05
-          </p>
-          <h3 className="bottom-16 left-1/2 absolute font-semibold text-white text-2xl -translate-x-1/2">
-            Custom silicon
-          </h3>
-        </StageSection>
-
-        <StageSection id="display">
-          <p className="bottom-24 left-1/2 absolute text-white/50 text-sm uppercase tracking-widest -translate-x-1/2">
-            05 / 05
-          </p>
-          <h3 className="bottom-16 left-1/2 absolute font-semibold text-white text-2xl -translate-x-1/2">
-            Optical stack
-          </h3>
-        </StageSection>
-      </div>
+      <HeroSection />
+      <ShowcaseSection />
 
       <DebugHud />
     </>

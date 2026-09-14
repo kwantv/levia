@@ -40,6 +40,7 @@ export function useOrbitDrag(
       );
       if (hits.length === 0) return;
 
+      e.preventDefault();
       isDown.current = true;
       last.current = { x: e.clientX, y: e.clientY };
       setDragging(true);
@@ -47,6 +48,7 @@ export function useOrbitDrag(
 
     const handleMove = (e: PointerEvent) => {
       if (!isDown.current || !groupRef.current) return;
+      e.preventDefault();
       const dx = e.clientX - last.current.x;
       const dy = e.clientY - last.current.y;
       groupRef.current.rotation.y += dx * 0.005;

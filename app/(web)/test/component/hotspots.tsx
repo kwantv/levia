@@ -33,8 +33,7 @@ function jumpToStage(id: string) {
 }
 
 export function Hotspots() {
-  const stage = useStore((s) => s.stage);
-  const visible = stage === 'hero';
+  const orbitEnabled = useStore((s) => s.orbit);
 
   return (
     <>
@@ -43,12 +42,12 @@ export function Hotspots() {
           key={point.id}
           position={point.position}
           occlude
-          visible={visible}
+          visible={orbitEnabled}
         >
           <button
             onClick={() => jumpToStage(point.id)}
             className={`group relative flex h-3 w-3 items-center justify-center transition-opacity duration-200 ${
-              visible
+              orbitEnabled
                 ? 'opacity-100 pointer-events-auto'
                 : 'pointer-events-none opacity-0'
             }`}

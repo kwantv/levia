@@ -13,6 +13,9 @@ interface StoreState {
   dragging: boolean;
   setDragging: (v: boolean) => void;
 
+  animating: boolean;
+  setAnimating: (v: boolean) => void;
+
   modelRef: Group | null;
   setModelRef: (ref: Group | null) => void;
 
@@ -32,6 +35,9 @@ export const useStore = create<StoreState>((set) => ({
 
   orbit: true,
   setOrbit: (orbit) => set({ orbit }),
+
+  animating: false,
+  setAnimating: (animating) => set({ animating }),
 
   dragging: false,
   setDragging: (dragging) => set({ dragging }),

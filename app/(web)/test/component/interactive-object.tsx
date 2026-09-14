@@ -8,8 +8,6 @@ import { Hotspots } from './hotspots';
 import { Object } from './object';
 import { useMouseTilt } from './use-mouse-tilt';
 import { useOrbitDrag } from './use-orbit-drag';
-import { StageAnnotations } from './annotations';
-import { PresentationControls } from '@react-three/drei';
 
 export function InteractiveObject() {
   const outerGroupRef = useRef<Group>(null); // universal pose target — tweenToPose writes here
@@ -50,7 +48,7 @@ export function InteractiveObject() {
         <group ref={orbitLayerRef}>
           <Object ref={meshRef} position={[0, 0, 0]} />
           <Hotspots />
-          <StageAnnotations />
+          {/* <StageAnnotations /> */}
         </group>
       </group>
     </group>
