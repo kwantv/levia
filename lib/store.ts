@@ -4,8 +4,8 @@ import type { Group } from 'three';
 import type Lenis from 'lenis';
 
 interface StoreState {
-  stage: string;
-  setStage: (stage: string) => void;
+  activeStage: string | null;
+  setActiveStage: (id: string | null) => void;
 
   orbit: boolean;
   setOrbit: (v: boolean) => void;
@@ -30,8 +30,8 @@ interface StoreState {
 }
 
 export const useStore = create<StoreState>((set) => ({
-  stage: 'hero',
-  setStage: (stage) => set({ stage }),
+  activeStage: null,
+  setActiveStage: (activeStage) => set({ activeStage }),
 
   orbit: true,
   setOrbit: (orbit) => set({ orbit }),

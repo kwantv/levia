@@ -4,7 +4,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Fragment, useEffect, useRef } from 'react';
-import { movePoseTo } from './move-pose-to';
+import { getStickyOffset, movePoseTo, scrollToStage } from '../utils';
 import { SHOWCASE_STAGES } from './showcase-stages';
 import { useStore } from '@/lib/store';
 
@@ -27,6 +27,7 @@ export function ShowcaseSection() {
       );
 
       const enter = () => {
+        useStore.getState().setActiveStage(stage.id);
         movePoseTo(stage.pose);
         gsap.to(textEl, { opacity: 1, duration: 0.3 });
         if (detailEl) gsap.to(detailEl, { opacity: 1, y: 0, duration: 0.3 });
@@ -34,13 +35,14 @@ export function ShowcaseSection() {
 
       const leave = () => {
         gsap.to(textEl, { opacity: 0.25, duration: 0.3 });
+        const { activeStage, setActiveStage } = useStore.getState();
+        if (activeStage === stage.id) setActiveStage(null);
       };
 
       const st = ScrollTrigger.create({
         trigger: trigger,
-        start: () => `top ${96 + i * 56}`,
-        end: () => `bottom ${96 + i * 56}`,
-        markers: true,
+        start: () => `top ${getStickyOffset(i)}`,
+        end: () => `bottom ${getStickyOffset(i)}`,
         onEnter: enter,
         onEnterBack: enter,
         onLeave: leave,
@@ -53,29 +55,19 @@ export function ShowcaseSection() {
     return () => instances.forEach((i) => i.kill());
   }, []);
 
-  const jumpToStage = (i: number) => {
-    const target = triggerRefs.current[i];
-    if (!target || !lenis) return;
-
-    lenis.scrollTo(target, {
-      offset: -(96 + i * 56) + 16, // mirrors the ScrollTrigger start() offset
-      duration: 0.7,
-    });
-  };
-
   return (
     <section className="relative">
       {SHOWCASE_STAGES.map((stage, i) => (
         <Fragment key={stage.id}>
           <div
             className="z-10 sticky px-24 pointer-events-none"
-            style={{ top: `calc(6rem + ${i * 3.5}rem)` }}
+            style={{ top: getStickyOffset(i) }}
           >
             <div
               ref={(el) => {
                 titleRefs.current[i] = el;
               }}
-              onClick={() => jumpToStage(i)}
+              onClick={() => scrollToStage(stage.id)}
               className="opacity-25 hover:opacity-75 max-w-md transition-opacity cursor-pointer pointer-events-auto"
             >
               <h3 className="mb-3 font-heading text-3xl">{stage.title}</h3>
@@ -83,6 +75,7 @@ export function ShowcaseSection() {
           </div>
 
           <div
+            id={`stage-${stage.id}`}
             ref={(el) => {
               triggerRefs.current[i] = el;
             }}

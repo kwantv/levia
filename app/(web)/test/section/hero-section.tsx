@@ -1,10 +1,9 @@
 'use client';
 
 import { useStore } from '@/lib/store';
-import { resetInteractionLayers } from '@/lib/utils';
+import { resetInteractionLayers, movePoseTo } from '../utils';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useEffect, useRef } from 'react';
-import { movePoseTo } from './move-pose-to';
 
 const HERO_POSE = { position: [1.6, 0, 0], rotation: [0, 0, 0] } as const;
 
@@ -14,7 +13,9 @@ const HeroSection = () => {
   useEffect(() => {
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
-      start: 'bottom top',
+      start: 'top 96',
+      end: 'bottom 96',
+      markers: true,
       onLeave: () => {
         useStore.getState().setOrbit(false);
         resetInteractionLayers();
@@ -30,7 +31,7 @@ const HeroSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="items-center grid grid-cols-2 border w-full min-h-dvh"
+      className="items-center grid grid-cols-2 w-full min-h-dvh"
     >
       <div className="space-y-4 p-24">
         <h1 className="w-fit font-heading text-6xl">The object</h1>

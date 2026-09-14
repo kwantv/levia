@@ -3,6 +3,7 @@
 
 import { Html } from '@react-three/drei';
 import { useStore } from '@/lib/store';
+import { scrollToStage } from '../utils';
 
 interface HotspotDef {
   id: string; // matches a stage id — this is the jump target
@@ -20,18 +21,6 @@ const HOTSPOTS: HotspotDef[] = [
   { id: 'display', position: [-0.5, 0.5, -0.5], label: 'Display' },
 ];
 
-function jumpToStage(id: string) {
-  const section = document.getElementById(`stage-${id}`);
-  if (!section) return;
-
-  const { lenis } = useStore.getState();
-  if (lenis) {
-    lenis.scrollTo(section);
-  } else {
-    section.scrollIntoView({ behavior: 'smooth' });
-  }
-}
-
 export function Hotspots() {
   const orbitEnabled = useStore((s) => s.orbit);
 
@@ -45,7 +34,7 @@ export function Hotspots() {
           visible={orbitEnabled}
         >
           <button
-            onClick={() => jumpToStage(point.id)}
+            onClick={() => scrollToStage(point.id)}
             className={`group relative flex h-3 w-3 items-center justify-center transition-opacity duration-200 ${
               orbitEnabled
                 ? 'opacity-100 pointer-events-auto'

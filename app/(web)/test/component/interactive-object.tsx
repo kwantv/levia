@@ -8,6 +8,7 @@ import { Hotspots } from './hotspots';
 import { Object } from './object';
 import { useMouseTilt } from './use-mouse-tilt';
 import { useOrbitDrag } from './use-orbit-drag';
+import { Annotations } from './annotations';
 
 export function InteractiveObject() {
   const outerGroupRef = useRef<Group>(null); // universal pose target — tweenToPose writes here
@@ -20,8 +21,9 @@ export function InteractiveObject() {
   const setOrbitLayerRef = useStore((s) => s.setOrbitLayerRef);
   const orbitEnabled = useStore((s) => s.orbit);
   const isDragging = useStore((s) => s.dragging);
+  const activeStage = useStore((s) => s.activeStage);
 
-  const tilt = useMouseTilt(orbitEnabled);
+  const tilt = useMouseTilt(orbitEnabled || !!activeStage);
   useOrbitDrag(orbitLayerRef, meshRef, orbitEnabled);
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export function InteractiveObject() {
         <group ref={orbitLayerRef}>
           <Object ref={meshRef} position={[0, 0, 0]} />
           <Hotspots />
-          {/* <StageAnnotations /> */}
+          <Annotations />
         </group>
       </group>
     </group>

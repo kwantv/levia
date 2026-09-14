@@ -1,33 +1,75 @@
-// components/stage-annotations.tsx
 'use client';
 
-import { Html } from '@react-three/drei';
+import { Html, Line } from '@react-three/drei';
 import { useStore } from '@/lib/store';
+import { SHOWCASE_STAGES } from '../section/showcase-stages';
+import { useEffect, useState } from 'react';
+import * as THREE from 'three';
 
-export function StageAnnotations() {
-  const annotations = useStore((s) => s.annotations);
+function resolveLabelAnchor(
+  point: readonly [number, number, number],
+  offset?: readonly [number, number, number],
+) {
+  if (offset) {
+    return [
+      point[0] + offset[0],
+      point[1] + offset[1],
+      point[2] + offset[2],
+    ] as const;
+  }
+  const dir = new THREE.Vector3(...point);
+  if (dir.lengthSq() === 0) dir.set(0, 1, 0);
+  dir.normalize().multiplyScalar(0.35);
+  return [point[0] + dir.x, point[1] + dir.y, point[2] + dir.z] as const;
+}
+
+function AnnotationLabel({ label }: { label: string }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <div
+      className={`-translate-x-1/2 -translate-y-1/2 bg-black/70 px-2 py-1 rounded text-white text-xs whitespace-nowrap transition-opacity duration-300 ${
+        visible ? 'opacity-100' : 'opacity-0'
+      }`}
+    >
+      {label}
+    </div>
+  );
+}
+
+export function Annotations() {
+  const activeStage = useStore((s) => s.activeStage);
+  const stage = SHOWCASE_STAGES.find((s) => s.id === activeStage);
+
+  if (!stage) return null;
 
   return (
     <>
-      {annotations.map((a, i) => (
-        <Html key={a.label} position={a.position} distanceFactor={6} occlude>
-          <div
-            className="flex items-center gap-2 opacity-0 pointer-events-none"
-            style={{
-              animation: 'annotation-pop 0.4s ease forwards',
-              animationDelay: `${i * 100 + 200}ms`,
-            }}
-          >
-            {/* marker dot at the exact 3D anchor point */}
-            <span className="bg-white shadow-[0_0_6px_rgba(255,255,255,0.8)] rounded-full w-1.5 h-1.5 shrink-0" />
-            {/* connecting line — width doubles as a small reveal via the keyframe below */}
-            <span className="bg-white/50 w-8 h-px origin-left" />
-            <span className="text-white/80 text-xs uppercase tracking-wide whitespace-nowrap">
-              {a.label}
-            </span>
-          </div>
-        </Html>
-      ))}
+      {stage.annotations.map((a) => {
+        const labelAnchor = resolveLabelAnchor(a.point, a.labelOffset);
+        return (
+          <group key={a.id}>
+            <Line
+              points={[a.point, labelAnchor]}
+              color="white"
+              lineWidth={1}
+              transparent
+              opacity={0.6}
+            />
+            <mesh position={a.point}>
+              <sphereGeometry args={[0.015, 16, 16]} />
+              <meshBasicMaterial color="white" />
+            </mesh>
+            <Html position={labelAnchor} occlude>
+              <AnnotationLabel label={a.label} />
+            </Html>
+          </group>
+        );
+      })}
     </>
   );
 }

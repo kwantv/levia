@@ -9,7 +9,7 @@ import HeroSection from './section/hero-section';
 import { ShowcaseSection } from './section/showcase-section';
 
 function DebugHud() {
-  const stage = useStore((s) => s.stage);
+  const stage = useStore((s) => s.activeStage);
   const orbitEnabled = useStore((s) => s.orbit);
   const dragging = useStore((s) => s.dragging);
   const animating = useStore((s) => s.animating);
