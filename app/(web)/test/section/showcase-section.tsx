@@ -1,4 +1,3 @@
-// sections/showcase-section.tsx
 'use client';
 
 import gsap from 'gsap';
@@ -11,7 +10,6 @@ import { useStore } from '@/lib/store';
 export function ShowcaseSection() {
   const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const titleRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const lenis = useStore((s) => s.lenis);
 
   useEffect(() => {
     const instances: Array<{ kill: () => void }> = [];
@@ -27,7 +25,7 @@ export function ShowcaseSection() {
       );
 
       const enter = () => {
-        useStore.getState().setActiveStage(stage.id);
+        useStore.getState().setStage(stage.id);
         movePoseTo(stage.pose);
         gsap.to(textEl, { opacity: 1, duration: 0.3 });
         if (detailEl) gsap.to(detailEl, { opacity: 1, y: 0, duration: 0.3 });
@@ -35,8 +33,8 @@ export function ShowcaseSection() {
 
       const leave = () => {
         gsap.to(textEl, { opacity: 0.25, duration: 0.3 });
-        const { activeStage, setActiveStage } = useStore.getState();
-        if (activeStage === stage.id) setActiveStage(null);
+        const { stage: currentStage, setStage } = useStore.getState();
+        if (currentStage === stage.id) setStage(null);
       };
 
       const st = ScrollTrigger.create({

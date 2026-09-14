@@ -9,10 +9,9 @@ import HeroSection from './section/hero-section';
 import { ShowcaseSection } from './section/showcase-section';
 
 function DebugHud() {
-  const stage = useStore((s) => s.activeStage);
+  const stage = useStore((s) => s.stage);
   const orbitEnabled = useStore((s) => s.orbit);
   const dragging = useStore((s) => s.dragging);
-  const animating = useStore((s) => s.animating);
 
   return (
     <div className="bottom-4 left-1/3 z-10 fixed gap-10 columns-2 font-mono text-xs">
@@ -28,14 +27,6 @@ function DebugHud() {
         dragging:{' '}
         <strong className={cn(dragging ? 'text-emerald-600' : 'text-rose-600')}>
           {String(dragging)}
-        </strong>
-      </p>
-      <p>
-        animating:{' '}
-        <strong
-          className={cn(animating ? 'text-emerald-600' : 'text-rose-600')}
-        >
-          {String(animating)}
         </strong>
       </p>
       <p>

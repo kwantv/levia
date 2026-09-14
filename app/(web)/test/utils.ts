@@ -2,12 +2,6 @@ import gsap from 'gsap';
 import { useStore } from '@/lib/store';
 import { Pose, SHOWCASE_STAGES } from './section/showcase-stages';
 
-export function resetInteractionLayers(duration = 0.6) {
-  const { tiltLayerRef, orbitLayerRef } = useStore.getState();
-  if (tiltLayerRef) gsap.to(tiltLayerRef.rotation, { x: 0, y: 0, duration });
-  if (orbitLayerRef) gsap.to(orbitLayerRef.rotation, { x: 0, y: 0, duration });
-}
-
 /**
  * Universal object-pose tween, usable from any section (showcase, future
  * products/kitchen sections, hero's reset-on-leave, etc). Killing existing

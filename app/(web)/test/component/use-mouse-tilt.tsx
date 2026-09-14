@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react';
  * input. Returns a ref so consumers can read it inside useFrame without
  * triggering React re-renders on every mousemove.
  */
-export function useMouseTilt(enabled: boolean) {
+export function useMouseTilt(enabled = true) {
   const tilt = useRef({ x: 0, y: 0 });
 
   useEffect(() => {

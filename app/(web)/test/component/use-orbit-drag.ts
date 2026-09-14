@@ -1,14 +1,17 @@
-// components/use-orbit-drag.ts
 'use client';
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
-import type { Group, Object3D } from 'three';
+import type { Object3D } from 'three';
 import { useStore } from '@/lib/store';
 
+/**
+ * Tracks pointer-drag rotation against a hit-tested object. Returns a ref
+ * so consumers can apply it inside useFrame — mirrors useMouseTilt's
+ * pattern: this hook calculates, it never touches the scene graph itself.
+ */
 export function useOrbitDrag(
-  groupRef: React.RefObject<Group | null>,
   hitTargetRef: React.RefObject<Object3D | null>,
   enabled: boolean,
 ) {
@@ -17,6 +20,7 @@ export function useOrbitDrag(
   const raycaster = useRef(new THREE.Raycaster());
   const last = useRef({ x: 0, y: 0 });
   const isDown = useRef(false);
+  const rotation = useRef({ x: 0, y: 0 }); // accumulated drag rotation
 
   useEffect(() => {
     if (!enabled) return;
@@ -32,8 +36,6 @@ export function useOrbitDrag(
     const handleDown = (e: PointerEvent) => {
       if (!hitTargetRef.current) return;
       raycaster.current.setFromCamera(toNDC(e), camera);
-      // The raycast IS the hit-test — this replaces needing the browser
-      // to consider the canvas a valid click target at all.
       const hits = raycaster.current.intersectObject(
         hitTargetRef.current,
         true,
@@ -47,12 +49,12 @@ export function useOrbitDrag(
     };
 
     const handleMove = (e: PointerEvent) => {
-      if (!isDown.current || !groupRef.current) return;
+      if (!isDown.current) return;
       e.preventDefault();
       const dx = e.clientX - last.current.x;
       const dy = e.clientY - last.current.y;
-      groupRef.current.rotation.y += dx * 0.005;
-      groupRef.current.rotation.x += dy * 0.005;
+      rotation.current.y += dx * 0.005;
+      rotation.current.x += dy * 0.005;
       last.current = { x: e.clientX, y: e.clientY };
     };
 
@@ -71,5 +73,7 @@ export function useOrbitDrag(
       window.removeEventListener('pointerup', handleUp);
       window.removeEventListener('pointercancel', handleUp);
     };
-  }, [enabled, groupRef, hitTargetRef, camera, gl, setDragging]);
+  }, [enabled, hitTargetRef, camera, gl, setDragging]);
+
+  return rotation;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useStore } from '@/lib/store';
-import { resetInteractionLayers, movePoseTo } from '../utils';
+import { movePoseTo } from '../utils';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useEffect, useRef } from 'react';
 
@@ -18,10 +18,11 @@ const HeroSection = () => {
       markers: true,
       onLeave: () => {
         useStore.getState().setOrbit(false);
-        resetInteractionLayers();
+        useStore.getState().resetInteraction?.();
       },
       onEnterBack: () => {
         useStore.getState().setOrbit(true);
+        useStore.getState().setStage('hero');
         movePoseTo(HERO_POSE);
       },
     });

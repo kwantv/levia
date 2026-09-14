@@ -1,10 +1,10 @@
 'use client';
 
-import { Html, Line } from '@react-three/drei';
 import { useStore } from '@/lib/store';
-import { SHOWCASE_STAGES } from '../section/showcase-stages';
+import { Html, Line } from '@react-three/drei';
 import { useEffect, useState } from 'react';
 import * as THREE from 'three';
+import { SHOWCASE_STAGES } from '../section/showcase-stages';
 
 function resolveLabelAnchor(
   point: readonly [number, number, number],
@@ -32,7 +32,7 @@ function AnnotationLabel({ label }: { label: string }) {
 
   return (
     <div
-      className={`-translate-x-1/2 -translate-y-1/2 bg-black/70 px-2 py-1 rounded text-white text-xs whitespace-nowrap transition-opacity duration-300 ${
+      className={`-translate-x-1/2 -translate-y-1/2 px-2 py-1 bg-foreground text-background text-xs font-mono text-nowrap transition-opacity duration-300 ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}
     >
@@ -42,7 +42,7 @@ function AnnotationLabel({ label }: { label: string }) {
 }
 
 export function Annotations() {
-  const activeStage = useStore((s) => s.activeStage);
+  const activeStage = useStore((s) => s.stage);
   const stage = SHOWCASE_STAGES.find((s) => s.id === activeStage);
 
   if (!stage) return null;
@@ -61,10 +61,10 @@ export function Annotations() {
               opacity={0.6}
             />
             <mesh position={a.point}>
-              <sphereGeometry args={[0.015, 16, 16]} />
+              <sphereGeometry args={[0.009, 16, 16]} />
               <meshBasicMaterial color="white" />
             </mesh>
-            <Html position={labelAnchor} occlude>
+            <Html position={labelAnchor} occlude="blending">
               <AnnotationLabel label={a.label} />
             </Html>
           </group>

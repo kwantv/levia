@@ -1,4 +1,3 @@
-// lib/showcase-stages.ts
 export interface Pose {
   position: readonly [number, number, number];
   rotation: readonly [number, number, number];
