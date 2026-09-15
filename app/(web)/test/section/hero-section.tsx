@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react';
 
 const HERO_POSE = { position: [1.6, 0, 0], rotation: [0, 0, 0] } as const;
 
-const HeroSection = () => {
+export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -52,6 +52,4 @@ const HeroSection = () => {
       </div>
     </section>
   );
-};
-
-export default HeroSection;
+}

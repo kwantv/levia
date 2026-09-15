@@ -5,8 +5,9 @@ import { cn } from '@/lib/utils';
 import { Environment } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { InteractiveObject } from './component/interactive-object';
-import HeroSection from './section/hero-section';
+import { HeroSection } from './section/hero-section';
 import { ShowcaseSection } from './section/showcase-section';
+import { ProductsSection } from './section/product-section';
 
 function DebugHud() {
   const stage = useStore((s) => s.stage);
@@ -43,7 +44,7 @@ const Page = () => {
         style={{
           position: 'fixed',
           inset: '0',
-          zIndex: 0,
+          zIndex: 1,
           pointerEvents: 'none',
         }}
         camera={{ position: [0, 0, 5], fov: 45 }}
@@ -57,6 +58,7 @@ const Page = () => {
 
       <HeroSection />
       <ShowcaseSection />
+      <ProductsSection />
 
       <DebugHud />
     </>

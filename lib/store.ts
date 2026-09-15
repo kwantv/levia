@@ -16,6 +16,9 @@ interface StoreState {
   modelRef: Group | null;
   setModelRef: (ref: Group | null) => void;
 
+  dockTargetId: string | null;
+  setDockTargetId: (id: string | null) => void;
+
   resetInteraction: (() => void) | null;
   setResetInteraction: (fn: (() => void) | null) => void;
 
@@ -38,6 +41,9 @@ export const useStore = create<StoreState>((set) => ({
 
   modelRef: null,
   setModelRef: (modelRef) => set({ modelRef }),
+
+  dockTargetId: null,
+  setDockTargetId: (dockTargetId) => set({ dockTargetId }),
 
   resetInteraction: null,
   setResetInteraction: (resetInteraction) => set({ resetInteraction }),
