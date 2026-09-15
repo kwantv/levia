@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Group } from 'three';
 import type Lenis from 'lenis';
+import { Pose } from '@/app/(web)/test/section/showcase-stages';
 
 interface StoreState {
   stage: string | null;
@@ -17,6 +18,9 @@ interface StoreState {
 
   resetInteraction: (() => void) | null;
   setResetInteraction: (fn: (() => void) | null) => void;
+
+  pendingPose: Pose | null;
+  setPendingPose: (pose: Pose | null) => void;
 
   lenis: Lenis | null;
   setLenis: (lenis: Lenis | null) => void;
@@ -37,6 +41,9 @@ export const useStore = create<StoreState>((set) => ({
 
   resetInteraction: null,
   setResetInteraction: (resetInteraction) => set({ resetInteraction }),
+
+  pendingPose: null,
+  setPendingPose: (pendingPose) => set({ pendingPose }),
 
   lenis: null,
   setLenis: (lenis) => set({ lenis }),

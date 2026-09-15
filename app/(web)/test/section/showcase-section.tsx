@@ -27,12 +27,12 @@ export function ShowcaseSection() {
       const enter = () => {
         useStore.getState().setStage(stage.id);
         movePoseTo(stage.pose);
-        gsap.to(textEl, { opacity: 1, duration: 0.3 });
+        textEl.classList.add('opacity-100!');
         if (detailEl) gsap.to(detailEl, { opacity: 1, y: 0, duration: 0.3 });
       };
 
       const leave = () => {
-        gsap.to(textEl, { opacity: 0.25, duration: 0.3 });
+        textEl.classList.remove('opacity-100!');
         const { stage: currentStage, setStage } = useStore.getState();
         if (currentStage === stage.id) setStage(null);
       };
@@ -66,7 +66,7 @@ export function ShowcaseSection() {
                 titleRefs.current[i] = el;
               }}
               onClick={() => scrollToStage(stage.id)}
-              className="opacity-25 hover:opacity-75 max-w-md transition-opacity cursor-pointer pointer-events-auto"
+              className="opacity-25 hover:opacity-75 w-fit transition-opacity cursor-pointer pointer-events-auto"
             >
               <h3 className="mb-3 font-heading text-3xl">{stage.title}</h3>
             </div>
