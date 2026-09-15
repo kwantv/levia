@@ -15,7 +15,6 @@ export function HeroSection() {
       trigger: sectionRef.current,
       start: 'top 96',
       end: 'bottom 96',
-      markers: true,
       onLeave: () => {
         useStore.getState().setOrbit(false);
         useStore.getState().resetInteraction?.();

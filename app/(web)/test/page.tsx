@@ -7,7 +7,20 @@ import { Canvas } from '@react-three/fiber';
 import { InteractiveObject } from './component/interactive-object';
 import { HeroSection } from './section/hero-section';
 import { ShowcaseSection } from './section/showcase-section';
-import { ProductsSection } from './section/product-section';
+import ProductSection from './section/product-section';
+import { RefObject, useRef } from 'react';
+
+export type SceneMorphState = {
+  progress: number;
+
+  // viewport pixel coordinates
+  targetX: number;
+  targetY: number;
+
+  targetScale: number;
+};
+
+export type SceneMorphRef = RefObject<SceneMorphState>;
 
 function DebugHud() {
   const stage = useStore((s) => s.stage);
@@ -38,14 +51,28 @@ function DebugHud() {
 }
 
 const Page = () => {
+  const eventSourceRef = useRef<HTMLDivElement>(null);
+
+  const morphRef = useRef<SceneMorphState>({
+    progress: 0,
+    targetX: 0,
+    targetY: 0,
+    targetScale: 0.55,
+  });
+
   return (
+    // <div ref={eventSourceRef} className="relative">
     <>
       <Canvas
+        id="scene-canvas"
         style={{
           position: 'fixed',
-          inset: '0',
+          inset: 0,
           zIndex: 1,
           pointerEvents: 'none',
+          // GSAP animates this, not width/height.
+          clipPath: 'inset(0px 0px 0px 0px round 0px)',
+          willChange: 'clip-path',
         }}
         camera={{ position: [0, 0, 5], fov: 45 }}
         dpr={[1, 2]}
@@ -53,15 +80,21 @@ const Page = () => {
         <ambientLight intensity={0.6} />
         <directionalLight position={[3, 4, 2]} intensity={1.2} />
         <Environment preset="city" />
-        <InteractiveObject />
+        <InteractiveObject morph={morphRef} />
       </Canvas>
+
+      <div
+        id="scene-card-frame"
+        className="z-2 fixed shadow-2xl border border-white/10 pointer-events-none"
+      />
 
       <HeroSection />
       <ShowcaseSection />
-      <ProductsSection />
+      <ProductSection morph={morphRef} />
 
       <DebugHud />
     </>
+    // </div>
   );
 };
 

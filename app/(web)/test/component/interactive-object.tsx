@@ -1,20 +1,29 @@
 'use client';
 
 import { useStore } from '@/lib/store';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import gsap from 'gsap';
-import { useEffect, useRef } from 'react';
-import type { Group, Mesh } from 'three';
+import { useEffect, useMemo, useRef } from 'react';
+import {
+  MathUtils,
+  Plane,
+  Raycaster,
+  Vector2,
+  Vector3,
+  type Group,
+  type Mesh,
+} from 'three';
 import { shortestEquivalentAngle } from '../utils';
 import { Annotations } from './annotations';
 import { Hotspots } from './hotspots';
 import { Object } from './object';
 import { useMouseTilt } from './use-mouse-tilt';
 import { useOrbitDrag } from './use-orbit-drag';
-import { ObjectDocking } from './object-docking';
+import { SceneMorphRef } from '../page';
 
-export function InteractiveObject() {
+export function InteractiveObject({ morph }: { morph: SceneMorphRef }) {
   const outerGroupRef = useRef<Group>(null); // universal pose target — tweenToPose writes here
+  const morphLayerRef = useRef<Group>(null); // morph
   const tiltLayerRef = useRef<Group>(null); // passive mouse tilt
   const orbitLayerRef = useRef<Group>(null); // drag orbit — self-owned, replacing PresentationControls
   const meshRef = useRef<Mesh>(null);
@@ -25,6 +34,105 @@ export function InteractiveObject() {
 
   const tilt = useMouseTilt();
   const orbit = useOrbitDrag(meshRef, orbitEnabled);
+
+  const { camera, size } = useThree();
+
+  const raycaster = useMemo(() => new Raycaster(), []);
+
+  const ndc = useMemo(() => new Vector2(), []);
+
+  const targetWorld = useMemo(() => new Vector3(), []);
+
+  const targetLocal = useMemo(() => new Vector3(), []);
+
+  /*
+   * Plane passing through z = 0.
+   *
+   * This is the same depth where your object
+   * approximately lives.
+   */
+  const objectPlane = useMemo(() => new Plane(new Vector3(0, 0, 1), 0), []);
+
+  useFrame(() => {
+    const outerGroup = outerGroupRef.current;
+    const morphLayer = morphLayerRef.current;
+
+    if (!outerGroup || !morphLayer) {
+      return;
+    }
+
+    const { progress, targetX, targetY, targetScale } = morph.current;
+
+    /*
+     * Viewport pixels -> NDC.
+     *
+     * browser:
+     *
+     * 0,0 ---------------- width
+     * |
+     * |
+     * height
+     *
+     * becomes Three.js:
+     *
+     * -1,+1 -------- +1,+1
+     *   |
+     *   |
+     * -1,-1 -------- +1,-1
+     */
+    ndc.set((targetX / size.width) * 2 - 1, -(targetY / size.height) * 2 + 1);
+
+    /*
+     * Shoot a ray through that screen coordinate.
+     */
+    raycaster.setFromCamera(ndc, camera);
+
+    const hit = raycaster.ray.intersectPlane(objectPlane, targetWorld);
+
+    if (!hit) {
+      return;
+    }
+
+    /*
+     * targetWorld is in scene/world coordinates.
+     *
+     * morphLayer is a child of outerGroup,
+     * so convert destination into outerGroup's
+     * local coordinate system.
+     */
+    outerGroup.updateWorldMatrix(true, false);
+
+    targetLocal.copy(targetWorld);
+
+    outerGroup.worldToLocal(targetLocal);
+
+    /*
+     * At p = 0:
+     *
+     * morph layer position = 0
+     *
+     * therefore your existing:
+     *
+     * outerGroup position={[1.6, 0, 0]}
+     *
+     * behaves exactly as before.
+     *
+     * At p = 1, morphLayer moves the object
+     * into the product card center.
+     */
+    morphLayer.position.set(
+      MathUtils.lerp(0, targetLocal.x, progress),
+
+      MathUtils.lerp(0, targetLocal.y, progress),
+
+      MathUtils.lerp(0, targetLocal.z, progress),
+    );
+
+    const scale = MathUtils.lerp(1, targetScale, progress);
+
+    morphLayer.scale.setScalar(scale);
+    // outerGroup.updateWorldMatrix(true, true);
+  });
 
   useEffect(() => {
     setModelRef(outerGroupRef.current);
@@ -86,12 +194,13 @@ export function InteractiveObject() {
 
   return (
     <group ref={outerGroupRef} position={[1.6, 0, 0]}>
-      <group ref={tiltLayerRef}>
-        <group ref={orbitLayerRef}>
-          <Object ref={meshRef} position={[0, 0, 0]} />
-          <Hotspots />
-          <Annotations />
-          <ObjectDocking />
+      <group ref={morphLayerRef}>
+        <group ref={tiltLayerRef}>
+          <group ref={orbitLayerRef}>
+            <Object ref={meshRef} position={[0, 0, 0]} />
+            <Hotspots />
+            <Annotations />
+          </group>
         </group>
       </group>
     </group>
