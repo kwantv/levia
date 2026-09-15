@@ -1,15 +1,9 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SceneMorphRef } from '../page';
-// import { useGSAP } from '@gsap/react';
-
-// import type { SceneMorphRef } from '@/lib/scene-morph';
-
-gsap.registerPlugin(ScrollTrigger);
 
 type ProductSectionProps = {
   morph: SceneMorphRef;
@@ -17,176 +11,182 @@ type ProductSectionProps = {
 
 const ProductSection = ({ morph }: ProductSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
+  const spaceRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const firstCardRef = useRef<HTMLDivElement>(null);
+  const styleCardRef = useRef<HTMLDivElement>(null);
 
-  useEffect(
-    () => {
-      const section = sectionRef.current;
+  useEffect(() => {
+    const section = sectionRef.current;
+    const space = spaceRef.current;
+    const card = firstCardRef.current;
+    const styleCard = styleCardRef.current;
+    const frame = document.getElementById('scene-frame');
+    const viewport = document.getElementById('scene-viewport');
 
-      const card = firstCardRef.current;
+    if (!section || !space || !card || !styleCard || !frame || !viewport)
+      return;
 
-      const canvas = document.getElementById('scene-canvas');
+    // Final card shape
+    const getTargetRect = () => {
+      const sectionRect = section.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
 
-      const frame = document.getElementById('scene-card-frame');
+      const sectionHeight = sectionRect.height;
+      const cardTopInSection = cardRect.top - sectionRect.top;
+      const finalSectionTop = window.innerHeight - sectionHeight;
 
-      if (!section || !card || !canvas || !frame) {
-        return;
-      }
+      return {
+        left: cardRect.left,
+        top: finalSectionTop + cardTopInSection,
+        width: cardRect.width,
+        height: cardRect.height,
+      };
+    };
 
-      const clamp01 = gsap.utils.clamp(0, 1);
+    // Get taiwindcss style
+    const getTargetStyle = () => {
+      const style = getComputedStyle(styleCard);
 
-      const updateScene = () => {
-        const sectionRect = section.getBoundingClientRect();
+      return {
+        backgroundColor: style.backgroundColor,
+        borderColor: style.borderTopColor,
+        borderRadius: style.borderTopLeftRadius,
+        boxShadow: style.boxShadow,
+      };
+    };
 
-        const rect = card.getBoundingClientRect();
+    // Swap background illusion
+    const activateSurface = () => {
+      gsap.set(space, { backgroundColor: 'black' });
+      gsap.set(frame, {
+        backgroundColor: targetStyle.backgroundColor,
+        borderColor: targetStyle.borderColor,
+      });
+    };
 
-        /**
-         * Begin morphing when the ProductSection
-         * enters near the bottom of the screen.
-         */
-        const startY = window.innerHeight * 0.95;
+    const deactivateSurface = () => {
+      gsap.set(space, { clearProps: 'backgroundColor, borderColor' });
+      gsap.set(frame, { backgroundColor: 'transparent' });
+    };
 
-        /**
-         * Finish before ProductSection reaches
-         * the very top.
-         */
-        const endY = window.innerHeight * 0.15;
+    const attachToDocument = () => {
+      const rect = frame.getBoundingClientRect();
+      gsap.set(frame, {
+        position: 'absolute',
+        left: rect.left + window.scrollX,
+        top: rect.top + window.scrollY,
+        width: rect.width,
+        height: rect.height,
+      });
+    };
 
-        const progress = clamp01((startY - sectionRect.top) / (startY - endY));
+    const attachToViewport = () => {
+      const rect = frame.getBoundingClientRect();
 
-        morph.current.progress = progress;
+      gsap.set(frame, {
+        position: 'fixed',
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+      });
+    };
 
-        morph.current.targetX = rect.left + rect.width / 2;
+    let targetRect = getTargetRect();
+    let targetStyle = getTargetStyle();
 
-        morph.current.targetY = rect.top + rect.height / 2;
+    const trigger = ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: true,
+      invalidateOnRefresh: true,
 
-        morph.current.targetScale = 0.55;
+      onEnter: activateSurface,
+      onLeave: attachToDocument,
+      onEnterBack: attachToViewport,
+      onLeaveBack: () => {
+        morph.current.progress = 0;
 
-        /**
-         * Target card expressed as viewport
-         * inset values.
-         */
-        const targetTop = rect.top;
-
-        const targetRight = window.innerWidth - rect.right;
-
-        const targetBottom = window.innerHeight - rect.bottom;
-
-        const targetLeft = rect.left;
-
-        /**
-         * 0:
-         *
-         * inset(0 0 0 0)
-         *
-         * 1:
-         *
-         * inset(card bounds)
-         */
-        const top = gsap.utils.interpolate(0, targetTop, progress);
-
-        const right = gsap.utils.interpolate(0, targetRight, progress);
-
-        const bottom = gsap.utils.interpolate(0, targetBottom, progress);
-
-        const left = gsap.utils.interpolate(0, targetLeft, progress);
-
-        const radius = gsap.utils.interpolate(0, 16, progress);
-
-        gsap.set(canvas, {
-          clipPath: `
-            inset(
-              ${top}px
-              ${right}px
-              ${bottom}px
-              ${left}px
-              round ${radius}px
-            )
-          `,
-        });
-
-        /**
-         * Don't show the card chrome immediately.
-         *
-         * Canvas first shrinks, then the frame
-         * becomes visible near the end.
-         */
-        const frameProgress = clamp01((progress - 0.65) / 0.35);
+        deactivateSurface();
 
         gsap.set(frame, {
-          left: rect.left,
-          top: rect.top,
-
-          width: rect.width,
-          height: rect.height,
-
-          borderRadius: radius,
-
-          opacity: frameProgress,
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          width: '100vw',
+          height: '100dvh',
         });
-      };
 
-      const trigger = ScrollTrigger.create({
-        trigger: section,
+        gsap.set(viewport, {
+          left: 0,
+          top: 0,
+        });
+      },
 
-        /**
-         * Keep tracking for the complete time
-         * ProductSection travels through viewport.
-         */
-        start: 'top bottom',
-        end: 'bottom top',
+      onRefresh: () => {
+        targetRect = getTargetRect();
+        targetStyle = getTargetStyle();
+      },
 
-        onEnter: updateScene,
-        onUpdate: updateScene,
-        onRefresh: updateScene,
+      onUpdate: (self) => {
+        const p = self.progress;
+        const left = gsap.utils.interpolate(0, targetRect.left, p);
+        const top = gsap.utils.interpolate(0, targetRect.top, p);
+        const width = gsap.utils.interpolate(
+          window.innerWidth,
+          targetRect.width,
+          p,
+        );
+        const height = gsap.utils.interpolate(
+          window.innerHeight,
+          targetRect.height,
+          p,
+        );
 
-        onLeaveBack: () => {
-          morph.current.progress = 0;
+        // Morph the frame into card
+        gsap.set(frame, {
+          position: 'fixed',
+          left,
+          top,
+          width,
+          height,
+        });
 
-          gsap.set(canvas, {
-            clipPath: 'inset(0px 0px 0px 0px round 0px)',
-          });
+        // Canvas remains viewport-sized while morphing.
+        gsap.set(viewport, { left: -left, top: -top });
 
-          gsap.set(frame, {
-            opacity: 0,
-          });
-        },
-      });
+        // Update 3D object
+        morph.current.progress = p;
+        morph.current.targetX = targetRect.left + targetRect.width / 2;
+        morph.current.targetY = targetRect.top + targetRect.height / 2;
+        morph.current.targetScale = 0.55;
+      },
+    });
 
-      updateScene();
+    ScrollTrigger.refresh();
 
-      return () => {
-        trigger.kill();
-      };
-    },
-    [],
-    // {
-    //   scope: sectionRef,
-    // },
-  );
+    return () => trigger.kill();
+  }, [morph]);
 
   return (
-    <section ref={sectionRef} className="relative h-dvh">
-      <div className="content-center grid px-24 min-h-dvh">
+    <section ref={sectionRef} className="relative bg-black">
+      <div ref={spaceRef} className="bg-background h-dvh" />
+      <div ref={contentRef} className="content-center grid px-24 min-h-dvh">
         <div className="items-center gap-6 grid grid-cols-3">
-          {/* Canvas destination */}
           <div ref={firstCardRef} className="aspect-square" />
 
           <div
-            data-product-reveal
-            className="flex flex-col justify-end bg-white/5 backdrop-blur-sm p-6 border border-white/10 rounded-2xl aspect-square"
+            ref={styleCardRef}
+            className="flex flex-col justify-end bg-background p-6 border aspect-square"
           >
             <h4 className="font-heading text-xl">Companion Dock</h4>
-
             <p className="text-muted-foreground text-sm">$49</p>
           </div>
 
-          <div
-            data-product-reveal
-            className="flex flex-col justify-end bg-white/5 backdrop-blur-sm p-6 border border-white/10 rounded-2xl aspect-square"
-          >
+          <div className="flex flex-col justify-end bg-background p-6 border aspect-square">
             <h4 className="font-heading text-xl">Travel Case</h4>
-
             <p className="text-muted-foreground text-sm">$39</p>
           </div>
         </div>
