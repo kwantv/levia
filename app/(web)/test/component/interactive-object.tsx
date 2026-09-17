@@ -19,7 +19,7 @@ import { Hotspots } from './hotspots';
 import { Object } from './object';
 import { useMouseTilt } from './use-mouse-tilt';
 import { useOrbitDrag } from './use-orbit-drag';
-import { SceneMorphRef } from '../page';
+import { SceneMorphRef } from '../section/product-section';
 
 export function InteractiveObject({ morph }: { morph: SceneMorphRef }) {
   const outerGroupRef = useRef<Group>(null); // universal pose target — tweenToPose writes here
@@ -38,11 +38,8 @@ export function InteractiveObject({ morph }: { morph: SceneMorphRef }) {
   const { camera, size } = useThree();
 
   const raycaster = useMemo(() => new Raycaster(), []);
-
   const ndc = useMemo(() => new Vector2(), []);
-
   const targetWorld = useMemo(() => new Vector3(), []);
-
   const targetLocal = useMemo(() => new Vector3(), []);
 
   /*
@@ -57,41 +54,15 @@ export function InteractiveObject({ morph }: { morph: SceneMorphRef }) {
     const outerGroup = outerGroupRef.current;
     const morphLayer = morphLayerRef.current;
 
-    if (!outerGroup || !morphLayer) {
-      return;
-    }
+    if (!outerGroup || !morphLayer) return;
 
     const { progress, targetX, targetY, targetScale } = morph.current;
-
-    /*
-     * Viewport pixels -> NDC.
-     *
-     * browser:
-     *
-     * 0,0 ---------------- width
-     * |
-     * |
-     * height
-     *
-     * becomes Three.js:
-     *
-     * -1,+1 -------- +1,+1
-     *   |
-     *   |
-     * -1,-1 -------- +1,-1
-     */
     ndc.set((targetX / size.width) * 2 - 1, -(targetY / size.height) * 2 + 1);
-
-    /*
-     * Shoot a ray through that screen coordinate.
-     */
     raycaster.setFromCamera(ndc, camera);
 
     const hit = raycaster.ray.intersectPlane(objectPlane, targetWorld);
 
-    if (!hit) {
-      return;
-    }
+    if (!hit) return;
 
     /*
      * targetWorld is in scene/world coordinates.
@@ -101,9 +72,7 @@ export function InteractiveObject({ morph }: { morph: SceneMorphRef }) {
      * local coordinate system.
      */
     outerGroup.updateWorldMatrix(true, false);
-
     targetLocal.copy(targetWorld);
-
     outerGroup.worldToLocal(targetLocal);
 
     /*
@@ -122,9 +91,7 @@ export function InteractiveObject({ morph }: { morph: SceneMorphRef }) {
      */
     morphLayer.position.set(
       MathUtils.lerp(0, targetLocal.x, progress),
-
       MathUtils.lerp(0, targetLocal.y, progress),
-
       MathUtils.lerp(0, targetLocal.z, progress),
     );
 

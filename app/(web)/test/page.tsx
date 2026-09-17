@@ -10,18 +10,6 @@ import { ShowcaseSection } from './section/showcase-section';
 import ProductSection from './section/product-section';
 import { RefObject, useRef } from 'react';
 
-export type SceneMorphState = {
-  progress: number;
-
-  // viewport pixel coordinates
-  targetX: number;
-  targetY: number;
-
-  targetScale: number;
-};
-
-export type SceneMorphRef = RefObject<SceneMorphState>;
-
 function DebugHud() {
   const stage = useStore((s) => s.stage);
   const orbitEnabled = useStore((s) => s.orbit);
@@ -51,70 +39,11 @@ function DebugHud() {
 }
 
 const Page = () => {
-  const morphRef = useRef<SceneMorphState>({
-    progress: 0,
-    targetX: 0,
-    targetY: 0,
-    targetScale: 0.8,
-  });
-
   return (
     <>
-      <div
-        id="scene-frame"
-        className="top-0 left-0 z-1 box-border fixed border border-transparent overflow-hidden pointer-events-none"
-        style={{
-          width: '100vw',
-          height: '100dvh',
-
-          // These two are handed over at ProductSection.
-          backgroundColor: 'transparent',
-          backdropFilter: 'blur(0px)',
-          WebkitBackdropFilter: 'blur(0px)',
-        }}
-      >
-        <div
-          id="scene-viewport"
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-
-            // IMPORTANT:
-            // stays viewport-sized even when parent shrinks
-            width: '100vw',
-            height: '100dvh',
-          }}
-        >
-          <Canvas
-            gl={{
-              alpha: true,
-            }}
-            style={{
-              width: '100%',
-              height: '100%',
-              pointerEvents: 'none',
-            }}
-            camera={{
-              position: [0, 0, 5],
-              fov: 45,
-            }}
-            dpr={[1, 2]}
-          >
-            <ambientLight intensity={0.6} />
-
-            <directionalLight position={[3, 4, 2]} intensity={1.2} />
-
-            <Environment preset="city" />
-
-            <InteractiveObject morph={morphRef} />
-          </Canvas>
-        </div>
-      </div>
-
       <HeroSection />
       <ShowcaseSection />
-      <ProductSection morph={morphRef} />
+      <ProductSection />
 
       <DebugHud />
     </>
