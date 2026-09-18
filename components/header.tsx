@@ -3,54 +3,55 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import logo from '@/public/logo/logo-text.svg';
+// import logo from '@/public/logo/logo.svg';
 
 const navLinks = [
-  { href: '/about', label: 'About' },
-  { href: '/product', label: 'Product' },
-  { href: '/agency', label: 'Agency' },
-  { href: '/article', label: 'Article' },
+  { href: '/about', label: 'Giới thiệu' },
+  { href: '/product', label: 'Sản phẩm' },
+  { href: '/agency', label: 'Đại lý' },
+  { href: '/article', label: 'Cẩm nang bếp' },
 ];
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="top-0 z-50 sticky bg-background/80 backdrop-blur-md">
+      <div className="items-center grid-layout mx-auto h-16 container">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tight text-foreground">
-            LEVIA
-          </span>
-          <span className="hidden text-xs text-muted-foreground sm:inline">
-            Thông minh từ bên trong.
-          </span>
+          <Image src={logo} alt="logo" className="w-auto h-8" />
         </Link>
-
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden md:flex items-center md:col-span-6 lg:col-span-10">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="px-2 py-1 text-muted-foreground hover:text-foreground text-xs uppercase tracking-wider transition-colors"
             >
               {link.label}
             </Link>
           ))}
-          <Link href="/cook">
-            <Button size="sm" className="ml-2">
-              Cook Now
-            </Button>
-          </Link>
         </nav>
+
+        <Link
+          className="hidden md:inline-block justify-self-end -col-end-1"
+          href="/cook"
+        >
+          <Button size="sm" className="ml-2 uppercase tracking-wider">
+            Cook Now
+          </Button>
+        </Link>
 
         {/* Mobile toggle */}
         <button
           type="button"
-          className="inline-flex items-center justify-center p-2 text-muted-foreground hover:text-foreground md:hidden"
+          className="md:hidden inline-flex justify-center justify-self-end items-center -col-end-1 p-2 text-muted-foreground hover:text-foreground"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -61,25 +62,31 @@ export function Header() {
       {/* Mobile menu */}
       <div
         className={cn(
-          'overflow-hidden border-t border-border transition-all duration-300 md:hidden',
+          'md:hidden border-border border-b overflow-hidden transition-all duration-300',
           mobileOpen ? 'max-h-80' : 'max-h-0 border-t-0',
         )}
       >
-        <nav className="flex flex-col gap-1 px-4 py-3">
+        <nav className="flex flex-col gap-1 mx-auto p-3 container">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="hover:bg-muted px-4 py-2 font-semibold text-muted-foreground hover:text-foreground text-2xl transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               {link.label}
             </Link>
           ))}
-          <Link href="/cook" onClick={() => setMobileOpen(false)}>
-            <Button size="sm" className="mt-1 w-full">
-              Cook Now
-            </Button>
+          <Link
+            href="/cook"
+            // className={cn(
+            //   buttonVariants({ size: 'lg' }),
+            //   'mt-1 w-full uppercase text-2xl tracking-wider',
+            // )}
+            className="bg-primary px-4 py-2 font-semibold text-background text-2xl transition-colors"
+            onClick={() => setMobileOpen(false)}
+          >
+            Cook Now
           </Link>
         </nav>
       </div>

@@ -11,3 +11,12 @@ export function formatPrice(price: number): string {
     currency: 'VND',
   }).format(price);
 }
+
+export function formatDate(dateStr: string | null) {
+  if (!dateStr) return null;
+  return new Date(dateStr).toLocaleDateString('vi-VN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}

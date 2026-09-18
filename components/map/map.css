@@ -3,13 +3,6 @@
   height: min(70vh, 720px);
 }
 
-.mapboxgl-ctrl-group {
-  background-color: var(--color-muted) !important;
-  border: 1px solid var(--color-border) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
 .mapboxgl-popup-content {
   background-color: var(--color-popover) !important;
   border: 1px solid var(--color-border) !important;
@@ -20,6 +13,13 @@
 
 .mapboxgl-popup-tip {
   border-top-color: var(--color-popover) !important;
+}
+
+.mapboxgl-ctrl-group {
+  background-color: var(--color-muted) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .mapboxgl-ctrl-group button {
@@ -34,8 +34,6 @@
   background-color: var(--color-border) !important;
 }
 
-/* Icon color — Mapbox renders icons as SVG background-images with a fixed dark fill,
-   so we invert + tint to get a warm off-white rather than pure white */
 .mapboxgl-ctrl-icon {
   filter: invert(80%) saturate(300%) hue-rotate(38deg);
 }
@@ -61,4 +59,16 @@
     var(--color-primary) 15%,
     transparent
   ) !important;
+}
+
+/*
+ * Fade the map into the page on the left,
+ * slightly fade top/bottom as well.
+ */
+.mask-map {
+  pointer-events: none;
+  background:
+    linear-gradient(to right, var(--background), transparent 12rem),
+    linear-gradient(to left, var(--background), transparent 8rem),
+    radial-gradient(circle at top left, transparent 80%, var(--background));
 }

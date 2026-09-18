@@ -1,17 +1,12 @@
 'use client';
 
-import { MapPin } from 'lucide-react';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { useEffect, useRef, useState } from 'react';
-import Map, {
-  GeolocateControl,
-  MapRef,
-  Marker,
-  NavigationControl,
-  Popup,
-} from 'react-map-gl/mapbox';
-import './map.css';
 import { Agency } from '@/app/(web)/agency/[slug]/action';
+import { MapPin, Navigation } from 'lucide-react';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { useEffect, useState } from 'react';
+import Map, { MapRef, Marker, Popup } from 'react-map-gl/mapbox';
+import './map.css';
+import { useMapStore } from '@/lib/use-map-store';
 
 const VIETNAM_VIEW = {
   latitude: 21.1,
@@ -21,17 +16,19 @@ const VIETNAM_VIEW = {
 };
 
 interface StoreLocatorProps {
+  mapRef: React.RefObject<MapRef | null>;
   agencies: Agency[];
   selectedAgencyId?: string;
   onAgencySelect?: (agencyId: string) => void;
 }
 
 export default function StoreLocator({
+  mapRef,
   agencies,
   selectedAgencyId,
   onAgencySelect,
 }: StoreLocatorProps) {
-  const mapRef = useRef<MapRef>(null);
+  const userLocation = useMapStore((state) => state.userLocation);
   const [viewState, setViewState] = useState(VIETNAM_VIEW);
 
   const selectedAgency = agencies.find(
@@ -77,6 +74,7 @@ export default function StoreLocator({
     if (!map) return;
 
     map.setLanguage('vi');
+    mapSetTheme(map);
     mapAddMask(map);
     mapSetCustomFont(map);
     mapAddIslands(map);
@@ -106,13 +104,37 @@ export default function StoreLocator({
       onLoad={handleMapLoad}
       mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
       mapStyle="mapbox://styles/mapbox/dark-v11"
+      style={{ width: '100%', height: '100%' }}
     >
-      <NavigationControl showZoom={false} position="bottom-right" />
-      <GeolocateControl
-        position="bottom-right"
-        trackUserLocation
-        showUserHeading
-      />
+      {userLocation && (
+        <Marker
+          longitude={userLocation.longitude}
+          latitude={userLocation.latitude}
+        >
+          <div className="relative flex justify-center items-center">
+            {/* Heading Arrow (Only shows if heading is available and moving) */}
+            {userLocation.heading !== null && (
+              <div
+                className="z-10 absolute transition-transform duration-300 ease-linear"
+                style={{
+                  transform: `rotate(${userLocation.heading}deg) translateY(-14px)`,
+                }}
+              >
+                <Navigation
+                  className="drop-shadow-md fill-blue-500 w-5 h-5 text-blue-500"
+                  strokeWidth={1.5}
+                />
+              </div>
+            )}
+
+            {/* Inner Dot */}
+            <div className="z-20 bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)] border-2 border-white rounded-full w-4 h-4" />
+
+            {/* Radar Pulse Effect */}
+            <div className="z-0 absolute bg-blue-500/30 rounded-full w-8 h-8 animate-ping" />
+          </div>
+        </Marker>
+      )}
 
       {agencies.map((agency) => {
         const isSelected = selectedAgencyId === agency._id;
@@ -154,6 +176,12 @@ export default function StoreLocator({
       )}
     </Map>
   );
+}
+
+function mapSetTheme(mapRef: MapRef) {
+  const map = mapRef.getMap();
+
+  map.setPaintProperty('water', 'fill-color', '#121212');
 }
 
 function mapSetCustomFont(mapRef: MapRef) {
