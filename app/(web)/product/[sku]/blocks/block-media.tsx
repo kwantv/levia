@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { getImageUrl, SanityImage } from '@/sanity/lib/image';
 import Image from 'next/image';
 
@@ -17,7 +18,7 @@ export function BlockMedia({
   const src = getImageUrl(image ?? undefined, 1800);
 
   return (
-    <div className={['relative bg-card overflow-hidden', className].join(' ')}>
+    <div className={cn('relative bg-card overflow-hidden', className)}>
       {src ? (
         <Image
           src={src}

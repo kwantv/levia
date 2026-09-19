@@ -1,6 +1,7 @@
 import { Package } from 'lucide-react';
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import LabelValueListInput from '../components/label-value-list-input';
+import { ProductDetailBlocksInput } from '../components/product-detail-blocks/detail-blocks-input';
 
 export const product = defineType({
   name: 'product',
@@ -123,27 +124,13 @@ export const product = defineType({
         'Xây dựng nội dung giới thiệu sản phẩm bằng các bố cục tùy chỉnh.',
       type: 'array',
       group: 'content',
-
+      components: { input: ProductDetailBlocksInput },
       of: [
-        defineArrayMember({
-          type: 'productSplitMedia',
-        }),
-
-        defineArrayMember({
-          type: 'productMetrics',
-        }),
-
-        // defineArrayMember({
-        //   type: 'productFullMedia',
-        // }),
-
-        // defineArrayMember({
-        //   type: 'productFeatureRail',
-        // }),
-
-        // defineArrayMember({
-        //   type: 'productStatement',
-        // }),
+        defineArrayMember({ type: 'productSplitMedia' }),
+        defineArrayMember({ type: 'productMetrics' }),
+        defineArrayMember({ type: 'productFullMedia' }),
+        defineArrayMember({ type: 'productFeatureRail' }),
+        defineArrayMember({ type: 'productStatement' }),
       ],
     }),
 

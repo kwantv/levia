@@ -2,16 +2,9 @@ import { client } from '@/sanity/lib/client';
 import { SanityImage } from '@/sanity/lib/image';
 import { sanityFetch } from '@/sanity/lib/live';
 import { groq } from 'next-sanity';
-import { PortableTextBlock } from 'sanity';
-import { ProductSplitMediaBlock } from './blocks/split-media-block';
-import { ProductMetricsBlock } from './blocks/metrics-block';
+import { ProductDetailBlock } from './product-detail-blocks';
 
 // ─── Types ───────────────────────────────────────────────────
-
-export type ProductDetailBlock = ProductSplitMediaBlock | ProductMetricsBlock;
-// | ProductFullMediaBlock
-// | ProductFeatureRailBlock
-// | ProductStatementBlock;
 
 export interface ProductDetail {
   _id: string;

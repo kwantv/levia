@@ -137,7 +137,7 @@ function GalleryItem({
       onClick={(event) => onClick(event.currentTarget)}
       aria-label={`Xem ảnh ${index + 1} của ${title}`}
       className={[
-        'group relative block bg-card overflow-hidden cursor-zoom-in',
+        'group relative block hover:opacity-90 bg-card overflow-hidden cursor-zoom-in',
         className,
       ].join(' ')}
     >
@@ -146,7 +146,7 @@ function GalleryItem({
         alt={image.alt || `${title} ${index + 1}`}
         fill
         priority={priority}
-        className="p-5 xl:p-8 object-contain group-hover:scale-[1.025] transition-transform duration-700 ease-out"
+        className="p-5 xl:p-8 object-contain transition-transform duration-700 ease-out"
         sizes={
           index === 0
             ? '(max-width: 1024px) 90vw, 60vw'

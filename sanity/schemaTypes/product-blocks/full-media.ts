@@ -5,9 +5,9 @@ import {
 import { defineField, defineType } from 'sanity';
 import { defineLayoutField } from './layout-field';
 
-export const productSplitMedia = defineType({
-  name: 'productSplitMedia',
-  title: 'Nội dung + hình ảnh',
+export const productFullMedia = defineType({
+  name: 'productFullMedia',
+  title: 'Hình ảnh (fullscreen)',
   type: 'object',
   components: { preview: ProductDetailBlockPreview },
 
@@ -15,7 +15,7 @@ export const productSplitMedia = defineType({
     defineField({
       name: 'label',
       title: 'Nhãn',
-      description: 'Ví dụ: Technology',
+      description: 'Ví dụ: Media',
       type: 'string',
       validation: (rule) => rule.required(),
     }),
@@ -31,15 +31,7 @@ export const productSplitMedia = defineType({
       name: 'description',
       title: 'Mô tả',
       type: 'text',
-      rows: 5,
-      validation: (rule) => rule.required(),
-    }),
-
-    defineField({
-      name: 'note',
-      title: 'Ghi chú kỹ thuật',
-      description: 'Ví dụ: Precision heating / Intelligent control',
-      type: 'string',
+      rows: 4,
     }),
 
     defineField({
@@ -60,7 +52,7 @@ export const productSplitMedia = defineType({
       validation: (rule) => rule.required(),
     }),
 
-    defineLayoutField('productSplitMedia'),
+    defineLayoutField('productFullMedia'),
   ],
 
   preview: productDetailBlockPreview,

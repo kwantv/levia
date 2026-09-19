@@ -5,9 +5,9 @@ import {
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import { defineLayoutField } from './layout-field';
 
-export const productMetrics = defineType({
-  name: 'productMetrics',
-  title: 'Chỉ số / Tính năng',
+export const productFeatureRail = defineType({
+  name: 'productFeatureRail',
+  title: 'Chi tiết kỹ thuật',
   type: 'object',
   components: { preview: ProductDetailBlockPreview },
 
@@ -15,7 +15,6 @@ export const productMetrics = defineType({
     defineField({
       name: 'label',
       title: 'Nhãn',
-      description: 'Ví dụ: Performance / 02',
       type: 'string',
       validation: (rule) => rule.required(),
     }),
@@ -34,13 +33,31 @@ export const productMetrics = defineType({
       rows: 4,
     }),
 
-    defineLayoutField('productMetrics'),
+    defineField({
+      name: 'image',
+      title: 'Hình ảnh',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          validation: (rule) => rule.required(),
+        }),
+      ],
+      validation: (rule) => rule.required(),
+    }),
+
+    defineLayoutField('productFeatureRail'),
 
     defineField({
       name: 'items',
-      title: 'Nội dung',
+      title: 'Chi tiết',
       type: 'array',
-      validation: (rule) => rule.required().min(1).max(6),
+      validation: (rule) => rule.required().min(1),
 
       of: [
         defineArrayMember({
@@ -48,16 +65,8 @@ export const productMetrics = defineType({
 
           fields: [
             defineField({
-              name: 'value',
-              title: 'Số / Ký hiệu',
-              description: 'Ví dụ: 01, 9+, 7400W',
-              type: 'string',
-              validation: (rule) => rule.required(),
-            }),
-
-            defineField({
-              name: 'label',
-              title: 'Tên',
+              name: 'title',
+              title: 'Tiêu đề',
               type: 'string',
               validation: (rule) => rule.required(),
             }),
@@ -73,8 +82,7 @@ export const productMetrics = defineType({
 
           preview: {
             select: {
-              title: 'label',
-              subtitle: 'value',
+              title: 'title',
             },
           },
         }),
