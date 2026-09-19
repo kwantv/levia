@@ -6,6 +6,21 @@ import { product } from './product';
 import { recipe } from './recipe';
 import { tag } from './tag';
 
+import { productSplitMedia } from './product-blocks/split-media';
+import { productMetrics } from './product-blocks/metrics';
+
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [category, product, article, recipe, agency, tag],
+  types: [
+    tag,
+    article,
+
+    category,
+    productSplitMedia,
+    productMetrics,
+    product,
+
+    recipe,
+
+    agency,
+  ],
 };

@@ -90,7 +90,7 @@ export function AgencyLocator({ agencies }: { agencies: Agency[] }) {
 
           {/* Province filters */}
           <div className="relative mt-5">
-            <div className="[&::-webkit-scrollbar]:hidden flex gap-2 overflow-x-auto [scrollbar-width:none]">
+            <div className="[&::-webkit-scrollbar]:hidden flex gap-2 overflow-x-auto scrollbar-none">
               <button
                 type="button"
                 onClick={() => handleProvinceChange(ALL_PROVINCES)}

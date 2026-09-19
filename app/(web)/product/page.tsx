@@ -1,14 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DotGridBackground from '@/components/dot-grid-background';
 import { getImageUrl } from '@/sanity/lib/image';
-import { ChevronRight } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { getAllProducts, getCategories } from './action';
+import { ProductBrowser } from './product-browser';
 
 export const metadata = {
   title: 'Sản phẩm — Levia',
   description:
-    'Khám phá các dòng bếp từ và máy hút mùi Levia — thiết kế bằng AI, nấu chuẩn vị Việt.',
+    'Khám phá các dòng bếp từ và máy hút mùi Levia — công nghệ hiện đại, thiết kế tinh gọn cho căn bếp Việt.',
 };
 
 export default async function ProductPage() {
@@ -18,131 +16,84 @@ export default async function ProductPage() {
   ]);
 
   return (
-    <>
-      {/* ──────── HERO ──────── */}
-      <section className="bg-background py-16 sm:py-24">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <p className="mb-2 font-medium text-primary text-sm uppercase tracking-widest">
-            Product
-          </p>
-          <h1 className="font-heading text-4xl sm:text-5xl tracking-tight">
-            Sản phẩm Levia
-          </h1>
-          <p className="mt-4 max-w-xl text-muted-foreground text-lg">
-            Bếp từ thế hệ AI và phụ kiện — thiết kế tinh gọn theo thẩm mỹ châu
-            Âu, làm ra để nấu chuẩn vị Việt.
-          </p>
-        </div>
-      </section>
+    <main className="bg-background min-h-screen text-foreground">
+      {/* ───────────────── HERO ───────────────── */}
+      <section className="relative border-border border-b overflow-hidden">
+        <DotGridBackground />
 
-      {/* ──────── CATEGORIES ──────── */}
-      <section className="bg-card py-12 border-border border-t">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="flex flex-wrap gap-3">
-            {categories.map((cat) => (
-              <a
-                key={cat.slug}
-                href={`#${cat.slug}`}
-                className="bg-background px-4 py-2 border border-border hover:border-primary/30 font-medium text-muted-foreground hover:text-foreground text-sm transition-colors"
-              >
-                {cat.label}
-                <span className="ml-1.5 text-primary text-xs">
-                  {cat.count}
+        {/* Ambient brand glow */}
+        <div className="-top-56 -right-48 absolute bg-primary/5 blur-[160px] rounded-full size-175 pointer-events-none" />
+
+        <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 lg:pt-32 pb-16 sm:pb-20 container">
+          <div className="gap-y-12 lg:gap-x-8 grid grid-cols-12">
+            {/* Label */}
+            <div className="col-span-12 lg:col-span-3">
+              <div className="flex items-center gap-3">
+                <span className="bg-primary size-1.5" />
+
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.22em]">
+                  Product / 01
                 </span>
-              </a>
-            ))}
+              </div>
+            </div>
+
+            {/* Main copy */}
+            <div className="col-span-12 lg:col-span-8 lg:col-start-5">
+              <h1 className="max-w-5xl font-heading font-medium text-[clamp(3.5rem,8vw,8rem)] leading-[0.86] tracking-[-0.055em]">
+                Công nghệ cho
+                <br />
+                <span className="text-primary">căn bếp hiện đại.</span>
+              </h1>
+
+              <div className="gap-8 grid sm:grid-cols-2 mt-12 lg:mt-16 pt-6 border-border border-t">
+                <p className="max-w-md text-muted-foreground text-sm sm:text-base leading-relaxed">
+                  Khám phá hệ sinh thái thiết bị bếp Levia — nơi công nghệ, hiệu
+                  suất và thiết kế được phát triển để phù hợp với nhịp sống của
+                  gia đình Việt.
+                </p>
+
+                <p className="max-w-md text-muted-foreground text-sm sm:text-base leading-relaxed">
+                  Từ bếp từ đến các thiết bị hỗ trợ, mỗi sản phẩm đều hướng đến
+                  trải nghiệm sử dụng trực quan, chính xác và bền bỉ.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Statistics */}
+          <div className="gap-px grid grid-cols-2 md:grid-cols-4 mt-20 bg-border border border-border">
+            <div className="bg-background p-5 sm:p-6">
+              <span className="block font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
+                Sản phẩm
+              </span>
+
+              <span className="block mt-3 font-light text-3xl">
+                {String(products.length).padStart(2, '0')}
+              </span>
+            </div>
+
+            <div className="bg-background p-5 sm:p-6">
+              <span className="block font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
+                Danh mục
+              </span>
+
+              <span className="block mt-3 font-light text-3xl">
+                {String(categories.length).padStart(2, '0')}
+              </span>
+            </div>
+
+            <div className="hidden md:block md:col-span-2 bg-background p-6">
+              <div className="flex justify-end items-end h-full">
+                <span className="font-mono text-[9px] text-muted-foreground/60 uppercase tracking-[0.2em]">
+                  Levia / Kitchen Intelligence
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ──────── PRODUCT GRID BY CATEGORY ──────── */}
-      {categories.map((cat) => {
-        const catProducts = products.filter(
-          (p) => p.category?.slug === cat.slug,
-        );
-
-        return (
-          <section
-            key={cat.slug}
-            id={cat.slug}
-            className="bg-background py-16 sm:py-20 border-border border-t"
-          >
-            <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-              <h2 className="mb-2 font-heading text-2xl sm:text-3xl tracking-tight">
-                {cat.label}
-              </h2>
-              {cat.description && (
-                <p className="mb-8 text-muted-foreground text-sm">
-                  {cat.description}
-                </p>
-              )}
-
-              <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-3">
-                {catProducts.map((product) => {
-                  const heroSrc = getImageUrl(
-                    product.heroImage ?? undefined,
-                    600,
-                  );
-
-                  return (
-                    <Link
-                      key={product.sku}
-                      href={`/product/${product.sku}`}
-                      className="group"
-                    >
-                      <Card className="hover:ring-primary/30 overflow-hidden transition-colors">
-                        {/* Product image */}
-                        <div className="relative bg-muted/30 aspect-4/3 overflow-hidden">
-                          {heroSrc ? (
-                            <Image
-                              src={heroSrc}
-                              alt={product.title}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform"
-                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            />
-                          ) : (
-                            <div className="flex flex-col justify-center items-center gap-2 h-full text-muted-foreground">
-                              <div className="bg-primary/5 p-3">
-                                <span className="font-medium text-primary text-xs">
-                                  {product.sku.toUpperCase()}
-                                </span>
-                              </div>
-                              <span className="text-xs">Ảnh sản phẩm</span>
-                            </div>
-                          )}
-                        </div>
-
-                        <CardHeader>
-                          <CardTitle className="font-semibold group-hover:text-primary text-sm transition-colors">
-                            {product.title}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-muted-foreground text-xs">
-                            {product.desc}
-                          </p>
-                          <div className="flex justify-between items-center mt-4">
-                            {product.price != null && (
-                              <span className="font-semibold text-foreground text-sm">
-                                {product.price.toLocaleString('vi-VN')}₫
-                              </span>
-                            )}
-                            <span className="flex items-center gap-1 font-medium text-primary text-xs">
-                              Chi tiết
-                              <ChevronRight className="size-3.5" />
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        );
-      })}
-    </>
+      <ProductBrowser products={products} categories={categories} />
+    </main>
   );
 }

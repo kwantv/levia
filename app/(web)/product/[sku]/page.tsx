@@ -1,13 +1,13 @@
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import DotGridBackground from '@/components/dot-grid-background';
 import { getImageUrl } from '@/sanity/lib/image';
-import { components } from '@/sanity/lib/portable-component';
-import { PortableText } from '@portabletext/react';
-import { ChevronRight, MapPin } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+
 import { getAllProductSkus, getProductBySku } from './action';
+import { ProductDetailBlocks } from './product-detail-blocks';
+import { ProductGallery } from './product-gallery';
 
 type PageProps = {
   params: Promise<{ sku: string }>;
@@ -15,13 +15,20 @@ type PageProps = {
 
 export async function generateStaticParams() {
   const skus = await getAllProductSkus();
+
   return skus.map((sku) => ({ sku }));
 }
 
 export async function generateMetadata({ params }: PageProps) {
   const { sku } = await params;
   const product = await getProductBySku(sku);
-  if (!product) return { title: 'Không tìm thấy — Levia' };
+
+  if (!product) {
+    return {
+      title: 'Không tìm thấy — Levia',
+    };
+  }
+
   return {
     title: product.seoTitle || `${product.title} — Levia`,
     description: product.seoDescription || product.desc,
@@ -30,178 +37,282 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { sku } = await params;
+
   const product = await getProductBySku(sku);
+
   if (!product) notFound();
 
+  const heroImage = product.gallery?.[0]
+    ? getImageUrl(product.gallery[0], 1600)
+    : null;
+
   return (
-    <>
-      {/* ──────── HERO ──────── */}
-      <section className="bg-background py-16 sm:py-24">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="items-start gap-12 grid lg:grid-cols-2">
-            {/* Product image */}
-            <div className="relative flex justify-center items-center">
-              <div className="relative bg-muted/30 p-8 border border-border w-full aspect-square">
-                {product.gallery ? (
-                  <Image
-                    src={getImageUrl(product.gallery[0])!}
-                    alt={product.title}
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    priority
-                  />
-                ) : (
-                  <div className="flex flex-col justify-center items-center gap-4 h-full text-muted-foreground">
-                    <div className="bg-primary/5 p-6 border border-primary/20">
-                      <span className="font-bold text-primary text-lg">
-                        {product.sku.toUpperCase()}
-                      </span>
-                    </div>
-                    <span className="font-medium text-sm">{product.title}</span>
-                    <span className="text-xs">Ảnh render sản phẩm</span>
+    <main className="bg-background min-h-screen text-foreground">
+      {/* ───────────────── HERO ───────────────── */}
+      <section className="relative border-border border-b">
+        <DotGridBackground />
+
+        {/* <div className="-top-52 -right-48 absolute bg-primary/5 blur-[160px] rounded-full size-[700px] pointer-events-none" /> */}
+
+        <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-14 sm:pb-20 container">
+          {/* Navigation */}
+          <div className="flex justify-between items-center">
+            <Link
+              href="/product"
+              className="group inline-flex items-center gap-2 font-mono text-[10px] text-muted-foreground hover:text-primary uppercase tracking-[0.18em] transition-colors"
+            >
+              <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-1" />
+              Tất cả sản phẩm
+            </Link>
+
+            <span className="hidden sm:block font-mono text-[9px] text-muted-foreground/50 uppercase tracking-[0.2em]">
+              Levia / Kitchen Intelligence
+            </span>
+          </div>
+
+          <div className="gap-y-12 lg:gap-x-10 grid grid-cols-12 mt-12 sm:mt-16">
+            {/* PRODUCT INFO */}
+            <div className="top-16 lg:sticky flex flex-col self-start col-span-12 lg:col-span-5 lg:py-8">
+              <div>
+                <div className="flex items-center gap-3">
+                  <span className="bg-primary size-1.5" />
+
+                  <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                    Product / {product.sku}
+                  </span>
+                </div>
+
+                {product.category && (
+                  <p className="mt-12 font-mono text-[9px] text-primary uppercase tracking-[0.18em]">
+                    {product.category.title}
+                  </p>
+                )}
+
+                <h1 className="mt-4 max-w-xl font-heading font-medium text-[clamp(3rem,6vw,6rem)] leading-[0.9] tracking-[-0.055em]">
+                  {product.title}
+                </h1>
+
+                <p className="mt-7 max-w-lg text-muted-foreground text-sm sm:text-base leading-[1.8]">
+                  {product.desc}
+                </p>
+              </div>
+
+              {/* Key specs */}
+              <div className="hidden lg:block">
+                {product.specs.length > 0 && (
+                  <div className="mt-12 border-border border-t">
+                    {product.specs.slice(0, 4).map((spec, index) => (
+                      <div
+                        key={spec.label}
+                        className="gap-4 grid grid-cols-[2rem_minmax(0,1fr)_auto] py-4 border-border border-b"
+                      >
+                        <span className="font-mono text-[9px] text-primary">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+
+                        <span className="text-muted-foreground text-sm">
+                          {spec.label}
+                        </span>
+
+                        <span className="font-mono text-sm text-right">
+                          {spec.value}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Product info */}
-            <div className="space-y-6">
-              <div>
-                <p className="mb-1 font-medium text-primary text-sm">
-                  {product.sku}
-                </p>
-                <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl tracking-tight">
-                  {product.title}
-                </h1>
-              </div>
+              {/* Price */}
+              <div className="mt-12">
+                {product.price != null && (
+                  <div>
+                    <span className="block font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
+                      Giá niêm yết
+                    </span>
 
-              {product.price != null && (
-                <p className="font-bold text-foreground text-2xl">
-                  {product.price.toLocaleString('vi-VN')}₫
-                </p>
-              )}
+                    <span className="block mt-2 font-heading font-medium text-2xl sm:text-3xl tracking-[-0.03em]">
+                      {product.price.toLocaleString('vi-VN')}
+                      <span className="ml-1 text-muted-foreground text-lg">
+                        ₫
+                      </span>
+                    </span>
+                  </div>
+                )}
 
-              {/* Key specs as features */}
-              <ul className="space-y-2.5">
-                {product.specs.map(({ label, value }, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2.5 text-muted-foreground text-sm"
-                  >
-                    <ChevronRight className="mt-0.5 size-4 text-primary shrink-0" />
-                    <span className="font-medium text-foreground">
-                      {label}:
-                    </span>{' '}
-                    {value}
-                  </li>
-                ))}
-              </ul>
+                <Link
+                  href="/agency"
+                  className="group flex justify-between items-center gap-6 mt-8 pt-5 border-border border-t"
+                >
+                  <div>
+                    <span className="font-medium text-sm">
+                      Tìm đại lý gần bạn
+                    </span>
 
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Link href="/agency">
-                  <Button size="lg" className="gap-2">
-                    <MapPin className="size-4" />
-                    Tìm đại lý gần bạn
-                  </Button>
+                    <p className="mt-1 text-muted-foreground text-xs">
+                      Trải nghiệm sản phẩm trực tiếp tại showroom Levia.
+                    </p>
+                  </div>
+
+                  <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-11 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300 shrink-0">
+                    <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 duration-300" />
+                  </div>
                 </Link>
               </div>
             </div>
+
+            {/* GALLERY */}
+            <div className="col-span-12 lg:col-span-7">
+              <ProductGallery gallery={product.gallery} title={product.title} />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ──────── GALLERY ──────── */}
-      {product.gallery && product.gallery.length > 1 && (
-        <section className="bg-background py-12 border-border border-t">
-          <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-            <h2 className="mb-8 font-heading text-2xl sm:text-3xl text-center tracking-tight">
-              Thư viện ảnh
-            </h2>
-            <div className="gap-4 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {product.gallery.slice(1).map((img, i) => (
-                <div
-                  key={i}
-                  className="relative bg-muted/30 aspect-4/3 overflow-hidden"
-                >
-                  {getImageUrl(img, 600) && (
-                    <Image
-                      src={getImageUrl(img, 600)!}
-                      alt={img.alt || `${product.title} ${i + 1}`}
-                      fill
-                      className="object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  )}
+      {/* ───────────────── CUSTOM PRODUCT BLOCKS ───────────────── */}
+
+      {/*
+        product.content is deliberately ignored here.
+
+        For now we render five mocked layout blocks.
+        Later these can become Sanity custom objects.
+      */}
+      {product.detailBlocks.length > 0 && (
+        <ProductDetailBlocks blocks={product.detailBlocks} />
+      )}
+
+      {/* ───────────────── TECHNICAL SPECIFICATIONS ───────────────── */}
+      {product.specs.length > 0 && (
+        <section className="border-border border-t">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28 container">
+            <div className="gap-y-10 lg:gap-x-8 grid grid-cols-12">
+              <div className="col-span-12 lg:col-span-3">
+                <div className="flex items-center gap-3">
+                  <span className="bg-primary size-1.5" />
+
+                  <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                    Specification / 06
+                  </span>
                 </div>
-              ))}
+              </div>
+
+              <div className="col-span-12 lg:col-span-8 lg:col-start-5">
+                <div className="flex sm:flex-row flex-col sm:justify-between sm:items-end gap-5 mb-10">
+                  <div>
+                    <h2 className="font-heading font-medium text-3xl sm:text-4xl lg:text-5xl tracking-[-0.04em]">
+                      Thông số kỹ thuật
+                    </h2>
+
+                    <p className="mt-4 max-w-xl text-muted-foreground text-sm sm:text-base leading-relaxed">
+                      Thông tin chi tiết về kích thước, công suất và các thông
+                      số vận hành của {product.title}.
+                    </p>
+                  </div>
+
+                  <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
+                    {String(product.specs.length).padStart(2, '0')} thông số
+                  </span>
+                </div>
+
+                <div className="border-border border-t">
+                  {product.specs.map((spec, index) => (
+                    <div
+                      key={spec.label}
+                      className="gap-4 grid sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1fr)] py-5 border-border border-b"
+                    >
+                      <span className="font-mono text-[9px] text-primary">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+
+                      <span className="font-medium text-sm">{spec.label}</span>
+
+                      <span className="font-mono text-muted-foreground text-sm sm:text-right">
+                        {spec.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
       )}
 
-      {/* ──────── SPECS ──────── */}
-      <section className="bg-background py-16 sm:py-24 border-border border-t">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="mb-12 max-w-2xl">
-            <p className="mb-2 font-medium text-primary text-sm uppercase tracking-widest">
-              Thông số
-            </p>
-            <h2 className="font-heading text-3xl sm:text-4xl tracking-tight">
-              Thông số kỹ thuật
-            </h2>
-          </div>
+      {/* ───────────────── DEALER CTA ───────────────── */}
+      <section className="border-border border-t">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 container">
+          <Link
+            href="/agency"
+            className="group grid lg:grid-cols-12 border-border border-x"
+          >
+            <div className="lg:col-span-3 p-6 sm:p-8 lg:p-10 lg:border-border lg:border-r">
+              <div className="flex items-center gap-3">
+                <span className="bg-primary size-1.5" />
 
-          <div className="border border-border overflow-hidden">
-            <Table>
-              <TableBody>
-                {product.specs.map(({ label, value }, i) => (
-                  <TableRow
-                    key={label}
-                    className={i % 2 === 0 ? 'bg-card' : 'bg-background'}
-                  >
-                    <TableCell className="px-6 py-3.5 font-medium text-foreground">
-                      {label}
-                    </TableCell>
-                    <TableCell className="px-6 py-3.5 font-mono text-muted-foreground">
-                      {value}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-      </section>
+                <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
+                  Experience / 07
+                </span>
+              </div>
+            </div>
 
-      {/* ──────── DETAILED CONTENT (Portable Text) ──────── */}
-      {product.content && product.content.length > 0 && (
-        <section className="bg-card py-16 sm:py-24 border-border border-t">
-          <div className="prose-invert dark:prose-invert mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl prose">
-            <PortableText value={product.content} components={components} />
-          </div>
-        </section>
-      )}
+            <div className="flex justify-between items-end gap-8 lg:col-span-9 p-6 sm:p-8 lg:p-10">
+              <div>
+                <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
+                  Trải nghiệm trực tiếp
+                </span>
 
-      {/* ──────── CTA ──────── */}
-      <section className="bg-card py-16 sm:py-20 border-border border-t">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl text-center">
-          <MapPin className="mx-auto mb-4 size-8 text-primary" />
-          <h2 className="font-heading text-2xl sm:text-3xl tracking-tight">
-            Trải nghiệm {product.title} tại đại lý
-          </h2>
-          <p className="mx-auto mt-3 max-w-md text-muted-foreground text-sm">
-            Tìm cửa hàng gần nhất để xem và dùng thử sản phẩm trực tiếp.
-          </p>
-          <div className="mt-6">
-            <Link href="/agency">
-              <Button size="lg" className="gap-2">
+                <h2 className="mt-3 max-w-3xl font-heading font-medium text-2xl sm:text-3xl lg:text-4xl tracking-[-0.035em]">
+                  Trải nghiệm {product.title} tại đại lý Levia
+                </h2>
+
+                <p className="mt-4 max-w-lg text-muted-foreground text-sm leading-relaxed">
+                  Tìm showroom gần bạn để xem sản phẩm, trải nghiệm trực tiếp và
+                  nhận tư vấn phù hợp với không gian bếp.
+                </p>
+              </div>
+
+              <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-12 sm:size-14 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300 shrink-0">
                 <MapPin className="size-4" />
-                Tìm đại lý gần bạn
-              </Button>
-            </Link>
-          </div>
+              </div>
+            </div>
+          </Link>
         </div>
       </section>
+    </main>
+  );
+}
+
+function GalleryMeta({ index, count }: { index: number; count: number }) {
+  return (
+    <>
+      <span className="top-5 left-5 absolute bg-primary size-1.5" />
+
+      <div className="right-5 bottom-5 left-5 absolute flex justify-between items-center">
+        <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
+          Product / Gallery
+        </span>
+
+        <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
+          {String(index + 1).padStart(2, '0')} /{' '}
+          {String(count).padStart(2, '0')}
+        </span>
+      </div>
     </>
+  );
+}
+
+function ProductPlaceholder({ sku, title }: { sku: string; title: string }) {
+  return (
+    <div className="absolute inset-0 flex flex-col justify-center items-center gap-4">
+      <span className="bg-primary/5 px-5 py-3 border border-primary/10 font-mono text-primary text-sm uppercase tracking-[0.18em]">
+        {sku}
+      </span>
+
+      <span className="text-muted-foreground text-sm">{title}</span>
+
+      <span className="font-mono text-[8px] text-muted-foreground/40 uppercase tracking-[0.18em]">
+        Product / Render
+      </span>
+    </div>
   );
 }

@@ -117,37 +117,33 @@ export const product = defineType({
     }),
 
     defineField({
-      name: 'content',
+      name: 'detailBlocks',
       title: 'Nội dung chi tiết',
+      description:
+        'Xây dựng nội dung giới thiệu sản phẩm bằng các bố cục tùy chỉnh.',
       type: 'array',
       group: 'content',
+
       of: [
         defineArrayMember({
-          type: 'block',
-          styles: [
-            { title: 'Đoạn văn', value: 'normal' },
-            { title: 'Tiêu đề 2', value: 'h2' },
-            { title: 'Tiêu đề 3', value: 'h3' },
-            { title: 'Tiêu đề 4', value: 'h4' },
-            { title: 'Trích dẫn', value: 'blockquote' },
-          ],
+          type: 'productSplitMedia',
         }),
-        {
-          type: 'image',
-          options: { hotspot: true },
-          fields: [
-            defineField({
-              name: 'alt',
-              title: 'Alt text',
-              type: 'string',
-            }),
-            defineField({
-              name: 'caption',
-              title: 'Chú thích',
-              type: 'string',
-            }),
-          ],
-        },
+
+        defineArrayMember({
+          type: 'productMetrics',
+        }),
+
+        // defineArrayMember({
+        //   type: 'productFullMedia',
+        // }),
+
+        // defineArrayMember({
+        //   type: 'productFeatureRail',
+        // }),
+
+        // defineArrayMember({
+        //   type: 'productStatement',
+        // }),
       ],
     }),
 
