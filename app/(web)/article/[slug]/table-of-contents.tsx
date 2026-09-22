@@ -103,7 +103,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                   'border-border border-b',
                   'text-sm transition-colors',
                   active
-                    ? 'text-foreground'
+                    ? 'text-foreground border-primary'
                     : 'text-muted-foreground hover:text-foreground',
                 ].join(' ')}
               >
@@ -119,15 +119,6 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                 </span>
 
                 <span className="leading-snug">{heading.text}</span>
-
-                {/* Active indicator */}
-                <span
-                  className={[
-                    'top-0 bottom-0 -left-px absolute w-px',
-                    'transition-colors duration-300',
-                    active ? 'bg-primary' : 'bg-transparent',
-                  ].join(' ')}
-                />
               </Link>
             </li>
           );
