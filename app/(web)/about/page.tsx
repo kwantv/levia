@@ -1,14 +1,5 @@
 import DotGridBackground from '@/components/dot-grid-background';
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  BrainCircuit,
-  Flame,
-  Gauge,
-  Soup,
-  Sparkles,
-  Waves,
-} from 'lucide-react';
+import { ArrowUpRight, Flame, Gauge, Soup, Waves } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
@@ -123,7 +114,7 @@ export default function AboutPage() {
 
       {/* ───────────────── INTELLIGENCE ───────────────── */}
 
-      <section className="border-border border-b">
+      <section id="intelligence" className="border-border border-b">
         <div className="mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36 container">
           <div className="gap-y-12 lg:gap-x-8 grid grid-cols-12">
             <div className="col-span-12 lg:col-span-3">

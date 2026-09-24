@@ -12,12 +12,12 @@ const navigation = [
         href: '/product',
       },
       {
-        label: 'Hệ thống đại lý',
-        href: '/agency',
+        label: 'Cẩm nang bếp',
+        href: '/article',
       },
       {
-        label: 'Cook now',
-        href: '/cook',
+        label: 'Hệ thống đại lý',
+        href: '/agency',
       },
     ],
   },
@@ -31,6 +31,10 @@ const navigation = [
       {
         label: 'Kitchen Intelligence',
         href: '/about#intelligence',
+      },
+      {
+        label: 'Cook now',
+        href: '/cook',
       },
     ],
   },

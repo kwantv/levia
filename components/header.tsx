@@ -1,19 +1,18 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import logo from '@/public/logo/logo-text.svg';
+import { Menu, X } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
-import logo from '@/public/logo/logo-text.svg';
-// import logo from '@/public/logo/logo.svg';
 
 const navLinks = [
   { href: '/about', label: 'Giới thiệu' },
   { href: '/product', label: 'Sản phẩm' },
-  { href: '/agency', label: 'Đại lý' },
   { href: '/article', label: 'Cẩm nang bếp' },
+  { href: '/agency', label: 'Đại lý' },
 ];
 
 export function Header() {
@@ -79,10 +78,6 @@ export function Header() {
           ))}
           <Link
             href="/cook"
-            // className={cn(
-            //   buttonVariants({ size: 'lg' }),
-            //   'mt-1 w-full uppercase text-2xl tracking-wider',
-            // )}
             className="bg-primary px-4 py-2 font-semibold text-background text-2xl transition-colors"
             onClick={() => setMobileOpen(false)}
           >
