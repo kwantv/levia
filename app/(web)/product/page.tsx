@@ -42,7 +42,7 @@ export default async function ProductPage() {
               <h1 className="max-w-5xl font-heading font-medium text-[clamp(3.5rem,8vw,8rem)] leading-[0.86] tracking-[-0.055em]">
                 Công nghệ cho
                 <br />
-                <span className="text-primary">căn bếp hiện đại.</span>
+                <span className="text-primary">căn bếp hiện đại</span>
               </h1>
 
               <div className="gap-8 grid sm:grid-cols-2 mt-12 lg:mt-16 pt-6 border-border border-t">
