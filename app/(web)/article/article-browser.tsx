@@ -319,7 +319,7 @@ function ArticleCard({
                 key={tag._id}
                 className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]"
               >
-                {tag.title}
+                /{tag.title}
               </span>
             ))}
           </div>

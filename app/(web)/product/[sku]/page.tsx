@@ -218,7 +218,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   {product.specs.map((spec, index) => (
                     <div
                       key={spec.label}
-                      className="gap-4 grid sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1fr)] py-5 border-border border-b"
+                      className="gap-4 grid grid-cols-[3rem_minmax(0,1fr)_minmax(0,1fr)] py-5 border-border border-b"
                     >
                       <span className="font-mono text-[9px] text-primary">
                         {String(index + 1).padStart(2, '0')}

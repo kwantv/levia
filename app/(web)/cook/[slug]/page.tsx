@@ -478,30 +478,6 @@ function RecipeMetaItem({
 }
 
 function RecipeStep({ step, index }: { step: RecipeStepGroup; index: number }) {
-  // const recipeComponents = {
-  //   ...components,
-
-  //   block: {
-  //     ...components.block,
-
-  //     blockquote: ({ children }) => (
-  //       <aside className="bg-primary/[0.03] my-8 p-5 sm:p-6 border border-primary/20">
-  //         <div className="flex items-center gap-3">
-  //           <span className="bg-primary size-1.5 shrink-0" />
-
-  //           <span className="font-mono text-[8px] text-primary uppercase tracking-[0.18em]">
-  //             Kitchen note
-  //           </span>
-  //         </div>
-
-  //         <div className="[&>p]:m-0 mt-4 text-muted-foreground text-sm leading-[1.8]">
-  //           {children}
-  //         </div>
-  //       </aside>
-  //     ),
-  //   },
-  // } satisfies PortableTextComponents;
-
   return (
     <section className="group py-10 sm:py-12 first:pt-0 border-border border-b">
       <div className="gap-6 grid sm:grid-cols-[5rem_1fr]">

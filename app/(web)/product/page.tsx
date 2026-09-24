@@ -67,7 +67,7 @@ export default async function ProductPage() {
                 Sản phẩm
               </span>
 
-              <span className="block mt-3 font-light text-3xl">
+              <span className="block mt-3 font-heading font-light text-3xl">
                 {String(products.length).padStart(2, '0')}
               </span>
             </div>
@@ -77,7 +77,7 @@ export default async function ProductPage() {
                 Danh mục
               </span>
 
-              <span className="block mt-3 font-light text-3xl">
+              <span className="block mt-3 font-heading font-light text-3xl">
                 {String(categories.length).padStart(2, '0')}
               </span>
             </div>

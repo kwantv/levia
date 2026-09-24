@@ -39,7 +39,7 @@ export default async function ArticlePage() {
         {/* Ambient gold accent */}
         <div className="top-[-15%] right-[-10%] absolute bg-primary/5 blur-[140px] rounded-full size-150 pointer-events-none" />
 
-        <div className="relative mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36 container">
+        <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 lg:pt-32 pb-16 sm:pb-20 container">
           <div className="gap-y-12 lg:gap-x-8 grid grid-cols-12">
             <div className="col-span-12 lg:col-span-3">
               <div className="flex items-center gap-3 font-mono text-[10px] text-muted-foreground uppercase tracking-[0.25em]">
@@ -49,7 +49,7 @@ export default async function ArticlePage() {
             </div>
 
             <div className="col-span-12 lg:col-span-8 lg:col-start-5">
-              <h1 className="max-w-5xl font-heading font-medium text-[clamp(3.5rem,8vw,8.5rem)] leading-[0.85] tracking-[-0.055em]">
+              <h1 className="max-w-5xl font-heading font-medium text-[clamp(3.5rem,8vw,8rem)] leading-[0.86] tracking-[-0.055em]">
                 Cẩm nang
                 <br />
                 <span className="text-primary">bếp.</span>
@@ -75,7 +75,7 @@ export default async function ArticlePage() {
                 Bài viết
               </span>
 
-              <span className="block mt-3 font-light text-3xl">
+              <span className="block mt-3 font-heading font-light text-3xl">
                 {String(articles.length).padStart(2, '0')}
               </span>
             </div>
@@ -85,7 +85,7 @@ export default async function ArticlePage() {
                 Chủ đề
               </span>
 
-              <span className="block mt-3 font-light text-3xl">
+              <span className="block mt-3 font-heading font-light text-3xl">
                 {String(tags.length).padStart(2, '0')}
               </span>
             </div>

@@ -72,3 +72,37 @@
     linear-gradient(to left, var(--background), transparent 8rem),
     radial-gradient(circle at top left, transparent 80%, var(--background));
 }
+
+.levia-map .mapboxgl-map {
+  background: var(--background);
+}
+
+.levia-map .mapboxgl-popup-content {
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: color-mix(in oklch, var(--background) 94%, transparent);
+  color: var(--foreground);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.28);
+  backdrop-filter: blur(14px);
+}
+
+.levia-map .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: var(--border);
+}
+
+.levia-map .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+  border-bottom-color: var(--border);
+}
+
+.levia-map .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+  border-right-color: var(--border);
+}
+
+.levia-map .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+  border-left-color: var(--border);
+}
+
+.levia-map .mapboxgl-canvas {
+  outline: none;
+}

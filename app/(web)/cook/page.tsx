@@ -73,7 +73,7 @@ export default async function CookPage() {
                 Công thức
               </span>
 
-              <span className="block mt-3 font-light text-3xl">
+              <span className="block mt-3 font-heading font-light text-3xl">
                 {String(recipes.length).padStart(2, '0')}
               </span>
             </div>
@@ -83,7 +83,9 @@ export default async function CookPage() {
                 Chủ đề
               </span>
 
-              <span className="block mt-3 font-light text-3xl">Việt</span>
+              <span className="block mt-3 font-heading font-light text-3xl">
+                Việt
+              </span>
             </div>
 
             <div className="hidden md:block md:col-span-2 bg-background p-6">
