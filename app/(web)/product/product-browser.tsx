@@ -97,11 +97,10 @@ export function ProductBrowser({ products, categories }: ProductBrowserProps) {
                     {selectedCategory?.label ?? 'Tất cả sản phẩm'}
                   </h2>
 
-                  {selectedCategory?.description && (
-                    <p className="mt-3 max-w-xl text-muted-foreground text-sm leading-relaxed">
-                      {selectedCategory.description}
-                    </p>
-                  )}
+                  <p className="mt-3 max-w-xl text-muted-foreground text-sm leading-relaxed">
+                    {selectedCategory?.description ??
+                      'Công nghệ cho căn bếp hiện đại'}
+                  </p>
                 </div>
 
                 <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">

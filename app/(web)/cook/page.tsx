@@ -3,7 +3,7 @@ import { ArrowUpRight, Clock, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import DotGridBackground from '@/components/dot-grid-background';
+import { ListingHero as Hero } from '@/components/listing-page-hero';
 import { getAllRecipes } from './action';
 
 export const metadata = {
@@ -30,74 +30,28 @@ export default async function CookPage() {
   return (
     <main className="bg-background min-h-screen text-foreground">
       {/* ───────────────── HERO ───────────────── */}
-      <section className="relative border-border border-b overflow-hidden">
-        <DotGridBackground />
-
-        <div className="-top-52 -right-48 absolute bg-primary/5 blur-[160px] rounded-full size-[700px] pointer-events-none" />
-
-        <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 lg:pt-32 pb-16 sm:pb-20 container">
-          <div className="gap-y-12 lg:gap-x-8 grid grid-cols-12">
-            <div className="col-span-12 lg:col-span-3">
-              <div className="flex items-center gap-3">
-                <span className="bg-primary size-1.5" />
-
-                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.22em]">
-                  Cook / 01
-                </span>
-              </div>
-            </div>
-
-            <div className="col-span-12 lg:col-span-8 lg:col-start-5">
-              <h1 className="max-w-5xl font-heading font-medium text-[clamp(3.5rem,8vw,8rem)] leading-[0.86] tracking-[-0.055em]">
-                Hiểu căn bếp <span className="text-primary">Việt</span>
-              </h1>
-
-              <div className="gap-8 grid sm:grid-cols-2 mt-12 lg:mt-16 pt-6 border-border border-t">
-                <p className="max-w-md text-muted-foreground text-sm sm:text-base leading-relaxed">
-                  Công thức món Việt được trình bày rõ ràng theo từng bước, giúp
-                  bạn chủ động chuẩn bị, kiểm soát thời gian và hoàn thiện món
-                  ăn dễ dàng hơn.
-                </p>
-
-                <p className="max-w-md text-muted-foreground text-sm sm:text-base leading-relaxed">
-                  Không chỉ là công thức — đây còn là cách hiểu nhiệt, thời gian
-                  và cách bếp từ phản hồi trong từng món ăn.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="gap-px grid grid-cols-2 md:grid-cols-4 mt-20 bg-border border border-border">
-            <div className="bg-background p-5 sm:p-6">
-              <span className="block font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
-                Công thức
-              </span>
-
-              <span className="block mt-3 font-heading font-light text-3xl">
-                {String(recipes.length).padStart(2, '0')}
-              </span>
-            </div>
-
-            <div className="bg-background p-5 sm:p-6">
-              <span className="block font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
-                Chủ đề
-              </span>
-
-              <span className="block mt-3 font-heading font-light text-3xl">
-                Việt
-              </span>
-            </div>
-
-            <div className="hidden md:block md:col-span-2 bg-background p-6">
-              <div className="flex justify-end items-end h-full">
-                <span className="font-mono text-[9px] text-muted-foreground/50 uppercase tracking-[0.2em]">
-                  Levia / Cook Intelligence
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero
+        label="Cook / 01"
+        title="Hiểu căn bếp"
+        accent="Việt"
+        descriptions={[
+          'Công thức món Việt được trình bày rõ ràng theo từng bước, giúp bạn chủ động chuẩn bị, kiểm soát thời gian và hoàn thiện món ăn dễ dàng hơn.',
+          'Không chỉ là công thức — đây còn là cách hiểu nhiệt, thời gian và cách bếp từ phản hồi trong từng món ăn.',
+        ]}
+        stats={[
+          {
+            label: 'Công thức',
+            value: String(recipes.length).padStart(2, '0'),
+            scramble: true,
+          },
+          {
+            label: 'Chủ đề',
+            value: 'Việt',
+            scramble: true,
+          },
+        ]}
+        footerLabel="Levia / Cook Intelligence"
+      />
 
       {recipes.length === 0 ? (
         <section className="px-4 sm:px-6 lg:px-8 py-24">
