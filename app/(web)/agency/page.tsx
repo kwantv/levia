@@ -16,9 +16,9 @@ export default async function AgencyPage() {
   const provinces = new Set(agencies.map((agency) => agency.province));
 
   return (
-    <>
+    <main className="bg-background">
       {/* ───────────────── HERO ───────────────── */}
-      <section className="relative bg-background border-border border-b overflow-hidden">
+      <section className="relative border-b overflow-hidden">
         <DotGridBackground />
 
         {/* Ambient gold accent */}
@@ -106,6 +106,6 @@ export default async function AgencyPage() {
           </div>
         </section>
       )}
-    </>
+    </main>
   );
 }

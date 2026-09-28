@@ -40,26 +40,29 @@ export default function Home() {
   const hero = products[0]; // LV79DI
 
   return (
-    <>
+    <main>
       {/* ──────────────────── HERO ──────────────────── */}
-      <section className="relative overflow-hidden bg-background">
-        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+      <section className="relative bg-background overflow-hidden">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40 max-w-7xl">
+          <div className="items-center gap-12 grid lg:grid-cols-2">
             {/* Copy */}
             <div className="space-y-6">
-              <Badge variant="outline" className="gap-2 border-primary/30 bg-primary/10 text-primary">
+              <Badge
+                variant="outline"
+                className="gap-2 bg-primary/10 border-primary/30 text-primary"
+              >
                 <Brain className="size-3.5" />
                 Ai Design
               </Badge>
-              <h1 className="font-heading text-4xl leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl leading-tight tracking-tight">
                 Bếp từ được
                 <br />
                 <span className="text-primary">thiết kế bằng AI</span>
               </h1>
-              <p className="max-w-lg text-lg leading-relaxed text-muted-foreground">
+              <p className="max-w-lg text-muted-foreground text-lg leading-relaxed">
                 Levia là bếp từ thế hệ AI, thiết kế tinh gọn theo thẩm mỹ châu
-                Âu, làm ra để nấu chuẩn vị Việt — dành cho gia đình trẻ mê
-                công nghệ.
+                Âu, làm ra để nấu chuẩn vị Việt — dành cho gia đình trẻ mê công
+                nghệ.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link href="/agency">
@@ -78,14 +81,14 @@ export default function Home() {
             </div>
 
             {/* Hero image placeholder */}
-            <div className="relative flex items-center justify-center">
-              <div className="aspect-square w-full max-w-lg border border-border bg-muted/30 p-8">
-                <div className="flex h-full flex-col items-center justify-center gap-4 text-muted-foreground">
-                  <div className="border border-primary/20 bg-primary/5 p-4">
+            <div className="relative flex justify-center items-center">
+              <div className="bg-muted/30 p-8 border border-border w-full max-w-lg aspect-square">
+                <div className="flex flex-col justify-center items-center gap-4 h-full text-muted-foreground">
+                  <div className="bg-primary/5 p-4 border border-primary/20">
                     <Brain className="size-12 text-primary" />
                   </div>
-                  <span className="text-sm font-medium">{hero.name}</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="font-medium text-sm">{hero.name}</span>
+                  <span className="text-muted-foreground text-xs">
                     Ảnh sản phẩm render — 730 × 430 mm
                   </span>
                 </div>
@@ -96,16 +99,25 @@ export default function Home() {
       </section>
 
       {/* ──────── QUICK TECH STRIP ──────── */}
-      <section className="border-y border-border bg-card">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      <section className="bg-card border-border border-y">
+        <div className="grid grid-cols-1 sm:grid-cols-3 mx-auto sm:divide-x divide-y sm:divide-y-0 divide-border max-w-7xl">
           {[
-            { icon: <Zap className="size-5 text-primary" />, text: 'Menu nấu tự động' },
-            { icon: <Flame className="size-5 text-primary" />, text: 'Inverter ~30% tiết kiệm' },
-            { icon: <ScanSearch className="size-5 text-primary" />, text: '9 mức nhiệt · Nhận diện nồi' },
+            {
+              icon: <Zap className="size-5 text-primary" />,
+              text: 'Menu nấu tự động',
+            },
+            {
+              icon: <Flame className="size-5 text-primary" />,
+              text: 'Inverter ~30% tiết kiệm',
+            },
+            {
+              icon: <ScanSearch className="size-5 text-primary" />,
+              text: '9 mức nhiệt · Nhận diện nồi',
+            },
           ].map((item) => (
             <div
               key={item.text}
-              className="flex items-center justify-center gap-3 px-6 py-5 text-sm text-foreground"
+              className="flex justify-center items-center gap-3 px-6 py-5 text-foreground text-sm"
             >
               {item.icon}
               <span>{item.text}</span>
@@ -116,12 +128,12 @@ export default function Home() {
 
       {/* ──────── TECHNOLOGY SECTION ──────── */}
       <section className="bg-background py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="mb-12 max-w-2xl">
-            <p className="mb-2 text-sm font-medium uppercase tracking-widest text-primary">
+            <p className="mb-2 font-medium text-primary text-sm uppercase tracking-widest">
               Công nghệ
             </p>
-            <h2 className="font-heading text-3xl tracking-tight sm:text-4xl">
+            <h2 className="font-heading text-3xl sm:text-4xl tracking-tight">
               Hiểu căn bếp Việt.
             </h2>
             <p className="mt-4 text-muted-foreground">
@@ -130,24 +142,27 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-3">
             {techBlocks.map((block) => (
-              <Card key={block.number} className="group transition-colors hover:ring-primary/30">
+              <Card
+                key={block.number}
+                className="group hover:ring-primary/30 transition-colors"
+              >
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <div className="flex size-10 items-center justify-center bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
+                    <div className="flex justify-center items-center bg-primary/10 group-hover:bg-primary/20 size-10 text-primary transition-colors">
                       {techIcons[block.icon]}
                     </div>
-                    <span className="font-mono text-xs text-muted-foreground">
+                    <span className="font-mono text-muted-foreground text-xs">
                       {block.number}
                     </span>
                   </div>
-                  <CardTitle className="text-sm font-semibold">
+                  <CardTitle className="font-semibold text-sm">
                     {block.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     {block.description}
                   </p>
                 </CardContent>
@@ -158,12 +173,14 @@ export default function Home() {
           {/* Safety note */}
           <Card className="mt-8">
             <CardContent className="flex items-start gap-4 pt-4">
-              <Shield className="mt-0.5 size-5 shrink-0 text-primary" />
+              <Shield className="mt-0.5 size-5 text-primary shrink-0" />
               <div>
-                <h3 className="text-sm font-semibold text-foreground">An toàn</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Khoá trẻ em · Cảm biến nồi · Quá nhiệt tự ngắt · Chống tràn
-                  tự ngắt · Hẹn giờ · CO/CQ.
+                <h3 className="font-semibold text-foreground text-sm">
+                  An toàn
+                </h3>
+                <p className="mt-1 text-muted-foreground text-sm">
+                  Khoá trẻ em · Cảm biến nồi · Quá nhiệt tự ngắt · Chống tràn tự
+                  ngắt · Hẹn giờ · CO/CQ.
                 </p>
               </div>
             </CardContent>
@@ -181,33 +198,33 @@ export default function Home() {
       </section>
 
       {/* ──────── PRODUCT CATEGORIES ──────── */}
-      <section className="border-t border-border bg-background py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="bg-background py-20 sm:py-28 border-border border-t">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="mb-12 max-w-2xl">
-            <p className="mb-2 text-sm font-medium uppercase tracking-widest text-primary">
+            <p className="mb-2 font-medium text-primary text-sm uppercase tracking-widest">
               Sản phẩm
             </p>
-            <h2 className="font-heading text-3xl tracking-tight sm:text-4xl">
+            <h2 className="font-heading text-3xl sm:text-4xl tracking-tight">
               Danh mục sản phẩm
             </h2>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/product?category=${cat.slug}`}
                 className="group"
               >
-                <Card className="transition-colors hover:ring-primary/30">
+                <Card className="hover:ring-primary/30 transition-colors">
                   <CardHeader>
-                    <CardTitle className="text-lg font-semibold transition-colors group-hover:text-primary">
+                    <CardTitle className="font-semibold group-hover:text-primary text-lg transition-colors">
                       {cat.label}
                     </CardTitle>
                     <CardDescription>{cat.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="flex items-center gap-1 text-xs font-medium text-primary">
+                    <p className="flex items-center gap-1 font-medium text-primary text-xs">
                       {cat.count} sản phẩm
                       <ChevronRight className="size-3.5" />
                     </p>
@@ -220,52 +237,55 @@ export default function Home() {
       </section>
 
       {/* ──────── FEATURED RECIPES (COOK NOW) ──────── */}
-      <section className="border-t border-border bg-card py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 flex items-end justify-between">
+      <section className="bg-card py-20 sm:py-28 border-border border-t">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <div className="flex justify-between items-end mb-12">
             <div>
-              <p className="mb-2 text-sm font-medium uppercase tracking-widest text-primary">
+              <p className="mb-2 font-medium text-primary text-sm uppercase tracking-widest">
                 Cook
               </p>
-              <h2 className="font-heading text-3xl tracking-tight sm:text-4xl">
+              <h2 className="font-heading text-3xl sm:text-4xl tracking-tight">
                 Nấu chuẩn vị Việt.
               </h2>
             </div>
             <Link
               href="/cook"
-              className="hidden items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground sm:flex"
+              className="hidden sm:flex items-center gap-1 text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               Xem tất cả
               <ChevronRight className="size-4" />
             </Link>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-3">
             {featuredRecipes.map((recipe) => (
               <Link
                 key={recipe.slug}
                 href={`/cook/${recipe.slug}`}
                 className="group"
               >
-                <Card className="overflow-hidden transition-colors hover:ring-primary/30">
+                <Card className="hover:ring-primary/30 overflow-hidden transition-colors">
                   {/* Image placeholder */}
-                  <div className="relative aspect-4/3 bg-muted/30">
-                    <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
+                  <div className="relative bg-muted/30 aspect-4/3">
+                    <div className="flex justify-center items-center h-full text-muted-foreground text-xs">
                       Ảnh {recipe.title}
                     </div>
-                    <div className="absolute bottom-3 left-3">
-                      <Badge variant="secondary" className="bg-background/90 text-primary backdrop-blur-sm">
+                    <div className="bottom-3 left-3 absolute">
+                      <Badge
+                        variant="secondary"
+                        className="bg-background/90 backdrop-blur-sm text-primary"
+                      >
                         {recipe.heatLevel}
                       </Badge>
                     </div>
                   </div>
                   <CardHeader>
-                    <CardTitle className="text-sm font-semibold transition-colors group-hover:text-primary">
+                    <CardTitle className="font-semibold group-hover:text-primary text-sm transition-colors">
                       {recipe.title}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 text-muted-foreground text-xs">
                       <Clock className="size-3.5" />
                       {recipe.cookTime}
                     </div>
@@ -275,7 +295,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="mt-8 text-center sm:hidden">
+          <div className="sm:hidden mt-8 text-center">
             <Link href="/cook">
               <Button variant="outline" size="lg" className="gap-2">
                 Xem tất cả công thức
@@ -287,10 +307,10 @@ export default function Home() {
       </section>
 
       {/* ──────── FIND DEALER CTA ──────── */}
-      <section className="border-t border-border bg-background py-20 sm:py-28">
-        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+      <section className="bg-background py-20 sm:py-28 border-border border-t">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl text-center">
           <MapPin className="mx-auto mb-4 size-8 text-primary" />
-          <h2 className="font-heading text-3xl tracking-tight sm:text-4xl">
+          <h2 className="font-heading text-3xl sm:text-4xl tracking-tight">
             Tìm đại lý gần bạn
           </h2>
           <p className="mx-auto mt-4 max-w-md text-muted-foreground">
@@ -307,6 +327,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }

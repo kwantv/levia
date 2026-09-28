@@ -32,8 +32,8 @@ export default async function ArticlePage() {
   }));
 
   return (
-    <>
-      <section className="relative bg-background border-border border-b overflow-hidden">
+    <main className="bg-background">
+      <section className="relative border-b overflow-hidden">
         <DotGridBackground />
 
         {/* Ambient gold accent */}
@@ -100,6 +100,6 @@ export default async function ArticlePage() {
       </section>
 
       <ArticleBrowser articles={browserArticles} tags={tags} />
-    </>
+    </main>
   );
 }

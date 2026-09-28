@@ -7,7 +7,7 @@ export default function WebLayout({ children }: LayoutProps<'/'>) {
   return (
     <>
       <Header />
-      <main className="flex-1">{children}</main>
+      {children}
       <Footer />
       {process.env.NODE_ENV === 'development' && <StudioLink />}
       <SanityLive />

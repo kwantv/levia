@@ -1,7 +1,5 @@
 import DotGridBackground from '@/components/dot-grid-background';
-import { getImageUrl } from '@/sanity/lib/image';
 import { ArrowLeft, ArrowUpRight, MapPin } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -41,10 +39,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const product = await getProductBySku(sku);
 
   if (!product) notFound();
-
-  const heroImage = product.gallery?.[0]
-    ? getImageUrl(product.gallery[0], 1600)
-    : null;
 
   return (
     <main className="bg-background min-h-screen text-foreground">

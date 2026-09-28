@@ -1,5 +1,4 @@
 import DotGridBackground from '@/components/dot-grid-background';
-import { getImageUrl } from '@/sanity/lib/image';
 import { getAllProducts, getCategories } from './action';
 import { ProductBrowser } from './product-browser';
 

@@ -35,7 +35,7 @@ export function ProductBrowser({ products, categories }: ProductBrowserProps) {
   return (
     <>
       {/* CATEGORY FILTER */}
-      <section className="top-0 z-30 sticky bg-background/90 backdrop-blur-xl border-border border-b">
+      <section className="top-24 z-30 border-border border-b">
         <div className="mx-auto px-4 sm:px-6 lg:px-8 container">
           <div className="gap-6 grid lg:grid-cols-12 py-5">
             <div className="hidden lg:flex items-center lg:col-span-3">
