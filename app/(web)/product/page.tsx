@@ -18,7 +18,7 @@ export default async function ProductPage() {
     <main className="bg-background min-h-screen text-foreground">
       {/* ───────────────── HERO ───────────────── */}
       <Hero
-        label="Product / 01"
+        label="Product / 02"
         title="Công nghệ cho"
         accent="căn bếp hiện đại"
         breakBeforeAccent
@@ -38,7 +38,6 @@ export default async function ProductPage() {
             scramble: true,
           },
         ]}
-        footerLabel="Levia / Kitchen Intelligence"
       />
 
       <ProductBrowser products={products} categories={categories} />

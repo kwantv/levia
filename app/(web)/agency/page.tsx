@@ -19,7 +19,7 @@ export default async function AgencyPage() {
     <main className="bg-background">
       {/* ───────────────── HERO ───────────────── */}
       <Hero
-        label="Agency / 01"
+        label="Agency / 04"
         title="Trải nghiệm Levia"
         accent="gần bạn hơn"
         breakBeforeAccent
@@ -39,7 +39,6 @@ export default async function AgencyPage() {
             scramble: true,
           },
         ]}
-        footerLabel="Levia / Store Network"
       />
 
       {/* ───────────────── LOCATOR ───────────────── */}

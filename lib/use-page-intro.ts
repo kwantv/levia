@@ -59,6 +59,7 @@ export function usePageIntro({
             type: 'words,chars',
             wordsClass: 'intro-word',
             charsClass: 'intro-char',
+            mask: 'chars',
           })
         : null;
 
@@ -101,15 +102,14 @@ export function usePageIntro({
         timeline.to(titleSplit.chars, {
           y: 0,
           opacity: 1,
+          onComplete: () => titleSplit.revert(),
 
           duration: 0.34,
-
+          ease: 'power3.out',
           stagger: {
             each: 0.01,
             from: 'start',
           },
-
-          ease: 'power3.out',
         });
       }
 
@@ -119,10 +119,10 @@ export function usePageIntro({
           {
             y: 0,
             opacity: 1,
+            onComplete: () => subtitleSplits.forEach((split) => split.revert()),
 
             duration: 0.32,
             stagger: 0.04,
-
             ease: 'power2.out',
           },
           '-=0.15',

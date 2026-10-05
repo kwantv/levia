@@ -49,8 +49,6 @@ interface ListingHeroProps {
   descriptions: [string, string];
 
   stats: [HeroStat, HeroStat];
-
-  footerLabel: string;
 }
 
 export function ListingHero({
@@ -60,7 +58,6 @@ export function ListingHero({
   breakBeforeAccent = false,
   descriptions,
   stats,
-  footerLabel,
 }: ListingHeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -78,11 +75,10 @@ export function ListingHero({
       {/* Ambient gold accent */}
       <div className="-top-56 -right-48 absolute bg-primary/5 blur-[160px] rounded-full size-175 pointer-events-none" />
 
-      <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 lg:pt-32 pb-16 sm:pb-20 container">
-        {/* Main content */}
-        <div className="gap-y-12 lg:gap-x-8 grid grid-cols-12">
-          {/* Label */}
-          <div className="col-span-12 lg:col-span-3">
+      <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-16 sm:pb-20 container">
+        <div className="gap-y-12 lg:gap-x-8 lg:gap-y-16 grid grid-cols-12">
+          {/* Label (left, row 1) */}
+          <div className="col-span-12 lg:col-span-3 lg:col-start-1 lg:row-start-1">
             <div data-intro-label className="flex items-center gap-3">
               <span className="bg-primary size-1.5 shrink-0" />
 
@@ -92,11 +88,11 @@ export function ListingHero({
             </div>
           </div>
 
-          {/* Copy */}
-          <div className="col-span-12 lg:col-span-8 lg:col-start-5">
+          {/* Title (right, row 1) */}
+          <div className="col-span-12 lg:col-span-8 lg:col-start-5 lg:row-start-1">
             <h1
               data-intro-title
-              className="max-w-5xl font-heading font-medium text-[clamp(3.5rem,8vw,8rem)] leading-[0.9] tracking-[-0.055em]"
+              className="max-w-5xl font-heading font-medium text-[clamp(3.5rem,8vw,8rem)] leading-[1.2] tracking-tighter"
             >
               {title}
 
@@ -104,50 +100,42 @@ export function ListingHero({
 
               <span className="text-primary">{accent}</span>
             </h1>
-
-            <div className="gap-8 grid sm:grid-cols-2 mt-12 lg:mt-16 pt-6 border-border border-t">
-              {descriptions.map((description, index) => (
-                <p
-                  key={index}
-                  data-intro-subtitle
-                  className="max-w-md text-muted-foreground text-sm sm:text-base leading-relaxed"
-                >
-                  {description}
-                </p>
-              ))}
-            </div>
           </div>
-        </div>
 
-        {/* Statistics */}
-        <div className="gap-px grid grid-cols-2 md:grid-cols-4 mt-20 bg-border border border-border">
-          {stats.map((stat) => (
-            <div key={stat.label} className="bg-background p-5 sm:p-6">
-              <span className="block font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
-                {stat.label}
-              </span>
-
-              <span
-                {...(stat.scramble
-                  ? {
-                      'data-intro-scramble': '',
-                      'data-intro-scramble-chars': stat.scrambleChars,
-                    }
-                  : {})}
-                className="block mt-3 font-heading font-light tabular-nums text-3xl"
+          {/* Descriptions (right, row 2) */}
+          <div className="gap-8 grid sm:grid-cols-2 col-span-12 lg:col-span-8 lg:col-start-5 lg:row-start-2">
+            {descriptions.map((description, index) => (
+              <p
+                key={index}
+                data-intro-subtitle
+                className="max-w-md text-muted-foreground text-sm sm:text-base leading-relaxed"
               >
-                {stat.value}
-              </span>
-            </div>
-          ))}
+                {description}
+              </p>
+            ))}
+          </div>
 
-          {/* Footer label */}
-          <div className="hidden md:block md:col-span-2 bg-background p-6">
-            <div className="flex justify-end items-end h-full">
-              <span className="font-mono text-[9px] text-muted-foreground/60 uppercase tracking-[0.2em]">
-                {footerLabel}
-              </span>
-            </div>
+          {/* Statistics (left, row 2) */}
+          <div className="self-start gap-px grid grid-cols-2 col-span-12 lg:col-span-4 lg:col-start-1 lg:row-start-2">
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <span className="block font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
+                  {stat.label}
+                </span>
+
+                <span
+                  {...(stat.scramble
+                    ? {
+                        'data-intro-scramble': '',
+                        'data-intro-scramble-chars': stat.scrambleChars,
+                      }
+                    : {})}
+                  className="block mt-3 font-heading font-light tabular-nums text-3xl"
+                >
+                  {stat.value}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

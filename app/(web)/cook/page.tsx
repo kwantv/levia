@@ -31,7 +31,7 @@ export default async function CookPage() {
     <main className="bg-background min-h-screen text-foreground">
       {/* ───────────────── HERO ───────────────── */}
       <Hero
-        label="Cook / 01"
+        label="Cook / 05"
         title="Hiểu căn bếp"
         accent="Việt"
         descriptions={[
@@ -50,7 +50,6 @@ export default async function CookPage() {
             scramble: true,
           },
         ]}
-        footerLabel="Levia / Cook Intelligence"
       />
 
       {recipes.length === 0 ? (

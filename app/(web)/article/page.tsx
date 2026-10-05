@@ -34,7 +34,7 @@ export default async function ArticlePage() {
   return (
     <main className="bg-background">
       <Hero
-        label="Knowledge / 01"
+        label="Article / 03"
         title="Cẩm nang"
         accent="bếp"
         descriptions={[
@@ -53,7 +53,6 @@ export default async function ArticlePage() {
             scramble: true,
           },
         ]}
-        footerLabel="Levia / Kitchen Intelligence"
       />
 
       <ArticleBrowser articles={browserArticles} tags={tags} />

@@ -10,7 +10,7 @@ type DocumentWithViewTransition = Document & {
 
 export function playAfterPageTransition(
   animation: gsap.core.Animation,
-  delay = 0.06,
+  delay = 0,
 ) {
   let cancelled = false;
   let delayedCall: gsap.core.Tween | undefined;

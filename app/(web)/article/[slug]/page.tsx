@@ -1,3 +1,4 @@
+import DotGridBackground from '@/components/dot-grid-background';
 import { getContentHeadings } from '@/sanity/lib/content-headings';
 import { getImageUrl } from '@/sanity/lib/image';
 import { components } from '@/sanity/lib/portable-component';
@@ -6,7 +7,6 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import DotGridBackground from '@/components/dot-grid-background';
 import { getAllArticleSlugs, getArticleBySlug } from './action';
 import { TableOfContents } from './table-of-contents';
 
@@ -184,7 +184,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                   src={coverSrc}
                   alt={article.coverImage?.alt || article.title}
                   fill
-                  priority
+                  fetchPriority="high"
                   className="object-cover"
                   sizes="(max-width: 1280px) 100vw, 1280px"
                 />
