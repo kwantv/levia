@@ -76,7 +76,7 @@ export function ListingHero({
       <div className="-top-56 -right-48 absolute bg-primary/5 blur-[160px] rounded-full size-175 pointer-events-none" />
 
       <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-16 sm:pb-20 container">
-        <div className="gap-y-12 lg:gap-x-8 lg:gap-y-16 grid grid-cols-12">
+        <div className="gap-y-12 lg:gap-y-16 grid grid-cols-12">
           {/* Label (left, row 1) */}
           <div className="col-span-12 lg:col-span-3 lg:col-start-1 lg:row-start-1">
             <div data-intro-label className="flex items-center gap-3">

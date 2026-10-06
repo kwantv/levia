@@ -1,9 +1,15 @@
 'use client';
 
+import { cn } from '@/lib/utils';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState, ViewTransition } from 'react';
+
+gsap.registerPlugin(ScrollTrigger);
 
 type ArticleTag = {
   _id: string;
@@ -36,6 +42,9 @@ export default function ArticleBrowser({
   articles,
   tags,
 }: ArticleBrowserProps) {
+  const headerRef = useRef<HTMLDivElement>(null);
+  const articlesRef = useRef<HTMLDivElement>(null);
+
   const [activeTag, setActiveTag] = useState(ALL_TAGS);
 
   const filteredArticles = useMemo(() => {
@@ -51,99 +60,345 @@ export default function ArticleBrowser({
   const featuredArticle = filteredArticles[0];
   const remainingArticles = filteredArticles.slice(1);
 
+  const selectedTag = tags.find((tag) => tag._id === activeTag);
+
+  const currentIndex =
+    activeTag === ALL_TAGS
+      ? -1
+      : tags.findIndex((tag) => tag._id === activeTag);
+
+  const currentLabel = selectedTag?.title ?? 'Tất cả bài viết';
+
+  const currentDescription =
+    activeTag === ALL_TAGS
+      ? 'Kiến thức, cảm hứng và góc nhìn dành cho không gian bếp hiện đại'
+      : `Khám phá các bài viết thuộc chủ đề ${selectedTag?.title ?? ''}`;
+
+  const prevIndexRef = useRef<number>(currentIndex);
+  const prevLabelRef = useRef(currentLabel);
+  const prevDescRef = useRef(currentDescription);
+
+  /**
+   * Animated browser heading
+   *
+   * Same directional rolling behaviour used by ProductBrowser.
+   */
+  useGSAP(
+    () => {
+      const root = headerRef.current;
+      if (!root) return;
+
+      const prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      ).matches;
+
+      if (prefersReducedMotion) {
+        prevIndexRef.current = currentIndex;
+        prevLabelRef.current = currentLabel;
+        prevDescRef.current = currentDescription;
+        return;
+      }
+
+      const labelWrapper = root.querySelector<HTMLElement>(
+        '[data-label-wrapper]',
+      );
+      const label = labelWrapper?.querySelector<HTMLElement>('h2');
+
+      const descWrapper = root.querySelector<HTMLElement>(
+        '[data-desc-wrapper]',
+      );
+      const desc = descWrapper?.querySelector<HTMLElement>('p');
+
+      if (!labelWrapper || !label || !descWrapper || !desc) return;
+
+      const currentLabelText = label.innerText;
+      const currentDescText = desc.innerText;
+
+      if (
+        currentLabelText === prevLabelRef.current &&
+        currentDescText === prevDescRef.current
+      ) {
+        return;
+      }
+
+      const isNext = currentIndex > prevIndexRef.current;
+      const yOffset = 30;
+
+      /*
+       * Clone the previous text so the old and new states can
+       * cross each other without React having to own both.
+       */
+      const cloneLabel = document.createElement('h2');
+
+      cloneLabel.className = `${label.className} absolute top-0 left-0 w-full`;
+      cloneLabel.innerText = prevLabelRef.current;
+
+      labelWrapper.appendChild(cloneLabel);
+
+      const cloneDesc = document.createElement('p');
+
+      cloneDesc.className = `${desc.className} absolute top-0 left-0 w-full`;
+      cloneDesc.innerText = prevDescRef.current;
+
+      descWrapper.appendChild(cloneDesc);
+
+      gsap.set([label, desc], {
+        y: isNext ? yOffset : -yOffset,
+        opacity: 0,
+      });
+
+      gsap.set([labelWrapper, descWrapper], {
+        overflow: 'hidden',
+      });
+
+      const duration = 0.35;
+      const ease = 'power3.inOut';
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          cloneLabel.remove();
+          cloneDesc.remove();
+
+          labelWrapper.style.overflow = 'visible';
+          descWrapper.style.overflow = 'visible';
+        },
+      });
+
+      tl.to(
+        cloneLabel,
+        {
+          y: isNext ? -yOffset : yOffset,
+          opacity: 0,
+          duration,
+          ease,
+        },
+        0,
+      );
+
+      tl.to(
+        label,
+        {
+          y: 0,
+          opacity: 1,
+          duration,
+          ease,
+        },
+        0,
+      );
+
+      tl.to(
+        cloneDesc,
+        {
+          y: isNext ? -yOffset : yOffset,
+          opacity: 0,
+          duration,
+          ease,
+        },
+        0,
+      );
+
+      tl.to(
+        desc,
+        {
+          y: 0,
+          opacity: 1,
+          duration,
+          ease,
+        },
+        0,
+      );
+
+      prevIndexRef.current = currentIndex;
+      prevLabelRef.current = currentLabelText;
+      prevDescRef.current = currentDescText;
+
+      return () => {
+        tl.kill();
+
+        cloneLabel.remove();
+        cloneDesc.remove();
+      };
+    },
+    {
+      dependencies: [activeTag],
+      scope: headerRef,
+    },
+  );
+
+  /**
+   * Normal article cards
+   *
+   * The featured article intentionally does not participate in
+   * this animation.
+   */
+  useGSAP(
+    () => {
+      const root = articlesRef.current;
+      if (!root) return;
+
+      const cards = gsap.utils.toArray<HTMLElement>(
+        '[data-article-card]',
+        root,
+      );
+
+      if (!cards.length) return;
+
+      const prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      ).matches;
+
+      if (prefersReducedMotion) {
+        gsap.set(cards, {
+          opacity: 1,
+          y: 0,
+        });
+
+        return;
+      }
+
+      gsap.fromTo(
+        cards,
+        {
+          opacity: 0,
+          y: 24,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.35,
+          stagger: 0.06,
+          ease: 'power2.out',
+          overwrite: true,
+
+          scrollTrigger: {
+            trigger: root,
+            start: 'top 85%',
+            once: true,
+          },
+        },
+      );
+    },
+    {
+      dependencies: [activeTag],
+      scope: articlesRef,
+      revertOnUpdate: true,
+    },
+  );
+
   return (
-    <>
-      {/* FILTER */}
-      <section className="border-white/10 border-b">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 container">
-          <div className="gap-6 grid lg:grid-cols-12 py-8">
-            <div className="lg:col-span-3">
-              <div className="flex items-center gap-3 h-10 font-mono text-[10px] text-white/35 uppercase tracking-[0.2em]">
-                Chủ đề
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-24 container">
+      {/* BROWSER HEADER */}
+      <section ref={headerRef} className="gap-y-6 grid grid-cols-12">
+        <div className="col-span-12 lg:col-span-4">
+          <div className="flex items-center gap-3">
+            <span className="bg-primary size-1.5" />
+
+            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+              Tag / {String(currentIndex + 1).padStart(2, '0')}
+            </span>
+          </div>
+        </div>
+
+        <div className="col-span-12 lg:col-span-8">
+          <div className="flex sm:flex-row flex-col sm:justify-between sm:items-end gap-5 pb-6 border-b">
+            <div className="space-y-3">
+              <div
+                data-label-wrapper
+                key={`label-${activeTag}`}
+                className="relative"
+              >
+                <h2 className="font-heading font-medium text-3xl sm:text-4xl tracking-[-0.035em]">
+                  {currentLabel}
+                </h2>
+              </div>
+
+              <div
+                data-desc-wrapper
+                key={`desc-${activeTag}`}
+                className="relative"
+              >
+                <p className="max-w-xl text-muted-foreground text-sm leading-relaxed">
+                  {currentDescription}
+                </p>
               </div>
             </div>
 
-            <div className="lg:col-span-9">
-              <div className="flex flex-wrap gap-px bg-border border border-border w-fit max-w-full">
-                <FilterButton
-                  active={activeTag === ALL_TAGS}
-                  onClick={() => setActiveTag(ALL_TAGS)}
-                >
-                  Tất cả
-                  <span className="opacity-40">
-                    {String(articles.length).padStart(2, '0')}
-                  </span>
-                </FilterButton>
-
-                {tags.map((tag) => (
-                  <FilterButton
-                    key={tag._id}
-                    active={activeTag === tag._id}
-                    onClick={() => setActiveTag(tag._id)}
-                  >
-                    {tag.title}
-
-                    <span className="opacity-40">
-                      {String(tag.count).padStart(2, '0')}
-                    </span>
-                  </FilterButton>
-                ))}
-              </div>
-            </div>
+            <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
+              {String(filteredArticles.length).padStart(2, '0')} bài viết
+            </span>
           </div>
         </div>
       </section>
 
-      {/* ARTICLES */}
-      <section className="mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-28 container">
-        {filteredArticles.length === 0 ? (
-          <div className="flex flex-col justify-center items-center border border-white/10 min-h-100 text-center">
-            <span className="font-mono text-[10px] text-white/30 uppercase tracking-[0.25em]">
-              00 / Empty
-            </span>
+      {/* FILTER */}
+      <div className="grid lg:grid-cols-12 mb-10 sm:mb-14 py-5">
+        <div className="lg:col-span-8 lg:col-start-5 overflow-hidden">
+          <div className="flex overflow-x-auto scrollbar-none">
+            <FilterButton
+              active={activeTag === ALL_TAGS}
+              onClick={() => setActiveTag(ALL_TAGS)}
+            >
+              <span>Tất cả</span>
 
-            <p className="mt-5 text-white/50">
-              Chưa có bài viết thuộc chủ đề này.
-            </p>
+              <span className="opacity-40">
+                {String(articles.length).padStart(2, '0')}
+              </span>
+            </FilterButton>
+
+            {tags.map((tag) => (
+              <FilterButton
+                key={tag._id}
+                active={activeTag === tag._id}
+                onClick={() => setActiveTag(tag._id)}
+              >
+                <span>{tag.title}</span>
+
+                <span className="opacity-40">
+                  {String(tag.count).padStart(2, '0')}
+                </span>
+              </FilterButton>
+            ))}
           </div>
-        ) : (
-          <>
-            {featuredArticle && <FeaturedArticle article={featuredArticle} />}
+        </div>
+      </div>
 
-            {remainingArticles.length > 0 && (
-              <div className="mt-16 sm:mt-24">
-                {/* Section header */}
-                <div className="flex justify-between items-end mb-7 pb-4 border-white/10 border-b">
-                  <span className="font-mono text-[10px] text-white/35 uppercase tracking-[0.22em]">
-                    Bài viết mới
-                  </span>
+      {filteredArticles.length === 0 ? (
+        <section className="flex flex-col justify-center items-center border border-border min-h-100 text-center">
+          <span className="font-mono text-[9px] text-muted-foreground/50 uppercase tracking-[0.2em]">
+            00 / Empty
+          </span>
 
-                  <span className="font-mono text-[10px] text-white/25 uppercase tracking-[0.22em]">
-                    {String(filteredArticles.length).padStart(2, '0')} bài viết
-                  </span>
-                </div>
+          <p className="mt-4 text-muted-foreground text-sm">
+            Chưa có bài viết thuộc chủ đề này.
+          </p>
+        </section>
+      ) : (
+        <>
+          {/* FEATURED — intentionally unchanged */}
+          {featuredArticle && (
+            <FeaturedArticle article={featuredArticle} activeTag={activeTag} />
+          )}
 
-                {/* Swiss grid */}
-                <div className="gap-px grid sm:grid-cols-2 lg:grid-cols-3 bg-white/10 border border-white/10">
-                  {remainingArticles.map((article, index) => {
-                    const isWide = index % 7 === 3;
-
-                    return (
-                      <ArticleCard
-                        key={article._id}
-                        article={article}
-                        index={index + 2}
-                        wide={isWide}
-                      />
-                    );
-                  })}
-                </div>
+          {remainingArticles.length > 0 && (
+            <section className="mt-16 sm:mt-24">
+              <div
+                ref={articlesRef}
+                className="grid sm:grid-cols-2 lg:grid-cols-4 border-border border-t border-l"
+              >
+                {remainingArticles.map((article, index) => (
+                  <ArticleCard
+                    key={article._id}
+                    article={article}
+                    index={index + 2}
+                    activeTag={activeTag}
+                  />
+                ))}
               </div>
-            )}
-          </>
-        )}
-      </section>
-    </>
+            </section>
+          )}
+        </>
+      )}
+    </div>
   );
 }
 
@@ -162,11 +417,13 @@ function FilterButton({
       aria-pressed={active}
       onClick={onClick}
       className={[
-        'flex items-center gap-3 px-4 sm:px-5 h-10',
+        'shrink-0 flex items-center gap-3',
+        'h-10 px-4 sm:px-5',
+        'border-y border-l border-border last:border-r',
         'font-mono text-[10px] uppercase tracking-[0.14em]',
-        'transition-all duration-300',
+        'transition-colors duration-300 cursor-pointer',
         active
-          ? 'bg-primary text-primary-foreground'
+          ? 'bg-primary border-primary text-primary-foreground'
           : 'bg-background text-muted-foreground hover:bg-primary/5 hover:text-foreground',
       ].join(' ')}
     >
@@ -175,7 +432,13 @@ function FilterButton({
   );
 }
 
-function FeaturedArticle({ article }: { article: ArticleItem }) {
+function FeaturedArticle({
+  article,
+  activeTag,
+}: {
+  article: ArticleItem;
+  activeTag: string;
+}) {
   return (
     <Link
       href={`/article/${article.slug}`}
@@ -186,9 +449,13 @@ function FeaturedArticle({ article }: { article: ArticleItem }) {
         <div className="flex flex-col justify-between lg:col-span-5 p-6 sm:p-8 lg:p-10 xl:p-12">
           <div>
             <div className="flex justify-between items-start gap-4">
-              <span className="font-mono text-[10px] text-white/35 uppercase tracking-[0.22em]">
-                01 / Featured
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="bg-primary size-1.5" />
+
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                  Featured
+                </span>
+              </div>
 
               {article.publishedAt && (
                 <span className="font-mono text-[10px] text-white/30 tracking-widest">
@@ -199,14 +466,26 @@ function FeaturedArticle({ article }: { article: ArticleItem }) {
 
             {article.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-10">
-                {article.tags.map((tag) => (
-                  <span
-                    key={tag._id}
-                    className="bg-primary px-2.5 py-1 font-mono text-[9px] text-primary-foreground uppercase tracking-[0.14em]"
-                  >
-                    {tag.title}
-                  </span>
-                ))}
+                {article.tags.map((tag) => {
+                  const isActive =
+                    activeTag !== ALL_TAGS && tag._id === activeTag;
+
+                  return (
+                    <span
+                      key={tag._id}
+                      className={cn(
+                        'px-2 py-1',
+                        'font-mono text-[9px] uppercase tracking-[0.15em] bg-primary/5',
+                        'transition-colors duration-300',
+                        isActive
+                          ? 'text-primary bg-primary/15'
+                          : 'text-muted-foreground',
+                      )}
+                    >
+                      /{tag.title}
+                    </span>
+                  );
+                })}
               </div>
             )}
 
@@ -217,7 +496,7 @@ function FeaturedArticle({ article }: { article: ArticleItem }) {
 
           <div className="mt-16">
             {article.excerpt && (
-              <p className="max-w-md text-white/45 text-sm leading-6">
+              <p className="max-w-md text-white/45 text-sm line-clamp-3 leading-6">
                 {article.excerpt}
               </p>
             )}
@@ -238,24 +517,26 @@ function FeaturedArticle({ article }: { article: ArticleItem }) {
         <div className="relative lg:col-span-7 bg-[#101010] min-h-90 lg:min-h-full overflow-hidden">
           {article.coverSrc ? (
             <>
-              <Image
-                src={article.coverSrc}
-                alt={article.coverAlt}
-                fill
-                priority
-                className="object-cover scale-[1.01] group-hover:scale-[1.035] transition-transform duration-700 ease-out"
-                sizes="(max-width: 1024px) 100vw, 60vw"
-              />
+              <ViewTransition
+                name={`article-${article._id}-cover`}
+                share="image-clip"
+                default="none"
+              >
+                <Image
+                  src={article.coverSrc}
+                  alt={article.coverAlt}
+                  fill
+                  priority
+                  className="brightness-80 group-hover:brightness-100 object-cover transition-[filter] duration-700 ease-out"
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                />
+              </ViewTransition>
 
               <div className="absolute inset-0 bg-linear-to-t lg:bg-linear-to-r from-black/35 via-transparent to-transparent pointer-events-none" />
             </>
           ) : (
             <ImagePlaceholder />
           )}
-
-          <span className="right-5 bottom-5 absolute font-mono text-[9px] text-white/40 uppercase tracking-[0.2em]">
-            Levia / Editorial
-          </span>
         </div>
       </article>
     </Link>
@@ -265,98 +546,100 @@ function FeaturedArticle({ article }: { article: ArticleItem }) {
 function ArticleCard({
   article,
   index,
-  wide,
+  activeTag,
 }: {
   article: ArticleItem;
   index: number;
-  wide?: boolean;
+  activeTag: string;
 }) {
   return (
     <Link
+      data-article-card
       href={`/article/${article.slug}`}
-      className={[
-        'group flex flex-col bg-[#080808]',
-        'transition-colors duration-300 hover:bg-[#0d0d0d]',
-        wide ? 'lg:col-span-2' : '',
-      ].join(' ')}
+      className="group flex flex-col bg-background border-border border-r border-b min-w-0"
     >
-      {/* Image */}
-      <div
-        className={[
-          'relative bg-[#101010] overflow-hidden',
-          wide ? 'aspect-16/7' : 'aspect-4/3',
-        ].join(' ')}
-      >
-        {article.coverSrc ? (
-          <Image
-            src={article.coverSrc}
-            alt={article.coverAlt}
-            fill
-            className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
-            sizes={
-              wide
-                ? '(max-width: 1024px) 100vw, 66vw'
-                : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-            }
-          />
-        ) : (
-          <ImagePlaceholder />
-        )}
-
-        <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
-
-        <span className="top-4 left-4 absolute flex justify-center items-center bg-black/70 backdrop-blur-sm size-8 font-mono text-[9px] text-white/70">
-          {String(index).padStart(2, '0')}
-        </span>
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-col flex-1 p-5 sm:p-6">
-        <div className="flex justify-between items-start gap-4">
-          <div className="flex flex-wrap gap-x-3 gap-y-1">
-            {article.tags.slice(0, 2).map((tag) => (
-              <span
-                key={tag._id}
-                className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]"
-              >
-                /{tag.title}
-              </span>
-            ))}
-          </div>
-
-          {article.publishedAt && (
-            <span className="font-mono text-[9px] text-white/25 shrink-0">
-              {article.publishedAt}
-            </span>
+      <article className="flex flex-col flex-1">
+        {/* IMAGE */}
+        <div className="relative bg-card aspect-4/3 overflow-hidden">
+          {article.coverSrc ? (
+            <ViewTransition
+              name={`article-${article._id}-cover`}
+              share="image-clip"
+              default="none"
+            >
+              <Image
+                src={article.coverSrc}
+                alt={article.coverAlt}
+                fill
+                className="brightness-80 group-hover:brightness-100 object-cover transition-[filter,transform] duration-700 ease-out"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              />
+            </ViewTransition>
+          ) : (
+            <ImagePlaceholder />
           )}
-        </div>
 
-        <h3
-          className={[
-            'mt-6 font-heading font-medium tracking-tight',
-            'group-hover:text-white text-white/85 transition-colors',
-            wide
-              ? 'max-w-3xl text-2xl sm:text-3xl lg:text-4xl leading-[1.05]'
-              : 'text-xl leading-[1.15]',
-          ].join(' ')}
-        >
-          {article.title}
-        </h3>
-
-        {article.excerpt && (
-          <p className="mt-5 max-w-xl text-white/40 text-sm line-clamp-2 leading-6">
-            {article.excerpt}
-          </p>
-        )}
-
-        <div className="flex justify-between items-center mt-auto pt-8">
-          <span className="font-mono text-[9px] text-white/30 uppercase tracking-[0.18em]">
-            Đọc bài viết
+          <span className="right-4 bottom-4 absolute bg-background/80 backdrop-blur-md px-2.5 py-1 font-mono text-[9px] text-foreground uppercase tracking-[0.16em]">
+            {String(index).padStart(2, '0')}
           </span>
 
-          <ArrowUpRight className="size-4 text-white/35 group-hover:text-white transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 duration-300" />
+          <div className="bottom-0 left-0 absolute bg-primary w-0 group-hover:w-full h-px transition-[width] duration-500 ease-out" />
         </div>
-      </div>
+
+        {/* INFO */}
+        <div className="flex flex-col flex-1 p-5 sm:p-6">
+          <div className="flex justify-between items-start gap-4">
+            <div className="flex flex-wrap gap-2">
+              {article.tags.slice(0, 2).map((tag) => {
+                const isActive =
+                  activeTag !== ALL_TAGS && tag._id === activeTag;
+
+                return (
+                  <span
+                    key={tag._id}
+                    className={cn(
+                      'px-2 py-1',
+                      'font-mono text-[9px] uppercase tracking-[0.15em] bg-primary/5',
+                      'transition-colors duration-300',
+                      isActive
+                        ? 'text-primary bg-primary/15'
+                        : 'text-muted-foreground',
+                    )}
+                  >
+                    /{tag.title}
+                  </span>
+                );
+              })}
+            </div>
+
+            {article.publishedAt && (
+              <span className="font-mono text-[9px] text-muted-foreground/50 shrink-0">
+                {article.publishedAt}
+              </span>
+            )}
+          </div>
+
+          <h3 className="mt-4 font-heading font-medium group-hover:text-primary text-xl sm:text-2xl leading-[1.1] tracking-tight transition-colors duration-300">
+            {article.title}
+          </h3>
+
+          {article.excerpt && (
+            <p className="mt-4 text-muted-foreground text-sm line-clamp-2 leading-6">
+              {article.excerpt}
+            </p>
+          )}
+
+          <div className="flex justify-between items-end gap-6 mt-auto pt-8">
+            <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
+              Đọc bài viết
+            </span>
+
+            <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-11 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300">
+              <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 duration-300" />
+            </div>
+          </div>
+        </div>
+      </article>
     </Link>
   );
 }
@@ -364,7 +647,7 @@ function ArticleCard({
 function ImagePlaceholder() {
   return (
     <div className="absolute inset-0 flex justify-center items-center">
-      <span className="font-mono text-[9px] text-white/20 uppercase tracking-[0.2em]">
+      <span className="font-mono text-[9px] text-muted-foreground/40 uppercase tracking-[0.2em]">
         Levia / Hình ảnh
       </span>
     </div>

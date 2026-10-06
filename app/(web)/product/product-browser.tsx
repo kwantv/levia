@@ -233,17 +233,17 @@ export function ProductBrowser({ products, categories }: ProductBrowserProps) {
     <div className="mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-24 container">
       {/* HEADER */}
       <section ref={headerRef} className="gap-y-6 grid grid-cols-12">
-        <div className="col-span-12 lg:col-span-3">
+        <div className="col-span-12 lg:col-span-4">
           <div className="flex items-center gap-3">
             <span className="bg-primary size-1.5" />
 
-            <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
+            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
               Collection / {String(currentIndex + 1).padStart(2, '0')}
             </span>
           </div>
         </div>
 
-        <div className="col-span-12 lg:col-span-9">
+        <div className="col-span-12 lg:col-span-8">
           <div className="flex sm:flex-row flex-col sm:justify-between sm:items-end gap-5 pb-6 border-b">
             <div className="space-y-3">
               <div
@@ -276,7 +276,7 @@ export function ProductBrowser({ products, categories }: ProductBrowserProps) {
       </section>
 
       <div className="grid lg:grid-cols-12 mb-10 sm:mb-14 py-5">
-        <div className="lg:col-span-9 lg:col-start-4 overflow-hidden">
+        <div className="lg:col-span-8 lg:col-start-5 overflow-hidden">
           <div className="flex overflow-x-auto scrollbar-none">
             <CategoryButton
               active={activeCategory === ALL_CATEGORIES}

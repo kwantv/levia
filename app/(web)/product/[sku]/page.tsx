@@ -50,7 +50,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
         {/* <div className="-top-52 -right-48 absolute bg-primary/5 blur-[160px] rounded-full size-[700px] pointer-events-none" /> */}
 
-        <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-14 sm:pb-20 container">
+        <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-14 container">
           {/* Navigation */}
           <div className="flex justify-between items-center">
             <Link
@@ -61,7 +61,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
               Tất cả sản phẩm
             </Link>
 
-            <span className="hidden sm:block font-mono text-[9px] text-muted-foreground/50 uppercase tracking-[0.2em]">
+            <span className="hidden sm:block font-mono text-[10px] text-muted-foreground/50 uppercase tracking-[0.2em]">
               Levia / Kitchen Intelligence
             </span>
           </div>
@@ -93,41 +93,26 @@ export default async function ProductDetailPage({ params }: PageProps) {
       {product.specs.length > 0 && <ProductSpecs product={product} />}
 
       {/* ───────────────── DEALER CTA ───────────────── */}
-      <section className="border-border border-t">
+      <section className="border-t">
         <div className="mx-auto px-4 sm:px-6 lg:px-8 container">
           <Link
             href="/agency"
-            className="group grid lg:grid-cols-12 border-border border-x"
+            className="group flex justify-between items-center gap-8 py-12 sm:py-16 border-border border-x"
           >
-            <div className="lg:col-span-3 p-6 sm:p-8 lg:p-10 lg:border-border lg:border-r">
-              <div className="flex items-center gap-3">
-                <span className="bg-primary size-1.5" />
-
-                <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
-                  Experience / 07
-                </span>
-              </div>
+            <div className="px-6 sm:px-10 lg:px-12">
+              <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
+                Trải nghiệm trực tiếp
+              </span>
+              <p className="mt-2 font-heading text-2xl sm:text-3xl tracking-[-0.03em]">
+                Trải nghiệm {product.title} tại đại lý Levia
+              </p>
+              <p className="mt-4 max-w-lg text-muted-foreground text-sm leading-relaxed">
+                Tìm showroom gần bạn để xem sản phẩm, trải nghiệm trực tiếp và
+                nhận tư vấn phù hợp với không gian bếp.
+              </p>
             </div>
-
-            <div className="flex justify-between items-end gap-8 lg:col-span-9 p-6 sm:p-8 lg:p-10">
-              <div>
-                <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
-                  Trải nghiệm trực tiếp
-                </span>
-
-                <h2 className="mt-3 max-w-3xl font-heading font-medium text-2xl sm:text-3xl lg:text-4xl tracking-[-0.035em]">
-                  Trải nghiệm {product.title} tại đại lý Levia
-                </h2>
-
-                <p className="mt-4 max-w-lg text-muted-foreground text-sm leading-relaxed">
-                  Tìm showroom gần bạn để xem sản phẩm, trải nghiệm trực tiếp và
-                  nhận tư vấn phù hợp với không gian bếp.
-                </p>
-              </div>
-
-              <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-12 sm:size-14 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300 shrink-0">
-                <MapPin className="size-4" />
-              </div>
+            <div className="flex justify-center items-center group-hover:bg-primary mr-6 sm:mr-10 lg:mr-12 border border-border group-hover:border-primary size-12 sm:size-14 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300">
+              <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 duration-300" />
             </div>
           </Link>
         </div>
