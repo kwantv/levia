@@ -383,7 +383,7 @@ export default function ArticleBrowser({
             <section className="mt-16 sm:mt-24">
               <div
                 ref={articlesRef}
-                className="grid sm:grid-cols-2 lg:grid-cols-4 border-border border-t border-l"
+                className="gap-px grid sm:grid-cols-2 lg:grid-cols-4 border-l"
               >
                 {remainingArticles.map((article, index) => (
                   <ArticleCard
@@ -446,7 +446,7 @@ function FeaturedArticle({
     >
       <article className="grid lg:grid-cols-12 min-h-130">
         {/* Content */}
-        <div className="flex flex-col justify-between lg:col-span-5 p-6 sm:p-8 lg:p-10 xl:p-12">
+        <div className="flex flex-col justify-between lg:col-span-6 p-6 sm:p-8 lg:p-10 xl:p-12">
           <div>
             <div className="flex justify-between items-start gap-4">
               <div className="flex items-center gap-3">
@@ -489,9 +489,9 @@ function FeaturedArticle({
               </div>
             )}
 
-            <h2 className="mt-6 max-w-2xl font-heading font-medium text-3xl sm:text-4xl xl:text-5xl leading-[1.02] tracking-[-0.04em]">
+            <h3 className="mt-6 max-w-2xl font-heading font-medium group-hover:text-primary text-3xl sm:text-4xl xl:text-5xl leading-[1.02] tracking-[-0.04em] transition-colors duration-300">
               {article.title}
-            </h2>
+            </h3>
           </div>
 
           <div className="mt-16">
@@ -501,20 +501,18 @@ function FeaturedArticle({
               </p>
             )}
 
-            <div className="flex justify-between items-end mt-8 pt-5 border-white/10 border-t">
-              <span className="font-mono text-[10px] text-white/50 uppercase tracking-[0.16em]">
+            <div className="flex justify-between items-end mt-6 pt-3 border-t">
+              <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
                 Đọc bài viết
               </span>
 
-              <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-11 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300">
-                <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 duration-300" />
-              </div>
+              <ArrowUpRight className="size-4 text-muted-foreground group-hover:text-primary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </div>
           </div>
         </div>
 
         {/* Image */}
-        <div className="relative lg:col-span-7 bg-[#101010] min-h-90 lg:min-h-full overflow-hidden">
+        <div className="relative lg:col-span-6 bg-[#101010] min-h-90 lg:min-h-full overflow-hidden">
           {article.coverSrc ? (
             <>
               <ViewTransition
@@ -556,7 +554,7 @@ function ArticleCard({
     <Link
       data-article-card
       href={`/article/${article.slug}`}
-      className="group flex flex-col bg-background border-border border-r border-b min-w-0"
+      className="group flex flex-col bg-background border-y border-r min-w-0"
     >
       <article className="flex flex-col flex-1">
         {/* IMAGE */}
@@ -629,14 +627,12 @@ function ArticleCard({
             </p>
           )}
 
-          <div className="flex justify-between items-end gap-6 mt-auto pt-8">
+          <div className="flex justify-between items-end mt-auto pt-8">
             <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
               Đọc bài viết
             </span>
 
-            <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-11 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300">
-              <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 duration-300" />
-            </div>
+            <ArrowUpRight className="size-4 text-muted-foreground group-hover:text-primary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </div>
         </div>
       </article>

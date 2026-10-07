@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { ListingHero as Hero } from '@/components/listing-page-hero';
 import { getAllRecipes } from './action';
+import { ViewTransition } from 'react';
 
 export const metadata = {
   title: 'Công thức món Việt — Levia',
@@ -54,7 +55,7 @@ export default async function CookPage() {
 
       {recipes.length === 0 ? (
         <section className="px-4 sm:px-6 lg:px-8 py-24">
-          <div className="flex justify-center items-center mx-auto border border-border min-h-[400px] container">
+          <div className="flex justify-center items-center mx-auto border border-border min-h-100 container">
             <p className="text-muted-foreground text-sm">
               Chưa có công thức nào.
             </p>
@@ -65,19 +66,19 @@ export default async function CookPage() {
           {/* ───────────────── FEATURED ───────────────── */}
           <section className="border-border border-b">
             <div className="mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-24 container">
-              <div className="gap-y-8 lg:gap-x-8 grid grid-cols-12 mb-10 sm:mb-14">
+              <div className="gap-y-8 grid grid-cols-12 mb-10 sm:mb-14">
                 <div className="col-span-12 lg:col-span-3">
                   <div className="flex items-center gap-3">
                     <span className="bg-primary size-1.5" />
 
-                    <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
-                      Featured / 01
+                    <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                      Recipe / 00
                     </span>
                   </div>
                 </div>
 
                 <div className="col-span-12 lg:col-span-8 lg:col-start-5">
-                  <h2 className="font-heading font-medium text-3xl sm:text-4xl lg:text-5xl tracking-[-0.04em]">
+                  <h2 className="font-heading font-medium text-3xl sm:text-4xl tracking-[-0.035em]">
                     Gợi ý hôm nay
                   </h2>
 
@@ -112,9 +113,13 @@ export default async function CookPage() {
               <div className="mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28 container">
                 <div className="flex sm:flex-row flex-col sm:justify-between sm:items-end gap-6 mb-8 pb-5 border-border border-b">
                   <div>
-                    <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
-                      Recipe Index
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className="bg-primary size-1.5" />
+
+                      <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                        Recipe / 00
+                      </span>
+                    </div>
 
                     <h2 className="mt-3 font-heading font-medium text-3xl sm:text-4xl tracking-[-0.035em]">
                       Tất cả công thức
@@ -126,7 +131,7 @@ export default async function CookPage() {
                   </span>
                 </div>
 
-                <div className="gap-px grid sm:grid-cols-2 lg:grid-cols-3 bg-border border border-border">
+                <div className="gap-px grid sm:grid-cols-2 lg:grid-cols-4 border-l">
                   {remaining.map((recipe, index) => (
                     <RecipeCard
                       key={recipe._id}
@@ -152,21 +157,25 @@ function FeaturedRecipe({ recipe, index }: { recipe: Recipe; index: number }) {
       href={`/cook/${recipe.slug}`}
       className="group block border border-border"
     >
-      <article className="grid lg:grid-cols-12 min-h-[560px]">
+      <article className="grid lg:grid-cols-12 min-h-140">
         {/* Content */}
-        <div className="flex flex-col justify-between lg:col-span-5 p-6 sm:p-8 lg:p-10 xl:p-12">
+        <div className="flex flex-col justify-between lg:col-span-6 p-6 sm:p-8 lg:p-10 xl:p-12">
           <div>
             <div className="flex justify-between items-center">
-              <span className="font-mono text-[9px] text-primary uppercase tracking-[0.2em]">
-                {String(index + 1).padStart(2, '0')} / Featured
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="bg-primary size-1.5" />
+
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                  Featured
+                </span>
+              </div>
 
               <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.16em]">
                 Cook now
               </span>
             </div>
 
-            <h3 className="mt-10 max-w-xl font-heading font-medium text-3xl sm:text-4xl lg:text-5xl leading-[1] tracking-[-0.045em]">
+            <h3 className="mt-10 max-w-xl font-heading font-medium group-hover:text-primary text-3xl sm:text-4xl lg:text-5xl leading-none tracking-[-0.045em] transition-colors">
               {recipe.name}
             </h3>
 
@@ -178,32 +187,38 @@ function FeaturedRecipe({ recipe, index }: { recipe: Recipe; index: number }) {
           <div className="mt-14">
             <RecipeMeta recipe={recipe} />
 
-            <div className="flex justify-between items-center mt-8 pt-5 border-border border-t font-mono text-muted-foreground">
-              <span className="font-medium text-sm">Xem công thức</span>
+            <div className="flex justify-between items-center mt-8 pt-5 border-border border-t">
+              <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.18em]">
+                Xem công thức
+              </span>
 
-              <ActionSquare />
+              <ArrowUpRight className="size-4 text-muted-foreground group-hover:text-primary transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </div>
           </div>
         </div>
 
         {/* Image */}
-        <div className="relative lg:col-span-7 bg-card min-h-[360px] lg:min-h-full overflow-hidden">
+        <div className="relative lg:col-span-6 bg-card min-h-90 lg:min-h-full overflow-hidden">
           {coverSrc ? (
-            <Image
-              src={coverSrc}
-              alt={recipe.coverImage?.alt || recipe.name}
-              fill
-              priority
-              className="object-cover group-hover:scale-[1.025] transition-transform duration-700 ease-out"
-              sizes="(max-width: 1024px) 100vw, 60vw"
-            />
+            <ViewTransition
+              name={`recipe-${recipe._id}-cover`}
+              share="image-clip"
+              default="none"
+            >
+              <Image
+                src={coverSrc}
+                alt={recipe.coverImage?.alt || recipe.name}
+                fill
+                priority
+                className="brightness-80 group-hover:brightness-100 object-cover transition-[filter] duration-700 ease-out"
+                sizes="(max-width: 1024px) 100vw, 60vw"
+              />
+            </ViewTransition>
           ) : (
             <RecipeImagePlaceholder />
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-background/30 via-transparent to-transparent pointer-events-none" />
-
-          <span className="top-5 left-5 absolute bg-primary size-1.5" />
+          <div className="absolute inset-0 bg-linear-to-t lg:bg-linear-to-r from-background/30 via-transparent to-transparent pointer-events-none" />
         </div>
       </article>
     </Link>
@@ -222,15 +237,21 @@ function SupportingRecipe({
   return (
     <Link href={`/cook/${recipe.slug}`} className="group bg-background">
       <article>
-        <div className="relative bg-card aspect-[16/10] overflow-hidden">
+        <div className="relative bg-card aspect-16/10 overflow-hidden">
           {coverSrc ? (
-            <Image
-              src={coverSrc}
-              alt={recipe.coverImage?.alt || recipe.name}
-              fill
-              className="object-cover group-hover:scale-[1.035] transition-transform duration-700 ease-out"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
+            <ViewTransition
+              name={`recipe-${recipe._id}-cover`}
+              share="image-clip"
+              default="none"
+            >
+              <Image
+                src={coverSrc}
+                alt={recipe.coverImage?.alt || recipe.name}
+                fill
+                className="brightness-80 group-hover:brightness-100 object-cover transition-[filter] duration-700 ease-out"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </ViewTransition>
           ) : (
             <RecipeImagePlaceholder />
           )}
@@ -270,18 +291,24 @@ function RecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
   return (
     <Link
       href={`/cook/${recipe.slug}`}
-      className="group flex flex-col bg-background"
+      className="group flex flex-col bg-background border-y border-r"
     >
       <article className="flex flex-col h-full">
-        <div className="relative bg-card aspect-[4/3] overflow-hidden">
+        <div className="relative bg-card aspect-4/3 overflow-hidden">
           {coverSrc ? (
-            <Image
-              src={coverSrc}
-              alt={recipe.coverImage?.alt || recipe.name}
-              fill
-              className="object-cover group-hover:scale-[1.035] transition-transform duration-700 ease-out"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
+            <ViewTransition
+              name={`recipe-${recipe._id}-cover`}
+              share="image-clip"
+              default="none"
+            >
+              <Image
+                src={coverSrc}
+                alt={recipe.coverImage?.alt || recipe.name}
+                fill
+                className="brightness-80 group-hover:brightness-100 object-cover transition-[filter] duration-700 ease-out"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
+            </ViewTransition>
           ) : (
             <RecipeImagePlaceholder />
           )}
@@ -296,7 +323,7 @@ function RecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
         <div className="flex flex-col flex-1 p-5 sm:p-6">
           <RecipeMeta recipe={recipe} />
 
-          <h3 className="mt-6 font-heading font-medium group-hover:text-primary text-xl sm:text-2xl leading-[1.1] tracking-[-0.025em] transition-colors">
+          <h3 className="mt-6 font-heading font-medium group-hover:text-primary text-xl sm:text-2xl leading-[1.1] tracking-tight transition-colors">
             {recipe.name}
           </h3>
 
@@ -329,14 +356,6 @@ function RecipeMeta({ recipe }: { recipe: Recipe }) {
         <Clock className="size-3 text-primary" />
         {formatMinutes(recipe.cookTime)} nấu
       </span>
-    </div>
-  );
-}
-
-function ActionSquare() {
-  return (
-    <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-11 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300">
-      <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 duration-300" />
     </div>
   );
 }

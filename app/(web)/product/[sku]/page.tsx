@@ -93,14 +93,16 @@ export default async function ProductDetailPage({ params }: PageProps) {
       {product.specs.length > 0 && <ProductSpecs product={product} />}
 
       {/* ───────────────── DEALER CTA ───────────────── */}
-      <section className="border-t">
+      <section className="relative border-t overflow-hidden">
+        <div className="-bottom-80 -left-40 absolute bg-primary/5 blur-[160px] rounded-full size-[600px]" />
+
         <div className="mx-auto px-4 sm:px-6 lg:px-8 container">
           <Link
             href="/agency"
-            className="group flex justify-between items-center gap-8 py-12 sm:py-16 border-border border-x"
+            className="group flex justify-between items-center gap-8 py-12 sm:py-16"
           >
-            <div className="px-6 sm:px-10 lg:px-12">
-              <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
+            <div>
+              <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
                 Trải nghiệm trực tiếp
               </span>
               <p className="mt-2 font-heading text-2xl sm:text-3xl tracking-[-0.03em]">
@@ -111,7 +113,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 nhận tư vấn phù hợp với không gian bếp.
               </p>
             </div>
-            <div className="flex justify-center items-center group-hover:bg-primary mr-6 sm:mr-10 lg:mr-12 border border-border group-hover:border-primary size-12 sm:size-14 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300">
+
+            <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-12 sm:size-14 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300">
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 duration-300" />
             </div>
           </Link>

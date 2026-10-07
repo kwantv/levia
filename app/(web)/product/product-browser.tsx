@@ -310,7 +310,7 @@ export function ProductBrowser({ products, categories }: ProductBrowserProps) {
       {filteredProducts.length > 0 ? (
         <section
           ref={productsRef}
-          className="grid sm:grid-cols-2 lg:grid-cols-4 border-border border-t border-l"
+          className="gap-px grid sm:grid-cols-2 lg:grid-cols-4 border-l"
         >
           {filteredProducts.map((product) => (
             <ProductCard key={product._id} product={product} />
@@ -368,7 +368,7 @@ function ProductCard({ product }: { product: ProductListItem }) {
     <Link
       data-product-card
       href={`/product/${product.sku}`}
-      className="group flex flex-col bg-background border-border border-r border-b min-w-0"
+      className="group flex flex-col bg-background border-y border-r min-w-0"
     >
       <article className="flex flex-col flex-1">
         {/* IMAGE */}

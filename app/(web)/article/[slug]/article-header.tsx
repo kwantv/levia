@@ -214,7 +214,7 @@ function ArticleHeader({ article }: { article: ArticleDetail }) {
       <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-14 container">
         {/* Top nav */}
         <div className="gap-6 grid grid-cols-12">
-          <div className="col-span-12 lg:col-span-3">
+          <div className="col-span-12 lg:col-span-4">
             <Link
               href="/article"
               className="group inline-flex items-center gap-2 font-mono text-[10px] text-muted-foreground hover:text-primary uppercase tracking-[0.18em] transition-colors"
@@ -224,9 +224,9 @@ function ArticleHeader({ article }: { article: ArticleDetail }) {
             </Link>
           </div>
 
-          <div className="hidden lg:block lg:col-span-9">
+          <div className="hidden lg:block lg:col-span-8">
             <div className="flex justify-between items-center">
-              <span className="font-mono text-[10px] text-muted-foreground/60 uppercase tracking-[0.2em]">
+              <span className="font-mono text-[10px] text-muted-foreground/50 uppercase tracking-[0.2em]">
                 Knowledge / Article
               </span>
 
@@ -258,9 +258,9 @@ function ArticleHeader({ article }: { article: ArticleDetail }) {
                 {article.tags.map((tag) => (
                   <span
                     key={tag._id}
-                    className="bg-primary px-2.5 py-1 font-mono text-[9px] text-primary-foreground uppercase tracking-[0.14em]"
+                    className="bg-primary/10 px-2.5 py-1 font-mono text-[9px] text-muted-foreground uppercase tracking-[0.14em]"
                   >
-                    {tag.title}
+                    /{tag.title}
                   </span>
                 ))}
               </div>

@@ -17,6 +17,7 @@ import type { PortableTextBlock } from 'sanity';
 
 import { getAllRecipeSlugs, getRecipeBySlug } from './action';
 import DotGridBackground from '@/components/dot-grid-background';
+import { ViewTransition } from 'react';
 
 type PageProps = {
   params: Promise<{
@@ -205,7 +206,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
       <section className="relative border-border border-b overflow-hidden">
         <DotGridBackground />
 
-        <div className="-top-52 -right-48 absolute bg-primary/5 blur-[160px] rounded-full size-[700px] pointer-events-none" />
+        <div className="-top-52 -right-48 absolute bg-primary/5 blur-[160px] rounded-full size-175 pointer-events-none" />
 
         <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-14 sm:pb-20 container">
           {/* Navigation */}
@@ -218,8 +219,8 @@ export default async function RecipeDetailPage({ params }: PageProps) {
               Tất cả công thức
             </Link>
 
-            <span className="hidden sm:block font-mono text-[9px] text-muted-foreground/50 uppercase tracking-[0.2em]">
-              Levia / Cook Intelligence
+            <span className="hidden sm:block font-mono text-[10px] text-muted-foreground/50 uppercase tracking-[0.2em]">
+              Levia / Kitchen Intelligence
             </span>
           </div>
 
@@ -229,7 +230,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
               <div className="flex items-center gap-3">
                 <span className="bg-primary size-1.5" />
 
-                <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
                   Recipe / Cook
                 </span>
               </div>
@@ -262,21 +263,27 @@ export default async function RecipeDetailPage({ params }: PageProps) {
           </div>
 
           {/* Hero image */}
-          <div className="relative bg-card mt-14 sm:mt-20 border border-border aspect-[4/3] sm:aspect-[16/9] lg:aspect-[16/7] overflow-hidden">
+          <div className="relative bg-card mt-14 sm:mt-20 border border-border aspect-4/3 sm:aspect-video lg:aspect-16/7 overflow-hidden">
             {coverSrc ? (
-              <Image
-                src={coverSrc}
-                alt={recipe.coverImage?.alt || recipe.name}
-                fill
-                priority
-                className="object-cover"
-                sizes="100vw"
-              />
+              <ViewTransition
+                name={`recipe-${recipe._id}-cover`}
+                share="image-clip"
+                default="none"
+              >
+                <Image
+                  src={coverSrc}
+                  alt={recipe.coverImage?.alt || recipe.name}
+                  fill
+                  fetchPriority="high"
+                  className="object-cover"
+                  sizes="100vw"
+                />
+              </ViewTransition>
             ) : (
               <RecipeImagePlaceholder />
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-background/60 via-transparent to-transparent" />
 
             <span className="top-5 left-5 absolute bg-primary size-1.5" />
 
@@ -292,7 +299,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
           </div>
 
           {/* Meta strip */}
-          <div className="gap-px grid grid-cols-2 lg:grid-cols-4 bg-border border-border border-x border-b">
+          <div className="gap-px grid grid-cols-2 lg:grid-cols-4 bg-border">
             <RecipeMetaItem
               icon={Users}
               label="Khẩu phần"
@@ -322,10 +329,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
 
       {/* ───────────────── METHOD ───────────────── */}
 
-      <section
-        id="recipe-method"
-        className="border-border border-b scroll-mt-20"
-      >
+      <section id="recipe-method" className="scroll-mt-20">
         <div className="mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28 container">
           {/* Section header */}
           <div className="gap-y-8 lg:gap-x-8 grid grid-cols-12 pb-12 lg:pb-16 border-border border-b">
@@ -333,7 +337,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
               <div className="flex items-center gap-3">
                 <span className="bg-primary size-1.5" />
 
-                <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
                   Recipe / Method
                 </span>
               </div>
@@ -356,7 +360,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
 
             <aside className="col-span-12 lg:col-span-4 pt-12 lg:pt-16">
               <div className="top-24 lg:sticky">
-                <div className="flex justify-between items-center pb-5 border-border border-b">
+                <div className="flex justify-between items-center pb-5 border-b">
                   <h3 className="font-heading font-medium text-2xl sm:text-3xl tracking-[-0.035em]">
                     Nguyên liệu
                   </h3>
@@ -370,7 +374,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                   {recipe.ingredients.map((ingredient, index) => (
                     <div
                       key={`${ingredient}-${index}`}
-                      className="gap-5 grid grid-cols-[2rem_1fr] py-4 border-border border-b"
+                      className="gap-5 grid grid-cols-[2rem_1fr] py-4 border-b border-dashed"
                     >
                       <span className="font-mono text-[9px] text-primary">
                         {String(index + 1).padStart(2, '0')}
@@ -411,41 +415,32 @@ export default async function RecipeDetailPage({ params }: PageProps) {
       </section>
 
       {/* ───────────────── ENDING ───────────────── */}
+      <section className="relative border-t overflow-hidden">
+        <div className="-bottom-80 -left-40 absolute bg-primary/5 blur-[160px] rounded-full size-150" />
 
-      <section className="relative overflow-hidden">
-        <div className="-bottom-80 -left-40 absolute bg-primary/5 blur-[160px] rounded-full size-[600px]" />
-
-        <Link
-          href="/cook"
-          className="group block mx-auto px-4 sm:px-6 lg:px-8 border-border border-y container"
-        >
-          <div className="gap-8 grid lg:grid-cols-12 py-10 sm:py-14">
-            <div className="lg:col-span-3">
-              <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em]">
-                Cook / Explore
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 container">
+          <Link
+            href="/cook"
+            className="group flex justify-between items-center gap-8 py-12 sm:py-16"
+          >
+            <div>
+              <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                Tiếp tục vào bếp
               </span>
+              <p className="mt-2 font-heading text-2xl sm:text-3xl tracking-[-0.03em]">
+                Khám phá món tiếp theo
+              </p>
+              <p className="mt-4 max-w-xl text-muted-foreground text-sm leading-relaxed">
+                Tiếp tục khám phá những công thức được thiết kế để bạn hiểu món
+                ăn và cách làm chủ căn bếp tốt hơn.
+              </p>
             </div>
 
-            <div className="lg:col-span-9">
-              <div className="flex justify-between items-end gap-8">
-                <div>
-                  <h2 className="font-heading font-medium text-3xl sm:text-4xl lg:text-5xl tracking-[-0.045em]">
-                    Khám phá món tiếp theo.
-                  </h2>
-
-                  <p className="mt-4 max-w-xl text-muted-foreground text-sm leading-relaxed">
-                    Tiếp tục khám phá những công thức được thiết kế để bạn hiểu
-                    món ăn và cách làm chủ căn bếp tốt hơn.
-                  </p>
-                </div>
-
-                <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-12 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300 shrink-0">
-                  <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </div>
-              </div>
+            <div className="flex justify-center items-center group-hover:bg-primary border border-border group-hover:border-primary size-12 sm:size-14 text-muted-foreground group-hover:text-primary-foreground transition-all duration-300">
+              <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 duration-300" />
             </div>
-          </div>
-        </Link>
+          </Link>
+        </div>
       </section>
     </main>
   );
@@ -482,7 +477,7 @@ function RecipeStep({ step, index }: { step: RecipeStepGroup; index: number }) {
     <section className="group py-10 sm:py-12 first:pt-0 border-border border-b">
       <div className="gap-6 grid sm:grid-cols-[5rem_1fr]">
         <div>
-          <span className="font-mono text-primary text-3xl sm:text-4xl tracking-[-0.05em]">
+          <span className="font-mono text-primary text-3xl sm:text-4xl tracking-tighter">
             {String(index + 1).padStart(2, '0')}
           </span>
         </div>
