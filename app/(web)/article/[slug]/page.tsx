@@ -58,7 +58,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         <section className="mx-auto lg:px-8 lg:container">
           <div className="relative border-border lg:border-l">
             {/* image */}
-            <div className="relative bg-card aspect-16/8 lg:aspect-16/7 overflow-hidden">
+            <div className="relative aspect-16/8 lg:aspect-16/7 overflow-hidden">
               <ViewTransition
                 name={`article-${article._id}-cover`}
                 share="image-clip"

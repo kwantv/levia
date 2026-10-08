@@ -79,7 +79,10 @@ export function ProductGallery({
   return (
     <div
       ref={galleryRef}
-      className="flex gap-3 lg:gap-px lg:grid lg:grid-cols-2 -mx-4 lg:mx-0 lg:p-0 px-4 pb-2 lg:bg-border lg:border lg:border-border lg:overflow-visible overflow-x-auto snap-mandatory snap-x lg:snap-none scrollbar-none"
+      className={cn(
+        'flex gap-3 -mx-4 px-4 pb-2 overflow-x-auto snap-mandatory snap-x scrollbar-none',
+        'lg:gap-px lg:grid lg:grid-cols-2 lg:mx-0 lg:p-0 lg:overflow-visible lg:snap-none',
+      )}
     >
       {gallery.map((image, index) => (
         <GalleryItem
@@ -141,7 +144,7 @@ function GalleryItem({
       data-gallery-item
       data-gallery-hero={index === 0 ? '' : undefined}
       className={cn(
-        'group block relative bg-card brightness-85 hover:brightness-105 overflow-hidden transition-[filter] duration-700 ease-out',
+        'group block relative brightness-85 hover:brightness-105 overflow-hidden transition-[filter] duration-700 ease-out',
         className,
       )}
     >

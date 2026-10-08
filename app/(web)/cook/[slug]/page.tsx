@@ -1,23 +1,13 @@
 import { getImageUrl } from '@/sanity/lib/image';
-import { components } from '@/sanity/lib/portable-component';
-import { PortableText, PortableTextComponents } from '@portabletext/react';
-import {
-  ArrowDownRight,
-  ArrowLeft,
-  ArrowUpRight,
-  Clock,
-  CookingPot,
-  Users,
-} from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { PortableTextBlock } from 'sanity';
 
 import { getAllRecipeSlugs, getRecipeBySlug } from './action';
-import DotGridBackground from '@/components/dot-grid-background';
-import { ViewTransition } from 'react';
+import RecipeHeader from './recipe-header';
+import RecipeMethod from './recipe-method';
 
 type PageProps = {
   params: Promise<{
@@ -32,7 +22,7 @@ type TextBlock = PortableTextBlock & {
   style?: string;
 };
 
-type RecipeStepGroup = {
+export type RecipeStepGroup = {
   title: string;
   blocks: PortableTextBlock[];
 };
@@ -78,10 +68,6 @@ export async function generateMetadata({
         : undefined,
     },
   };
-}
-
-function formatMinutes(minutes: number) {
-  return `${minutes} phút`;
 }
 
 function toIsoDuration(minutes: number) {
@@ -150,7 +136,6 @@ function getRecipeInstructions(steps: PortableTextBlock[] | null) {
   return getRecipeStepGroups(steps).map((step) => ({
     '@type': 'HowToStep' as const,
     name: step.title,
-
     text: step.blocks.map(getBlockText).filter(Boolean).join(' '),
   }));
 }
@@ -165,30 +150,20 @@ export default async function RecipeDetailPage({ params }: PageProps) {
   }
 
   const coverSrc = getImageUrl(recipe.coverImage ?? undefined, 1800);
-
   const totalTime = recipe.prepTime + recipe.cookTime;
-
   const stepGroups = getRecipeStepGroups(recipe.steps);
 
   const recipeJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Recipe',
-
     name: recipe.name,
     description: recipe.description,
-
     image: coverSrc ? [coverSrc] : undefined,
-
     recipeYield: `${recipe.servings} khẩu phần`,
-
     prepTime: toIsoDuration(recipe.prepTime),
-
     cookTime: toIsoDuration(recipe.cookTime),
-
     totalTime: toIsoDuration(totalTime),
-
     recipeIngredient: recipe.ingredients,
-
     recipeInstructions: getRecipeInstructions(recipe.steps),
   };
 
@@ -202,217 +177,10 @@ export default async function RecipeDetailPage({ params }: PageProps) {
       />
 
       {/* ───────────────── HERO ───────────────── */}
-
-      <section className="relative border-border border-b overflow-hidden">
-        <DotGridBackground />
-
-        <div className="-top-52 -right-48 absolute bg-primary/5 blur-[160px] rounded-full size-175 pointer-events-none" />
-
-        <div className="relative mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-14 sm:pb-20 container">
-          {/* Navigation */}
-          <div className="flex justify-between items-center">
-            <Link
-              href="/cook"
-              className="group inline-flex items-center gap-2 font-mono text-[10px] text-muted-foreground hover:text-primary uppercase tracking-[0.18em] transition-colors"
-            >
-              <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-1" />
-              Tất cả công thức
-            </Link>
-
-            <span className="hidden sm:block font-mono text-[10px] text-muted-foreground/50 uppercase tracking-[0.2em]">
-              Levia / Kitchen Intelligence
-            </span>
-          </div>
-
-          {/* Intro */}
-          <div className="gap-y-10 lg:gap-x-8 grid grid-cols-12 mt-14 sm:mt-20">
-            <div className="col-span-12 lg:col-span-3">
-              <div className="flex items-center gap-3">
-                <span className="bg-primary size-1.5" />
-
-                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  Recipe / Cook
-                </span>
-              </div>
-            </div>
-
-            <div className="col-span-12 lg:col-span-8 lg:col-start-5">
-              <h1 className="max-w-5xl font-heading font-medium text-[clamp(3.25rem,7vw,7rem)] leading-[0.88] tracking-[-0.055em]">
-                {recipe.name}
-              </h1>
-
-              <div className="gap-y-8 md:gap-x-10 grid md:grid-cols-2 mt-10 sm:mt-12 pt-6 border-border border-t">
-                <p className="max-w-xl text-muted-foreground text-sm sm:text-base leading-[1.8]">
-                  {recipe.description}
-                </p>
-
-                <div className="flex md:justify-end items-end">
-                  <a
-                    href="#recipe-method"
-                    className="group inline-flex justify-between items-center gap-10 pb-3 border-border hover:border-primary border-b min-w-56 transition-colors"
-                  >
-                    <span className="font-mono text-[9px] uppercase tracking-[0.18em]">
-                      Bắt đầu nấu
-                    </span>
-
-                    <ArrowDownRight className="size-4 text-primary transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero image */}
-          <div className="relative bg-card mt-14 sm:mt-20 border border-border aspect-4/3 sm:aspect-video lg:aspect-16/7 overflow-hidden">
-            {coverSrc ? (
-              <ViewTransition
-                name={`recipe-${recipe._id}-cover`}
-                share="image-clip"
-                default="none"
-              >
-                <Image
-                  src={coverSrc}
-                  alt={recipe.coverImage?.alt || recipe.name}
-                  fill
-                  fetchPriority="high"
-                  className="object-cover"
-                  sizes="100vw"
-                />
-              </ViewTransition>
-            ) : (
-              <RecipeImagePlaceholder />
-            )}
-
-            <div className="absolute inset-0 bg-linear-to-t from-background/60 via-transparent to-transparent" />
-
-            <span className="top-5 left-5 absolute bg-primary size-1.5" />
-
-            <div className="right-5 bottom-5 left-5 absolute flex justify-between items-end">
-              <span className="font-mono text-[8px] text-white/60 uppercase tracking-[0.2em]">
-                Vietnamese Kitchen
-              </span>
-
-              <span className="font-mono text-[8px] text-white/60 uppercase tracking-[0.2em]">
-                Levia / Recipe
-              </span>
-            </div>
-          </div>
-
-          {/* Meta strip */}
-          <div className="gap-px grid grid-cols-2 lg:grid-cols-4 bg-border">
-            <RecipeMetaItem
-              icon={Users}
-              label="Khẩu phần"
-              value={`${recipe.servings} người`}
-            />
-
-            <RecipeMetaItem
-              icon={Clock}
-              label="Chuẩn bị"
-              value={formatMinutes(recipe.prepTime)}
-            />
-
-            <RecipeMetaItem
-              icon={CookingPot}
-              label="Nấu"
-              value={formatMinutes(recipe.cookTime)}
-            />
-
-            <RecipeMetaItem
-              icon={Clock}
-              label="Tổng thời gian"
-              value={formatMinutes(totalTime)}
-            />
-          </div>
-        </div>
-      </section>
+      <RecipeHeader recipe={recipe} coverSrc={coverSrc} />
 
       {/* ───────────────── METHOD ───────────────── */}
-
-      <section id="recipe-method" className="scroll-mt-20">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28 container">
-          {/* Section header */}
-          <div className="gap-y-8 lg:gap-x-8 grid grid-cols-12 pb-12 lg:pb-16 border-border border-b">
-            <div className="col-span-12 lg:col-span-3">
-              <div className="flex items-center gap-3">
-                <span className="bg-primary size-1.5" />
-
-                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  Recipe / Method
-                </span>
-              </div>
-            </div>
-
-            <div className="col-span-12 lg:col-span-8 lg:col-start-5">
-              <h2 className="font-heading font-medium text-3xl sm:text-4xl lg:text-5xl leading-none tracking-[-0.045em]">
-                Chuẩn bị và thực hiện.
-              </h2>
-
-              <p className="mt-5 max-w-xl text-muted-foreground text-sm sm:text-base leading-relaxed">
-                Chuẩn bị đầy đủ nguyên liệu trước khi bắt đầu để quá trình nấu
-                diễn ra liền mạch và dễ kiểm soát hơn.
-              </p>
-            </div>
-          </div>
-
-          <div className="gap-y-14 lg:gap-x-10 grid grid-cols-12">
-            {/* ───────── INGREDIENTS ───────── */}
-
-            <aside className="col-span-12 lg:col-span-4 pt-12 lg:pt-16">
-              <div className="top-24 lg:sticky">
-                <div className="flex justify-between items-center pb-5 border-b">
-                  <h3 className="font-heading font-medium text-2xl sm:text-3xl tracking-[-0.035em]">
-                    Nguyên liệu
-                  </h3>
-
-                  <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.16em]">
-                    {String(recipe.ingredients.length).padStart(2, '0')} mục
-                  </span>
-                </div>
-
-                <div>
-                  {recipe.ingredients.map((ingredient, index) => (
-                    <div
-                      key={`${ingredient}-${index}`}
-                      className="gap-5 grid grid-cols-[2rem_1fr] py-4 border-b border-dashed"
-                    >
-                      <span className="font-mono text-[9px] text-primary">
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-
-                      <span className="text-sm leading-relaxed">
-                        {ingredient}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </aside>
-
-            {/* ───────── STEPS ───────── */}
-
-            <div className="col-span-12 lg:col-span-7 lg:col-start-6 pt-12 lg:pt-16">
-              {stepGroups.length > 0 ? (
-                <div>
-                  {stepGroups.map((step, index) => (
-                    <RecipeStep
-                      key={`${step.title}-${index}`}
-                      step={step}
-                      index={index}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="py-20 border-border border-y">
-                  <p className="text-muted-foreground text-sm">
-                    Chưa có hướng dẫn thực hiện.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      <RecipeMethod recipe={recipe} stepGroups={stepGroups} />
 
       {/* ───────────────── ENDING ───────────────── */}
       <section className="relative border-t overflow-hidden">
@@ -443,90 +211,5 @@ export default async function RecipeDetailPage({ params }: PageProps) {
         </div>
       </section>
     </main>
-  );
-}
-
-function RecipeMetaItem({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Clock;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="bg-background p-5 sm:p-6">
-      <div className="flex items-center gap-2">
-        <Icon className="size-3.5 text-primary" />
-
-        <span className="font-mono text-[8px] text-muted-foreground uppercase tracking-[0.18em]">
-          {label}
-        </span>
-      </div>
-
-      <span className="block mt-4 font-heading font-medium text-xl sm:text-2xl tracking-[-0.03em]">
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function RecipeStep({ step, index }: { step: RecipeStepGroup; index: number }) {
-  return (
-    <section className="group py-10 sm:py-12 first:pt-0 border-border border-b">
-      <div className="gap-6 grid sm:grid-cols-[5rem_1fr]">
-        <div>
-          <span className="font-mono text-primary text-3xl sm:text-4xl tracking-tighter">
-            {String(index + 1).padStart(2, '0')}
-          </span>
-        </div>
-
-        <div>
-          <h3 className="max-w-2xl font-heading font-medium text-2xl sm:text-3xl lg:text-4xl leading-[1.05] tracking-[-0.04em]">
-            {step.title}
-          </h3>
-
-          {step.blocks.length > 0 && (
-            <div className="prose-invert dark:prose-invert mt-6 max-w-2xl prose-a:text-primary prose-li:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-p:leading-[1.8] prose">
-              <PortableText
-                value={step.blocks}
-                components={{
-                  ...components,
-                  block: {
-                    ...components.block,
-                    blockquote: ({ children }) => (
-                      <aside className="bg-primary/3 my-8 p-5 sm:p-6 border border-primary/20">
-                        <div className="flex items-center gap-3">
-                          <span className="bg-primary size-1.5 shrink-0" />
-
-                          <span className="font-mono text-[8px] text-primary uppercase tracking-[0.18em]">
-                            Kitchen note
-                          </span>
-                        </div>
-
-                        <div className="[&>p]:m-0 mt-4 text-muted-foreground text-sm leading-[1.8]">
-                          {children}
-                        </div>
-                      </aside>
-                    ),
-                  },
-                }}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function RecipeImagePlaceholder() {
-  return (
-    <div className="absolute inset-0 flex justify-center items-center">
-      <span className="font-mono text-[9px] text-muted-foreground/40 uppercase tracking-[0.2em]">
-        Levia / Recipe Image
-      </span>
-    </div>
   );
 }
