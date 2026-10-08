@@ -4,7 +4,7 @@ import type { Agency } from '@/app/(web)/agency/[slug]/action';
 import InteractiveMap from '@/components/map/interactive-map';
 import { cn } from '@/lib/utils';
 import { getImageUrl } from '@/sanity/lib/image';
-import { ArrowUpRight, Clock, MapPin, Search } from 'lucide-react';
+import { ArrowUpRight, Clock, Filter, MapPin, Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -64,10 +64,10 @@ export function AgencyLocator({ agencies }: { agencies: Agency[] }) {
   return (
     <section className="border-border border-b">
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16 container">
-        <div className="lg:grid lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] border border-border lg:h-[calc(100svh-6rem)] lg:min-h-[680px] lg:max-h-[900px]">
+        <div className="lg:grid lg:grid-cols-12 lg:h-[calc(100svh-6rem)] lg:min-h-170 lg:max-h-225">
           {/* ───────── LIST PANEL ───────── */}
 
-          <div className="flex flex-col bg-background lg:border-border lg:border-r min-h-0">
+          <div className="flex flex-col lg:col-span-4 lg:mr-10 min-h-0">
             <AgencyFilters
               search={search}
               province={province}
@@ -95,7 +95,7 @@ export function AgencyLocator({ agencies }: { agencies: Agency[] }) {
 
           {/* ───────── MAP ───────── */}
 
-          <div className="relative bg-card h-[440px] sm:h-[520px] lg:h-full min-h-0">
+          <div className="relative lg:col-span-8 bg-card h-110 sm:h-130 lg:h-full min-h-0">
             <InteractiveMap
               mapRef={mapRef}
               agencies={filteredAgencies}
@@ -138,25 +138,25 @@ function AgencyFilters({
   onProvinceChange: (value: string) => void;
 }) {
   return (
-    <div className="bg-background p-5 sm:p-6 border-border border-b shrink-0">
+    <div className="bg-background pb-4 shrink-0">
       <div className="flex justify-between items-end gap-4 mb-5">
-        <div>
-          <span className="font-mono text-[8px] text-muted-foreground uppercase tracking-[0.2em]">
+        <div data-intro-label className="flex items-center gap-3">
+          <span className="bg-primary size-1.5 shrink-0" />
+
+          <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.22em]">
             Store locator
           </span>
-
-          <p className="mt-2 text-sm">
-            <span className="font-medium text-foreground">
-              {filteredNumber(count)}
-            </span>{' '}
-            <span className="text-muted-foreground">đại lý</span>
-          </p>
         </div>
 
-        <span className="bg-primary size-1.5" />
+        <p className="mt-2 font-mono text-[10px] text-sm uppercase tracking-[0.18em]">
+          <span className="font-medium text-foreground">
+            {filteredNumber(count)}
+          </span>{' '}
+          <span className="text-muted-foreground">đại lý</span>
+        </p>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         {/* Search */}
         <label className="block relative">
           <Search className="top-1/2 left-4 absolute size-4 text-muted-foreground -translate-y-1/2 pointer-events-none" />
@@ -171,13 +171,15 @@ function AgencyFilters({
         </label>
 
         {/* Province */}
-        <label className="block">
+        <label className="block relative">
           <span className="sr-only">Tỉnh / thành</span>
+
+          <Filter className="top-1/2 left-4 absolute size-4 text-muted-foreground -translate-y-1/2 pointer-events-none" />
 
           <select
             value={province}
             onChange={(event) => onProvinceChange(event.target.value)}
-            className="bg-background px-4 border border-border focus:border-primary outline-none w-full h-13 text-foreground text-sm transition-colors cursor-pointer"
+            className="bg-background px-4 pl-11 border border-border focus:border-primary outline-none w-full h-13 text-foreground text-sm transition-colors cursor-pointer"
           >
             <option value={ALL_PROVINCES}>Tất cả tỉnh / thành</option>
 
@@ -223,7 +225,7 @@ function AgencyResults({
   }
 
   return (
-    <div>
+    <div className="space-y-4">
       {agencies.map((agency, index) => (
         <AgencyRow
           key={agency._id}
@@ -255,9 +257,9 @@ function AgencyRow({
   return (
     <article
       className={cn(
-        'group relative border-b transition-colors',
+        'group relative flex border-b transition-colors',
         selected
-          ? 'border-primary bg-primary/[0.025]'
+          ? 'border-primary bg-primary/2.5'
           : 'border-border hover:bg-card/30',
       )}
     >
@@ -269,62 +271,58 @@ function AgencyRow({
         className="z-0 absolute inset-0"
       />
 
-      <div className="z-10 relative gap-4 grid grid-cols-[6rem_minmax(0,1fr)] p-5 pointer-events-none">
-        <div className="relative bg-card aspect-[4/3] overflow-hidden">
-          {thumb ? (
-            <Image
-              src={thumb}
-              alt={agency.name}
-              fill
-              className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
-              sizes="96px"
-            />
-          ) : (
-            <div className="absolute inset-0 flex justify-center items-center">
-              <MapPin className="size-5 text-primary/60" />
-            </div>
-          )}
-
-          <span className="top-2 left-2 absolute bg-background/80 backdrop-blur-sm px-1.5 py-1 font-mono text-[8px] text-muted-foreground">
-            {String(index + 1).padStart(2, '0')}
-          </span>
-        </div>
-
-        <div className="min-w-0">
-          <div className="flex justify-between items-start gap-3">
-            <div>
-              <span className="font-mono text-[8px] text-primary uppercase tracking-[0.15em]">
-                {agency.province}
-              </span>
-
-              <h3 className="mt-1.5 font-heading font-medium text-base sm:text-lg leading-tight tracking-[-0.02em]">
-                {agency.name}
-              </h3>
-            </div>
-
-            <Link
-              href={`/agency/${agency.slug}`}
-              aria-label={`Xem chi tiết ${agency.name}`}
-              className="flex justify-center items-center hover:bg-primary border border-border hover:border-primary size-9 text-muted-foreground hover:text-primary-foreground transition-all pointer-events-auto shrink-0"
-            >
-              <ArrowUpRight className="size-3.5" />
-            </Link>
+      <div className="relative flex-1 bg-card aspect-4/3 overflow-hidden">
+        {thumb ? (
+          <Image
+            src={thumb}
+            alt={agency.name}
+            fill
+            className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
+            sizes="96px"
+          />
+        ) : (
+          <div className="absolute inset-0 flex justify-center items-center">
+            <span className="font-mono text-[8px] text-muted-foreground/50 uppercase">
+              Levia / agency
+            </span>
           </div>
+        )}
 
-          <p className="flex items-start gap-2 mt-3 text-muted-foreground text-xs leading-relaxed">
-            <MapPin className="mt-0.5 size-3.5 text-primary shrink-0" />
+        <span className="top-2 left-2 absolute bg-background/80 backdrop-blur-sm px-1.5 py-1 font-mono text-[8px] text-muted-foreground">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+      </div>
 
-            <span>{agency.address}</span>
-          </p>
+      <div className="relative flex-2 p-5 min-w-0 pointer-events-none">
+        <div className="flex justify-between items-start gap-3">
+          <h3 className="font-heading font-medium text-base sm:text-lg leading-tight tracking-[-0.02em]">
+            {agency.name}
+          </h3>
 
-          {agency.hours && (
-            <p className="flex items-center gap-2 mt-2 font-mono text-[8px] text-muted-foreground uppercase tracking-[0.1em]">
-              <Clock className="size-3 text-primary" />
-
-              {agency.hours}
-            </p>
-          )}
+          <Link
+            href={`/agency/${agency.slug}`}
+            aria-label={`Xem chi tiết ${agency.name}`}
+            className="flex justify-center items-center hover:bg-primary border border-border hover:border-primary size-9 text-muted-foreground hover:text-primary-foreground transition-all pointer-events-auto shrink-0"
+          >
+            <ArrowUpRight className="size-3.5" />
+          </Link>
         </div>
+
+        <p className="flex items-start gap-2 mt-3 text-muted-foreground text-xs">
+          <MapPin className="size-4 text-primary shrink-0" />
+
+          <span>
+            {agency.address}, {agency.province}
+          </span>
+        </p>
+
+        {agency.hours && (
+          <p className="flex items-start gap-2 mt-2 text-muted-foreground text-xs">
+            <Clock className="size-4 text-primary" />
+
+            {agency.hours}
+          </p>
+        )}
       </div>
     </article>
   );
