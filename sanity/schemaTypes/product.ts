@@ -1,6 +1,7 @@
 import { Package } from 'lucide-react';
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import LabelValueListInput from '../components/label-value-list-input';
+import { ProductDetailBlocksInput } from '../components/product-detail-blocks/detail-blocks-input';
 
 export const product = defineType({
   name: 'product',
@@ -117,37 +118,19 @@ export const product = defineType({
     }),
 
     defineField({
-      name: 'content',
+      name: 'detailBlocks',
       title: 'Nội dung chi tiết',
+      description:
+        'Xây dựng nội dung giới thiệu sản phẩm bằng các bố cục tùy chỉnh.',
       type: 'array',
       group: 'content',
+      components: { input: ProductDetailBlocksInput },
       of: [
-        defineArrayMember({
-          type: 'block',
-          styles: [
-            { title: 'Đoạn văn', value: 'normal' },
-            { title: 'Tiêu đề 2', value: 'h2' },
-            { title: 'Tiêu đề 3', value: 'h3' },
-            { title: 'Tiêu đề 4', value: 'h4' },
-            { title: 'Trích dẫn', value: 'blockquote' },
-          ],
-        }),
-        {
-          type: 'image',
-          options: { hotspot: true },
-          fields: [
-            defineField({
-              name: 'alt',
-              title: 'Alt text',
-              type: 'string',
-            }),
-            defineField({
-              name: 'caption',
-              title: 'Chú thích',
-              type: 'string',
-            }),
-          ],
-        },
+        defineArrayMember({ type: 'productSplitMedia' }),
+        defineArrayMember({ type: 'productMetrics' }),
+        defineArrayMember({ type: 'productFullMedia' }),
+        defineArrayMember({ type: 'productFeatureRail' }),
+        defineArrayMember({ type: 'productStatement' }),
       ],
     }),
 

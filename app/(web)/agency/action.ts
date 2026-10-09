@@ -1,3 +1,4 @@
+import { SanityImage } from '@/sanity/lib/image';
 import { sanityFetch } from '@/sanity/lib/live';
 import { groq } from 'next-sanity';
 
@@ -14,6 +15,7 @@ export interface AgencyListItem {
   mapLink?: string;
   lat: number;
   lng: number;
+  photos: SanityImage[];
 }
 
 // ─── Queries ─────────────────────────────────────────────────
@@ -29,6 +31,7 @@ const agenciesQuery = groq`*[_type == "agency" && defined(slug.current)] | order
   mapLink,
   lat,
   lng,
+  photos,
 }`;
 
 export async function getAgencies(): Promise<AgencyListItem[]> {

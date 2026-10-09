@@ -1,37 +1,38 @@
 'use client';
 
+import type { Agency } from '@/app/(web)/agency/[slug]/action';
 import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Map, {
   GeolocateControl,
   MapRef,
   Marker,
-  NavigationControl,
   Popup,
 } from 'react-map-gl/mapbox';
+
 import './map.css';
-import { Agency } from '@/app/(web)/agency/[slug]/action';
 
 const VIETNAM_VIEW = {
   latitude: 21.1,
   longitude: 106.5,
   zoom: 8.2,
-  pitch: 30,
+  pitch: 25,
 };
 
-interface StoreLocatorProps {
+interface InteractiveMapProps {
+  mapRef: React.RefObject<MapRef | null>;
   agencies: Agency[];
   selectedAgencyId?: string;
   onAgencySelect?: (agencyId: string) => void;
 }
 
-export default function StoreLocator({
+export default function InteractiveMap({
+  mapRef,
   agencies,
   selectedAgencyId,
   onAgencySelect,
-}: StoreLocatorProps) {
-  const mapRef = useRef<MapRef>(null);
+}: InteractiveMapProps) {
   const [viewState, setViewState] = useState(VIETNAM_VIEW);
 
   const selectedAgency = agencies.find(
@@ -44,23 +45,28 @@ export default function StoreLocator({
     mapRef.current?.flyTo({
       center: [selectedAgency.lng, selectedAgency.lat],
       zoom: 13,
-      duration: 1000,
+      duration: 700,
+      essential: true,
     });
-  }, [selectedAgency]);
+  }, [selectedAgency, mapRef]);
 
   useEffect(() => {
-    if (agencies.length === 0 || selectedAgency) return;
+    if (agencies.length === 0 || selectedAgency) {
+      return;
+    }
 
     if (agencies.length === 1) {
       mapRef.current?.flyTo({
         center: [agencies[0].lng, agencies[0].lat],
         zoom: 12,
-        duration: 800,
+        duration: 500,
       });
+
       return;
     }
 
     const lngs = agencies.map((agency) => agency.lng);
+
     const lats = agencies.map((agency) => agency.lat);
 
     mapRef.current?.fitBounds(
@@ -68,15 +74,22 @@ export default function StoreLocator({
         [Math.min(...lngs), Math.min(...lats)],
         [Math.max(...lngs), Math.max(...lats)],
       ],
-      { padding: 56, maxZoom: 11, duration: 800 },
+      {
+        padding: 72,
+        maxZoom: 11,
+        duration: 500,
+      },
     );
-  }, [selectedAgency, agencies]);
+  }, [agencies, selectedAgency, mapRef]);
 
   function handleMapLoad() {
     const map = mapRef.current;
+
     if (!map) return;
 
     map.setLanguage('vi');
+
+    mapSetTheme(map);
     mapAddMask(map);
     mapSetCustomFont(map);
     mapAddIslands(map);
@@ -86,10 +99,12 @@ export default function StoreLocator({
 
   if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
     return (
-      <div className="flex justify-center items-center bg-muted/30 min-h-96 text-center">
+      <div className="flex justify-center items-center bg-card w-full h-full text-center">
         <div className="p-6 max-w-sm">
           <MapPin className="mx-auto size-7 text-primary" />
+
           <p className="mt-3 font-medium">Bản đồ chưa được cấu hình</p>
+
           <p className="mt-2 text-muted-foreground text-sm">
             Thêm NEXT_PUBLIC_MAPBOX_TOKEN để hiển thị vị trí đại lý.
           </p>
@@ -99,61 +114,84 @@ export default function StoreLocator({
   }
 
   return (
-    <Map
-      ref={mapRef}
-      {...viewState}
-      onMove={(event) => setViewState(event.viewState)}
-      onLoad={handleMapLoad}
-      mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-      mapStyle="mapbox://styles/mapbox/dark-v11"
-    >
-      <NavigationControl showZoom={false} position="bottom-right" />
-      <GeolocateControl
-        position="bottom-right"
-        trackUserLocation
-        showUserHeading
-      />
+    <div className="relative bg-background w-full h-full overflow-hidden levia-map">
+      <Map
+        ref={mapRef}
+        {...viewState}
+        onMove={(event) => setViewState(event.viewState)}
+        onLoad={handleMapLoad}
+        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+        mapStyle="mapbox://styles/mapbox/dark-v11"
+        style={{
+          width: '100%',
+          height: '100%',
+        }}
+      >
+        <GeolocateControl showUserHeading trackUserLocation />
 
-      {agencies.map((agency) => {
-        const isSelected = selectedAgencyId === agency._id;
+        {/* Agencies */}
+        {agencies.map((agency) => {
+          const isSelected = selectedAgencyId === agency._id;
 
-        return (
-          <Marker key={agency._id} longitude={agency.lng} latitude={agency.lat}>
-            <button
-              type="button"
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-primary hover:scale-110 transition-transform"
-              aria-label={`Chọn ${agency.name}`}
-              onClick={() => onAgencySelect?.(agency._id)}
+          return (
+            <Marker
+              key={agency._id}
+              longitude={agency.lng}
+              latitude={agency.lat}
             >
-              <MapPin
-                className={isSelected ? 'size-10' : 'size-8'}
-                fill="currentColor"
-                strokeWidth={1.5}
-              />
-            </button>
-          </Marker>
-        );
-      })}
+              <button
+                type="button"
+                aria-label={`Chọn ${agency.name}`}
+                onClick={() => onAgencySelect?.(agency._id)}
+                className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-primary hover:scale-110 transition-transform"
+              >
+                <MapPin
+                  className={isSelected ? 'size-10' : 'size-7'}
+                  // fill="currentColor"
+                  strokeWidth={1.4}
+                />
+              </button>
+            </Marker>
+          );
+        })}
 
-      {selectedAgency && (
-        <Popup
-          longitude={selectedAgency.lng}
-          latitude={selectedAgency.lat}
-          offset={24}
-          closeButton={false}
-          closeOnClick={false}
-          anchor="bottom"
-        >
-          <div className="max-w-56 text-foreground">
-            <p className="font-semibold text-sm">{selectedAgency.name}</p>
-            <p className="mt-1 text-muted-foreground text-xs">
-              {selectedAgency.address}
-            </p>
-          </div>
-        </Popup>
-      )}
-    </Map>
+        {selectedAgency && (
+          <Popup
+            longitude={selectedAgency.lng}
+            latitude={selectedAgency.lat}
+            offset={28}
+            closeButton={false}
+            closeOnClick={false}
+            anchor="bottom"
+          >
+            <div className="p-3 max-w-60">
+              <span className="font-mono text-[8px] text-primary uppercase tracking-[0.15em]">
+                {selectedAgency.province}
+              </span>
+
+              <p className="mt-1 font-medium text-sm">{selectedAgency.name}</p>
+
+              <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed">
+                {selectedAgency.address}
+              </p>
+            </div>
+          </Popup>
+        )}
+      </Map>
+
+      {/* Give the map a page-like boundary */}
+      <div className="z-10 absolute inset-0 ring-border ring-1 ring-inset pointer-events-none" />
+
+      {/* Very subtle theme vignette */}
+      <div className="z-[5] absolute inset-0 bg-gradient-to-b from-background/10 via-transparent to-background/15 pointer-events-none" />
+    </div>
   );
+}
+
+function mapSetTheme(mapRef: MapRef) {
+  const map = mapRef.getMap();
+
+  map.setPaintProperty('water', 'fill-color', '#121212');
 }
 
 function mapSetCustomFont(mapRef: MapRef) {

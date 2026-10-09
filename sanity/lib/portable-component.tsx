@@ -17,7 +17,7 @@ type RichTableBlockValue = {
   rows: RichTableRow[];
 };
 
-export const components: PortableTextComponents = {
+export const components = {
   block: {
     h2: ({ children, value }) => (
       <h2 id={getContentHeadingId(value)} className="scroll-mt-24">
@@ -102,4 +102,4 @@ export const components: PortableTextComponents = {
       );
     },
   },
-};
+} satisfies PortableTextComponents;

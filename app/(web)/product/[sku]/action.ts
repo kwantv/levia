@@ -2,7 +2,7 @@ import { client } from '@/sanity/lib/client';
 import { SanityImage } from '@/sanity/lib/image';
 import { sanityFetch } from '@/sanity/lib/live';
 import { groq } from 'next-sanity';
-import { PortableTextBlock } from 'sanity';
+import { ProductDetailBlock } from './product-detail-blocks';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -10,15 +10,24 @@ export interface ProductDetail {
   _id: string;
   sku: string;
   title: string;
+
   category: {
     title: string;
     slug: string;
   } | null;
+
   price: number | null;
   desc: string;
-  specs: { label: string; value: string }[];
+
+  specs: {
+    label: string;
+    value: string;
+  }[];
+
   gallery: SanityImage[];
-  content: PortableTextBlock[] | null;
+
+  detailBlocks: ProductDetailBlock[];
+
   seoTitle: string | null;
   seoDescription: string | null;
 }
@@ -32,9 +41,9 @@ const productBySkuQuery = groq`*[_type == "product" && sku == $sku][0] {
   category-> { title, "slug": slug.current },
   price,
   desc,
-  specs,
-  gallery,
-  content,
+  "specs": coalesce(specs, []),
+  "gallery": coalesce(gallery, []),
+  "detailBlocks": coalesce(detailBlocks, []),
   seoTitle,
   seoDescription
 }`;

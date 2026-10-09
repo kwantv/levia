@@ -17,7 +17,7 @@ export interface Agency {
   mapLink?: string;
   lat: number;
   lng: number;
-  photos?: SanityImage[];
+  photos: SanityImage[];
 }
 
 // ─── Queries ─────────────────────────────────────────────────
