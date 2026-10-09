@@ -92,7 +92,7 @@ export function ListingHero({
           <div className="col-span-12 lg:col-span-8 lg:col-start-5 lg:row-start-1">
             <h1
               data-intro-title
-              className="max-w-5xl font-heading font-medium text-[clamp(3.5rem,8vw,8rem)] leading-[1.2] tracking-tight"
+              className="max-w-5xl font-heading font-medium text-[clamp(3.5rem,8vw,7rem)] leading-[1.2] tracking-tighter"
             >
               {title}
 
