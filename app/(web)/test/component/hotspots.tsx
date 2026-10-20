@@ -2,7 +2,6 @@
 
 import { Html } from '@react-three/drei';
 import { useStore } from '@/lib/store';
-import { scrollToStage } from '../utils';
 import { cn } from '@/lib/utils';
 
 interface HotspotDef {
@@ -34,7 +33,6 @@ export function Hotspots() {
           visible={orbitEnabled}
         >
           <button
-            onClick={() => scrollToStage(point.id)}
             className={cn(
               'group relative flex justify-center items-center w-3 h-3 transition-opacity duration-200',
               orbitEnabled

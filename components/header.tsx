@@ -9,6 +9,9 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const navLinks = [
+  ...(process.env.NODE_ENV === 'development'
+    ? [{ href: '/test', label: 'Test' }]
+    : []),
   { href: '/about', label: 'Giới thiệu' },
   { href: '/product', label: 'Sản phẩm' },
   { href: '/article', label: 'Cẩm nang bếp' },

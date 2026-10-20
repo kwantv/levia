@@ -3,9 +3,7 @@
 import { RefObject, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Environment } from '@react-three/drei';
-import { InteractiveObject } from '../component/interactive-object';
-import { Canvas } from '@react-three/fiber';
+import Canvas from '../component/canvas';
 
 export type SceneMorphState = {
   progress: number;
@@ -192,21 +190,7 @@ const ProductSection = () => {
               height: '100dvh',
             }}
           >
-            <Canvas
-              gl={{ alpha: true }}
-              style={{
-                width: '100%',
-                height: '100%',
-                pointerEvents: 'none',
-              }}
-              camera={{ position: [0, 0, 5], fov: 45 }}
-              dpr={[1, 2]}
-            >
-              <ambientLight intensity={0.6} />
-              <directionalLight position={[3, 4, 2]} intensity={1.2} />
-              <Environment preset="city" />
-              <InteractiveObject morph={morph} />
-            </Canvas>
+            <Canvas />
           </div>
         </div>
       </div>

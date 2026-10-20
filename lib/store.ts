@@ -4,6 +4,9 @@ import type Lenis from 'lenis';
 import { Pose } from '@/app/(web)/test/section/showcase-stages';
 
 interface StoreState {
+  snap: boolean | number;
+  setSnap: (snap: boolean | number) => void;
+
   stage: string | null;
   setStage: (id: string | null) => void;
 
@@ -30,6 +33,9 @@ interface StoreState {
 }
 
 export const useStore = create<StoreState>((set) => ({
+  snap: false,
+  setSnap: (snap) => set({ snap }),
+
   stage: null,
   setStage: (activeStage) => set({ stage: activeStage }),
 

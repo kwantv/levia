@@ -1,39 +1,38 @@
 'use client';
 
-import { useStore } from '@/lib/store';
-import { movePoseTo } from '../utils';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { goToPose } from './poses';
 
-const HERO_POSE = { position: [1.6, 0, 0], rotation: [0, 0, 0] } as const;
+gsap.registerPlugin(ScrollTrigger);
 
 export function HeroSection() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const root = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const trigger = ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: 'top 96',
-      end: 'bottom 96',
-      onLeave: () => {
-        useStore.getState().setOrbit(false);
-        useStore.getState().resetInteraction?.();
-      },
-      onEnterBack: () => {
-        useStore.getState().setOrbit(true);
-        useStore.getState().setStage('hero');
-        movePoseTo(HERO_POSE);
-      },
-    });
-    return () => trigger.kill();
-  }, []);
+  useGSAP(
+    () => {
+      const activate = () => goToPose('intro');
+
+      ScrollTrigger.create({
+        trigger: root.current,
+        start: 'top top+=10%',
+        end: 'bottom top+=10%',
+        markers: true,
+        onEnter: activate,
+        onEnterBack: activate,
+      });
+    },
+    { scope: root },
+  );
 
   return (
     <section
-      ref={sectionRef}
-      className="items-center grid grid-cols-2 w-full min-h-dvh"
+      ref={root}
+      className="items-center grid grid-cols-2 mx-auto px-4 sm:px-6 lg:px-8 w-full min-h-dvh container"
     >
-      <div className="space-y-4 p-24">
+      <div className="space-y-4">
         <h1 className="w-fit font-heading text-6xl">The object</h1>
         <p className="max-w-[50ch] text-muted-foreground">
           Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quas minus

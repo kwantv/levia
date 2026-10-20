@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
+    "@gsap/react": "^2.1.2",
+    "@react-spring/core": "^10.1.2",
+    "@react-spring/three": "^10.1.2",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
-    "@gsap/react": "^2.1.2",
     "@sanity/icons": "^5.2.1",
     "@sanity/image-url": "^2.1.1",
     "@sanity/locale-vi-vn": "^1.1.38",
