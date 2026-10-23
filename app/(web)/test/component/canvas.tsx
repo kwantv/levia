@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Environment, Grid, OrbitControls } from '@react-three/drei';
+import { Environment, Grid, Lightformer, OrbitControls } from '@react-three/drei';
 import { Canvas as R3FCanvas } from '@react-three/fiber';
 import { useState } from 'react';
 import { CameraDebugHUD, CameraRig } from './camera/camera-rig';
@@ -20,9 +20,14 @@ function Canvas() {
         gl={{ alpha: true }}
         dpr={[1, 2]}
       >
-        <Environment preset="city" />
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[3, 4, 2]} intensity={1.2} />
+        <ambientLight intensity={0.15} />
+        <spotLight position={[4, 5, 4]} angle={0.4} penumbra={1} intensity={80} castShadow />
+        <pointLight position={[-4, -2, -3]} intensity={20} color="#6aa0ff" />
+
+        <Environment resolution={512}>
+          <Lightformer form="rect" intensity={2.5} position={[0, 5, -5]} scale={[10, 2, 1]} />
+          <Lightformer form="rect" intensity={1.5} position={[-5, 1, 2]} rotation-y={Math.PI / 2} scale={[8, 3, 1]} />
+        </Environment>
 
         <ResponsiveScale>
           <CameraRig />
