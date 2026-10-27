@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useRef } from 'react';
 import { goToPose } from './poses';
+import { useAnnotationStore } from '../component/annotations/annotation-store';
 
 gsap.registerPlugin(ScrollTrigger);
 

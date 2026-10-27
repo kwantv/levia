@@ -1,3 +1,5 @@
+import { AnnotationId } from '../component/annotations/annotation-layer';
+import { useAnnotationStore } from '../component/annotations/annotation-store';
 import {
   useCameraStore,
   type AnimateOptions as CameraAnimate,
@@ -11,8 +13,11 @@ import { useTiltStore } from '../component/object/object-tilt';
 export type ScenePose = {
   camera?: CameraAnimate | 'reset';
   object?: ObjectAnimate | 'reset';
+  annotation?: AnnotationId;
+
   interact?: boolean;
   tilt?: boolean;
+  explode?: number;
 };
 
 export type SharedOptions = {
@@ -21,7 +26,7 @@ export type SharedOptions = {
 };
 
 export function animateScene(pose: ScenePose, shared: SharedOptions = {}) {
-  const { camera, object } = pose;
+  const { camera, object, interact, tilt, annotation, explode } = pose;
   const cam = useCameraStore.getState();
   const obj = useObjectStore.getState();
 
@@ -39,14 +44,21 @@ export function animateScene(pose: ScenePose, shared: SharedOptions = {}) {
       immediate: shared.immediate ?? object.immediate,
     });
 
-  if (pose.interact !== undefined) {
-    obj.setConfig({ enabled: pose.interact });
+  if (interact !== undefined) {
+    obj.setConfig({ enabled: interact });
   }
-  if (pose.tilt !== undefined) {
-    useTiltStore.getState().setEnabled(pose.tilt);
+
+  if (tilt !== undefined) {
+    useTiltStore.getState().setEnabled(tilt);
   }
+
+  if (explode !== undefined) {
+    obj.explode(explode, { immediate: shared.immediate });
+  }
+
+  useAnnotationStore.getState().show(annotation);
 }
 
 export function resetScene() {
-  animateScene({ camera: 'reset', object: 'reset' });
+  animateScene({ camera: 'reset', object: 'reset', explode: 0 });
 }

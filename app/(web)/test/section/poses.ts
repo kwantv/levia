@@ -22,6 +22,8 @@ export const POSES = {
     },
     object: 'reset',
     interact: false,
+    annotation: 'ruler',
+    explode: 0,
   },
 
   detail: {
@@ -32,6 +34,8 @@ export const POSES = {
       rotation: [0, 0, -15],
     },
     interact: false,
+    explode: 1,
+    annotation: 'explodedLabels',
   },
 
   cut: {
@@ -47,6 +51,7 @@ export const POSES = {
       rotation: [0, 0, 20],
     },
     interact: false,
+    explode: 0,
   },
 
   wide: {
@@ -123,6 +128,8 @@ export function resolvePose(name: PoseName): ScenePose {
   return {
     camera: mobile?.camera ?? base.camera,
     object: mobile?.object ?? base.object,
+    annotation: mobile?.annotation ?? base.annotation,
+    explode: mobile?.explode ?? base.explode,
     interact: mobile?.interact ?? base.interact,
     tilt: mobile?.tilt ?? base.tilt,
   };

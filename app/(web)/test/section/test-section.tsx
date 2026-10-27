@@ -1,21 +1,26 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useRef } from 'react';
+import { AnnotationId } from '../component/annotations/annotation-layer';
+import { useAnnotationStore } from '../component/annotations/annotation-store';
 import { goToPose, type PoseName } from './poses';
-import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const SECTIONS: {
   pose: PoseName;
+  annotation?: AnnotationId;
   title: string;
   body: string;
   options: string[];
 }[] = [
   {
     pose: 'hero',
+    annotation: 'ruler',
+
     title: 'Hero',
     body: 'Absolute camera view with an overshooting ease, and a bouncy spring on the object.',
     options: [
@@ -26,6 +31,7 @@ const SECTIONS: {
   },
   {
     pose: 'detail',
+
     title: 'Detail',
     body: 'Relative moves from wherever things currently are, with a stiff spring.',
     options: [
@@ -36,6 +42,7 @@ const SECTIONS: {
   },
   {
     pose: 'cut',
+
     title: 'Hard cut',
     body: 'The camera jumps instantly and pans its look-at point. The object keeps floating on a slow spring.',
     options: [
@@ -46,6 +53,7 @@ const SECTIONS: {
   },
   {
     pose: 'wide',
+
     title: 'Wide',
     body: 'A long linear dolly-out with a wide lens, while the object spins on the default spring.',
     options: [

@@ -18,6 +18,7 @@ type GyroStatus = 'unsupported' | 'prompt' | 'denied' | 'active';
 
 type TiltState = {
   enabled: boolean;
+  configured: boolean;
   setEnabled: (enabled: boolean) => void;
   toggle: () => void;
 
@@ -28,8 +29,9 @@ type TiltState = {
 
 export const useTiltStore = create<TiltState>((set) => ({
   enabled: true,
-  setEnabled: (enabled) => set({ enabled }),
-  toggle: () => set((s) => ({ enabled: !s.enabled })),
+  configured: false,
+  setEnabled: (enabled) => set({ enabled, configured: true }),
+  toggle: () => set((s) => ({ enabled: !s.enabled, configured: true })),
 
   gyro: 'unsupported',
   requestGyro: async () => {
@@ -103,7 +105,9 @@ export function ObjectTilt({
 
   // Props seed the store once on mount
   useEffect(() => {
-    useTiltStore.getState().setEnabled(enabled);
+    if (!useTiltStore.getState().configured) {
+      useTiltStore.getState().setEnabled(enabled);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

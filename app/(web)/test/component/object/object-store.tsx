@@ -1,6 +1,9 @@
 import { create } from 'zustand';
+import gsap from 'gsap';
 
 export type Rotation = [number, number, number];
+export type Vec3 = [number, number, number];
+export type Bounds = { min: Vec3; max: Vec3; size: Vec3; center: Vec3 };
 
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
@@ -34,6 +37,12 @@ export type MoveOptions = {
   config?: SpringSettings;
 };
 
+export type ExplodeOptions = {
+  duration?: number;
+  ease?: string;
+  immediate?: boolean;
+};
+
 export type AnimateOptions = MoveOptions & {
   /** Absolute target, in degrees. */
   rotation?: Rotation;
@@ -65,6 +74,9 @@ type ObjectState = ObjectConfig & {
   telemetryEnabled: boolean;
   handle: ObjectHandle | null;
   pending: Job[];
+  overrides: Partial<ObjectConfig>;
+  bounds: Bounds | null;
+  exploded: number; // 0 = assembled, 1 = fully exploded
 
   initialize: (config: ObjectConfig) => void;
   setConfig: (config: Partial<ObjectConfig>) => void;
@@ -72,36 +84,43 @@ type ObjectState = ObjectConfig & {
   setDragging: (dragging: boolean) => void;
   setHovered: (hovered: boolean) => void;
   setTelemetryEnabled: (value: boolean) => void;
+  setBounds: (bounds: Bounds | null) => void;
 
   registerHandle: (handle: ObjectHandle | null) => void;
   animate: (options: AnimateOptions) => void;
+  explode: (to: number, options?: ExplodeOptions) => void;
   reset: (options?: MoveOptions) => void;
 };
 
 const EPSILON = 0.0005;
+let explodeTween: gsap.core.Tween | null = null;
 
 export const useObjectStore = create<ObjectState>((set, get) => ({
   enabled: true,
   snap: false,
   dragSpeed: 0.008,
   springConfig: { tension: 170, friction: 26 },
+  overrides: {},
 
   rotation: [0, 0, 0],
   dragging: false,
   hovered: false,
+  exploded: 0,
   telemetryEnabled: true,
+  bounds: null,
 
   handle: null,
   pending: [],
 
   initialize: (config) =>
-    set({
+    set((state) => ({
       ...config,
-      springConfig: { ...config.springConfig },
+      ...state.overrides, // explicit writes (poses, HUD) win over props
+      springConfig: { ...config.springConfig, ...state.overrides.springConfig },
       rotation: [0, 0, 0],
       dragging: false,
       hovered: false,
-    }),
+    })),
 
   setConfig: (config) =>
     set((state) => ({
@@ -109,6 +128,7 @@ export const useObjectStore = create<ObjectState>((set, get) => ({
       springConfig: config.springConfig
         ? { ...state.springConfig, ...config.springConfig }
         : state.springConfig,
+      overrides: { ...state.overrides, ...config },
     })),
 
   setRotation: (rotation) =>
@@ -127,6 +147,7 @@ export const useObjectStore = create<ObjectState>((set, get) => ({
   setDragging: (dragging) => set({ dragging }),
   setHovered: (hovered) => set({ hovered }),
   setTelemetryEnabled: (telemetryEnabled) => set({ telemetryEnabled }),
+  setBounds: (bounds) => set({ bounds }),
 
   registerHandle: (handle) => {
     set({ handle });
@@ -165,5 +186,22 @@ export const useObjectStore = create<ObjectState>((set, get) => ({
     if (handle) return handle.reset(options);
 
     set({ pending: [(h) => h.reset({ ...options, immediate: true })] });
+  },
+
+  explode: (
+    to,
+    { duration = 0.8, ease = 'power4.inOut', immediate }: ExplodeOptions = {},
+  ) => {
+    explodeTween?.kill();
+
+    if (immediate) return set({ exploded: to });
+
+    const proxy = { v: get().exploded };
+    explodeTween = gsap.to(proxy, {
+      v: to,
+      duration,
+      ease,
+      onUpdate: () => set({ exploded: proxy.v }),
+    });
   },
 }));

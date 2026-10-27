@@ -1,4 +1,3 @@
-// responsive-scale.tsx
 import { useThree } from '@react-three/fiber';
 import type { ReactNode } from 'react';
 
