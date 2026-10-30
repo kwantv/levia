@@ -5,11 +5,10 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useRef } from 'react';
 import { goToPose } from './poses';
-import { useAnnotationStore } from '../component/annotations/annotation-store';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function HeroSection() {
+export default function HeroSection() {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -20,7 +19,6 @@ export function HeroSection() {
         trigger: root.current,
         start: 'top top+=10%',
         end: 'bottom top+=10%',
-        markers: true,
         onEnter: activate,
         onEnterBack: activate,
       });

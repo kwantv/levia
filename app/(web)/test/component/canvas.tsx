@@ -56,29 +56,18 @@ function Canvas() {
           <ObjectTilt>
             <ObjectControls>
               <Object />
-              {/* <Hotspots /> */}
               <AnnotationLayer />
             </ObjectControls>
           </ObjectTilt>
-
-          <Grid
-            infiniteGrid
-            fadeDistance={10}
-            cellColor={'#303030'}
-            sectionColor={'#303030'}
-            cellSize={0.2}
-            position={-0.1}
-            rotation={[Math.PI / 2, 0, 0]}
-          />
         </ResponsiveScale>
       </R3FCanvas>
 
-      {process.env.NODE_ENV === 'development' && (
+      {/* {process.env.NODE_ENV === 'development' && (
         <div className="bottom-4 left-4 absolute flex gap-16 pointer-events-auto">
           <ObjectDebugHUD />
           <CameraDebugHUD />
         </div>
-      )}
+      )} */}
     </div>
   );
 }

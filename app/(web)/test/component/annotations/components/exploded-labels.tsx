@@ -4,6 +4,7 @@ import { Group } from 'three';
 import { Html, Line } from '@react-three/drei';
 import { useObjectStore } from '../../object/object-store';
 import { useAnnotationStore } from '../annotation-store';
+import { cn } from '@/lib/utils';
 
 type Vec3 = [number, number, number];
 
@@ -122,7 +123,7 @@ export function ExplodedLabels() {
             <Line points={[[0, 0, 0], end]} color="gray" />
 
             <group position={end}>
-              <Html center>
+              <Html>
                 {i === 2 && (
                   <Registrar
                     root={root}
@@ -131,7 +132,12 @@ export function ExplodedLabels() {
                     labels={labels}
                   />
                 )}
-                <div className={right ? 'translate-x-19' : '-translate-x-19'}>
+                <div
+                  className={cn(
+                    'p-2 font-mono -translate-y-1/2',
+                    right ? '' : '-translate-x-full',
+                  )}
+                >
                   <div
                     ref={(el) => {
                       labels.current[i] = el;

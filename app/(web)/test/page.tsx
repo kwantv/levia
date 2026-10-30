@@ -1,15 +1,14 @@
 'use client';
 
-import Canvas from './component/canvas';
-import { HeroSection } from './section/hero-section';
+import HeroSection from './section/hero-section';
 import ProductSection from './section/product-section';
-import TestSection from './section/test-section';
+import ShowcaseSection from './section/showcase-section';
 
 const Page = () => {
   return (
     <>
       <HeroSection />
-      <TestSection />
+      <ShowcaseSection />
       <ProductSection />
     </>
   );

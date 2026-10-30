@@ -47,9 +47,7 @@ export const POSES = {
         target: [-0.7, -0.4, -0.1],
       },
     },
-    object: {
-      rotation: [0, 0, 20],
-    },
+    object: { rotation: [0, 0, 20] },
     interact: false,
     explode: 0,
   },
@@ -57,10 +55,10 @@ export const POSES = {
   wide: {
     camera: {
       view: { azimuth: 0, polar: 117, distance: 4, target: [0.5, 0, 0] },
+      ease: 'easeInOutCubic',
+      duration: 0.8,
     },
-    object: {
-      rotation: [0, 0, 0],
-    },
+    object: { rotation: [0, 0, 0] },
     interact: false,
   },
 } satisfies Record<string, ScenePose>;
