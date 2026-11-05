@@ -1,224 +1,234 @@
 'use client';
 
-import { RefObject, useEffect, useRef } from 'react';
+import DotBackground from '@/components/dot-background';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
+import { ArrowUpRight } from 'lucide-react';
+import { useRef } from 'react';
 import Canvas from '../component/canvas';
 
-export type SceneMorphState = {
-  progress: number;
+gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
-  // viewport pixel coordinates
-  targetX: number;
-  targetY: number;
+const SCREENS = { morph: 1, travel: 1.2, hold: 1 };
+const TOTAL = SCREENS.morph + SCREENS.travel + SCREENS.hold;
 
-  targetScale: number;
-};
+const products = [
+  { title: 'Bếp đôi LV79DI', href: '/product/lv79di', bg: '' }, // the canvas lives here
+  { title: 'Product Two', href: '/product', bg: 'bg-emerald-600' },
+  { title: 'Product Three', href: '/product', bg: 'bg-amber-600' },
+];
 
-export type SceneMorphRef = RefObject<SceneMorphState>;
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-const ProductSection = () => {
-  const morph = useRef<SceneMorphState>({
-    progress: 0,
-    targetX: 0,
-    targetY: 0,
-    targetScale: 0.8,
-  });
+export default function ProductSection() {
+  const container = useRef<HTMLElement>(null);
+  const track = useRef<HTMLDivElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null); // empty placeholder for card 1
+  const bgFrameRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null); // fixed, clipped
+  const innerRef = useRef<HTMLDivElement>(null); // viewport-sized, scaled
 
-  const sectionRef = useRef<HTMLElement>(null);
-  const spaceRef = useRef<HTMLDivElement>(null);
-  const firstCardRef = useRef<HTMLDivElement>(null);
-  const styleCardRef = useRef<HTMLDivElement>(null);
+  useGSAP(
+    () => {
+      const section = container.current!;
+      const trackEl = track.current!;
+      const slot = slotRef.current!;
+      const bgFrame = bgFrameRef.current!;
+      const frame = frameRef.current!;
+      const inner = innerRef.current!;
+      const articles = Array.from(trackEl.children) as HTMLElement[];
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    const card = firstCardRef.current;
-    const space = spaceRef.current;
-    const styleCard = styleCardRef.current;
+      // p = 0: fills the viewport. p = 1: sits exactly on the slot.
+      const morph = { p: 0 };
 
-    const frame = document.getElementById('scene-frame');
-    const viewport = document.getElementById('scene-viewport');
+      const render = () => {
+        const vw = document.documentElement.clientWidth;
+        const vh = window.innerHeight;
+        const r = slot.getBoundingClientRect();
+        const t = morph.p;
 
-    if (!section || !card || !space || !styleCard || !frame || !viewport)
-      return;
+        // current visible rect
+        const left = lerp(0, r.left, t);
+        const top = lerp(0, r.top, t);
+        const width = lerp(vw, r.width, t);
+        const height = lerp(vh, r.height, t);
 
-    const getTargetRect = () => {
-      const sectionRect = section.getBoundingClientRect();
-      const cardRect = card.getBoundingClientRect();
-      const cardTopInSection = cardRect.top - sectionRect.top;
-      const finalSectionTop = window.innerHeight - sectionRect.height;
+        // cover-scale the viewport-sized canvas into that rect, centered
+        const s = Math.max(width / vw, height / vh);
+        const dx = left + width / 2 - vw / 2;
+        const dy = top + height / 2 - vh / 2;
 
-      return {
-        left: cardRect.left,
-        top: finalSectionTop + cardTopInSection,
-        width: cardRect.width,
-        height: cardRect.height,
+        const clip = `inset(${top}px ${vw - left - width}px ${vh - top - height}px ${left}px)`;
+        const hidden =
+          t === 1 && (r.bottom < 0 || r.top > vh) ? 'hidden' : 'visible';
+
+        bgFrame.style.clipPath = clip;
+        bgFrame.style.visibility = hidden;
+
+        frame.style.clipPath = clip;
+        frame.style.visibility = hidden;
+
+        inner.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(${s})`;
       };
-    };
+      gsap.ticker.add(render);
 
-    const getTargetStyle = () => {
-      const style = getComputedStyle(styleCard);
+      // ---------- timelines ----------
+      const step = () => articles[1].offsetLeft - articles[0].offsetLeft;
+      const startX = () => step() * (articles.length - 1);
 
-      return {
-        backgroundColor: style.backgroundColor,
-        borderColor: style.borderTopColor,
+      gsap.set(trackEl, { x: startX });
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: () => '+=' + window.innerHeight * TOTAL,
+          pin: true,
+          scrub: 1,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      tl
+        // 1. fullscreen canvas -> card 1 (drives the interpolation above)
+        .fromTo(
+          morph,
+          { p: 0 },
+          { p: 1, duration: SCREENS.morph, ease: 'power2.inOut' },
+        )
+        // 2. track slides, cards 2 and 3 enter from the right
+        .fromTo(trackEl, { x: startX }, { x: 0, duration: SCREENS.travel })
+        // 3. hold
+        .to({}, { duration: SCREENS.hold });
+
+      // reveal text animation
+      const main = tl.scrollTrigger!;
+      const texts = gsap.utils.toArray<HTMLElement>('[data-reveal]');
+      const links = gsap.utils.toArray<HTMLElement>('[data-link]');
+      const icons = gsap.utils.toArray<HTMLElement>('[data-icon]');
+      let remaining = texts.length;
+
+      const allDone = () => {
+        // runs once, after the last text has finished and reverted
+        gsap.set(links, { pointerEvents: 'auto' });
+        gsap.to(icons, { autoAlpha: 1, duration: 0.3, stagger: 0.1 });
       };
-    };
 
-    const dockIntoStickyStage = () => {
-      gsap.set(frame, {
-        position: 'absolute',
-        inset: 'auto',
-        left: 0,
-        top: 0,
-        width: '100%',
-        height: '100%',
-      });
-
-      gsap.set(frame, {
-        backgroundColor: targetStyle.backgroundColor,
-        borderColor: targetStyle.borderColor,
-      });
-
-      gsap.set(space, {
-        backgroundColor: 'black',
-      });
-    };
-
-    const undockFromStickyStage = () => {
-      gsap.set(frame, {
-        position: 'fixed',
-        inset: 0,
-        width: '100vw',
-        height: '100dvh',
-        backgroundColor: 'transparent',
-        borderColor: 'transparent',
-      });
-
-      gsap.set(viewport, {
-        left: 0,
-        top: 0,
-      });
-
-      gsap.set(space, {
-        clearProps: 'backgroundColor, borderColor',
-      });
-    };
-
-    let targetRect = getTargetRect();
-    let targetStyle = getTargetStyle();
-
-    const trigger = ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: true,
-      invalidateOnRefresh: true,
-
-      onEnter: dockIntoStickyStage,
-      // onLeave: () => {},
-      // onEnterBack: () => {},
-      onLeaveBack: () => {
-        morph.current.progress = 0;
-        undockFromStickyStage();
-      },
-
-      onRefresh: () => {
-        targetRect = getTargetRect();
-        targetStyle = getTargetStyle();
-      },
-
-      onUpdate: (self) => {
-        const p = self.progress;
-        const left = gsap.utils.interpolate(0, targetRect.left, p);
-        const top = gsap.utils.interpolate(0, targetRect.top, p);
-        const width = gsap.utils.interpolate(
-          window.innerWidth,
-          targetRect.width,
-          p,
-        );
-        const height = gsap.utils.interpolate(
-          window.innerHeight,
-          targetRect.height,
-          p,
-        );
-
-        gsap.set(frame, {
-          left,
-          top,
-          width,
-          height,
+      texts.forEach((text, i) => {
+        SplitText.create(text, {
+          type: 'lines',
+          mask: 'lines',
+          autoSplit: true,
+          onSplit: (self) =>
+            gsap.from(self.lines, {
+              yPercent: 110,
+              duration: 0.4,
+              ease: 'power4.out',
+              stagger: 0.05,
+              delay: i * 0.1,
+              scrollTrigger: {
+                trigger: section,
+                start: () =>
+                  main.start +
+                  window.innerHeight * (SCREENS.morph + SCREENS.travel),
+                once: true,
+              },
+              onComplete: () => {
+                self.revert();
+                if (--remaining === 0) allDone();
+              },
+            }),
         });
+      });
 
-        // Keep the R3F viewport globally aligned while its frame shrinks.
-        gsap.set(viewport, {
-          left: -left,
-          top: -top,
-        });
-
-        morph.current.progress = p;
-        morph.current.targetX = targetRect.left + targetRect.width / 2;
-        morph.current.targetY = targetRect.top + targetRect.height / 2;
-        morph.current.targetScale = 0.55;
-      },
-    });
-
-    ScrollTrigger.refresh();
-
-    return () => trigger.kill();
-  }, [morph]);
+      return () => {
+        gsap.ticker.remove(render);
+      };
+    },
+    { scope: container },
+  );
 
   return (
-    <section ref={sectionRef} className="relative bg-black h-[200dvh]">
-      <div className="top-0 z-1 sticky w-full h-dvh pointer-events-none">
-        <div
-          id="scene-frame"
-          className="top-0 left-0 z-1 box-border fixed border border-transparent overflow-hidden pointer-events-none"
-          style={{
-            width: '100vw',
-            height: '100dvh',
-            backgroundColor: 'transparent',
-          }}
-        >
-          <div
-            id="scene-viewport"
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              width: '100vw',
-              height: '100dvh',
-            }}
-          >
-            <Canvas />
-          </div>
-        </div>
-      </div>
-
+    <>
+      {/* Always fixed to the viewport, sized/positioned by JS */}
       <div
-        ref={spaceRef}
-        className="top-0 left-0 absolute bg-background w-full h-dvh"
-      />
+        ref={bgFrameRef}
+        className="z-1 fixed inset-0 bg-background pointer-events-none"
+      >
+        <DotBackground />
+      </div>
 
-      <div className="top-[100dvh] left-0 absolute content-center grid px-24 w-full h-dvh">
-        <div className="items-center gap-6 grid grid-cols-3">
-          <div ref={firstCardRef} className="aspect-square" />
-          <div
-            ref={styleCardRef}
-            className="flex flex-col justify-end bg-background backdrop-blur-sm p-6 border rounded-2xl aspect-square"
-          >
-            <h4 className="font-heading text-xl">Companion Dock</h4>
-            <p className="text-muted-foreground text-sm">$49</p>
-          </div>
-
-          <div className="flex flex-col justify-end bg-background backdrop-blur-sm p-6 border rounded-2xl aspect-square">
-            <h4 className="font-heading text-xl">Travel Case</h4>
-            <p className="text-muted-foreground text-sm">$39</p>
-          </div>
+      {/* canvas layer: above the annotations, below headers */}
+      <div ref={frameRef} className="z-3 fixed inset-0 pointer-events-none">
+        <div
+          ref={innerRef}
+          className="top-0 left-0 absolute w-dvw h-dvh will-change-transform"
+        >
+          <Canvas />
         </div>
       </div>
-    </section>
-  );
-};
 
-export default ProductSection;
+      <section
+        ref={container}
+        className="relative bg-black mx-auto pt-[24vh] h-max lg:h-screen lg:overflow-hidden"
+      >
+        <header className="top-[24vh] lg:absolute inset-x-0 items-start grid-12 mx-auto container">
+          <h2
+            data-reveal
+            className="col-span-4 font-heading font-semibold text-3xl sm:text-4xl"
+          >
+            Dòng sản phẩm Lorem <br /> ipsum dolor sit amet.
+          </h2>
+          <p
+            data-reveal
+            className="col-span-3 text-muted-foreground text-sm sm:text-base"
+          >
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Adipisci
+            dignissimos accusamus, quibusdam amet optio rerum eum eveniet iste
+            dicta deleniti?
+          </p>
+          <a
+            href="/product"
+            data-link
+            className="group inline-flex flex-nowrap justify-between justify-self-end items-center gap-4 -col-end-1 hover:border-primary hover:border-b w-max transition-colors pointer-events-none"
+          >
+            <span
+              data-reveal
+              className="font-medium text-muted-foreground text-sm uppercase"
+            >
+              Khám phá các sản phẩm
+            </span>
+
+            <ArrowUpRight
+              data-icon
+              className="invisible size-4 text-primary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            />
+          </a>
+        </header>
+
+        <div
+          ref={track}
+          className="top-[46vh] lg:absolute inset-x-0 grid-12 mx-auto mt-6 w-full will-change-transform container"
+        >
+          {products.map((p, i) => (
+            <article key={p.title} className="col-span-4">
+              <div
+                ref={i === 0 ? slotRef : undefined}
+                className="relative w-full h-[38vh]"
+              >
+                {i > 0 && <div className={`absolute inset-0 ${p.bg}`} />}
+              </div>
+              <a href={p.href} data-reveal>
+                <h3 className="mt-3 font-medium">{p.title}</h3>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+}

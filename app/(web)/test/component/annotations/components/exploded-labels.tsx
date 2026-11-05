@@ -11,9 +11,24 @@ type Vec3 = [number, number, number];
 const STEM = [0.3, 0.2]; // stem run (x, y) away from the corner
 
 const PARTS = [
-  { title: 'Glass top', sub: 'Tempered glass', z: 0.444, corner: [1, 1] }, // top right
-  { title: 'Front panel', sub: 'Touch controls', z: 0, corner: [-1, -1] }, // bottom left
-  { title: 'Body', sub: 'Black housing', z: -0.4, corner: [1, -1] }, // bottom right
+  {
+    title: 'Kính CERAMIC K Nano',
+    sub: 'Chịu sốc nhiệt tới 1900°C, chống trầy xước và chịu va đập lực mạnh.',
+    z: 0.444,
+    corner: [1, 1], // top right
+  },
+  {
+    title: 'Mâm đồng nguyên chất',
+    sub: 'Tích hợp 2 bộ công suất, linh kiện lớn hơn 25% tối ưu hóa truyền nhiệt.',
+    z: 0,
+    corner: [-1, -1], // bottom left
+  },
+  {
+    title: 'Chống nồm ẩm 2 lớp',
+    sub: 'Sò công suất IGBT Đức, mạch EMC chống sốc điện, hoàn toàn miễn nhiễm khí hậu nhiệt đới.',
+    z: -0.4,
+    corner: [1, -1], // bottom right
+  },
 ] as const;
 
 function Registrar({
@@ -54,7 +69,13 @@ function Registrar({
             .fromTo(
               labels.current,
               { autoAlpha: 0, y: 6 },
-              { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.15 },
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.4,
+                stagger: 0.15,
+                pointerEvents: 'auto',
+              },
               '<0.25',
             );
         },
@@ -68,6 +89,7 @@ function Registrar({
             .to([...labels.current, ...dots.current], {
               autoAlpha: 0,
               duration: 0.15,
+              pointerEvents: 'none',
             })
             .to(scales, { x: 0, y: 0, z: 0, duration: 0.25 }, '<')
             .set(g, { visible: false });
@@ -111,7 +133,7 @@ export function ExplodedLabels() {
             scale={0}
             visible={false}
           >
-            <Html center style={{ pointerEvents: 'none' }}>
+            <Html center className="pointer-events-none">
               <div
                 ref={(el) => {
                   stems.current[i] = el;
@@ -123,7 +145,7 @@ export function ExplodedLabels() {
             <Line points={[[0, 0, 0], end]} color="gray" />
 
             <group position={end}>
-              <Html>
+              <Html className="pointer-events-none">
                 {i === 2 && (
                   <Registrar
                     root={root}
@@ -133,20 +155,16 @@ export function ExplodedLabels() {
                   />
                 )}
                 <div
+                  ref={(el) => {
+                    labels.current[i] = el;
+                  }}
                   className={cn(
-                    'p-2 font-mono -translate-y-1/2',
+                    'invisible bg-foreground p-4 py-3 w-3xs font-mono text-background text-justify -translate-y-1/2',
                     right ? '' : '-translate-x-full',
                   )}
                 >
-                  <div
-                    ref={(el) => {
-                      labels.current[i] = el;
-                    }}
-                    className={`invisible w-36 ${right ? 'text-left' : 'text-right'}`}
-                  >
-                    <p className="font-medium text-sm">{p.title}</p>
-                    <p className="text-muted-foreground text-xs">{p.sub}</p>
-                  </div>
+                  <p className="mb-2 font-medium text-sm">{p.title}</p>
+                  <p className="text-muted-background text-xs">{p.sub}</p>
                 </div>
               </Html>
             </group>

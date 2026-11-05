@@ -91,7 +91,7 @@
 }
 
 .dark {
-  --background: oklch(0.185 0 0);
+  --background: oklch(0.165 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -217,4 +217,8 @@
   object-fit: cover;
   object-position: center;
   mix-blend-mode: normal;
+}
+
+.grid-12 {
+  @apply gap-4 sm:gap-5 lg:gap-6 grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 px-4 sm:px-6 lg:px-8;
 }

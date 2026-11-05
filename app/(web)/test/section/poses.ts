@@ -1,24 +1,36 @@
 import { useEffect } from 'react';
 import {
-  animateScene,
-  type ScenePose,
-  type SharedOptions,
-} from './scene-animate';
+  useCameraStore,
+  AnimateOptions as CameraAnimate,
+} from '../component/camera/camera-store';
+import {
+  useObjectStore,
+  AnimateOptions as ObjectAnimate,
+} from '../component/object/object-store';
+import { useTiltStore } from '../component/object/object-tilt';
+import { useAnnotationStore } from '../component/annotations/annotation-store';
+import { AnnotationId } from '../component/annotations/annotation-layer';
 
 export const MOBILE_QUERY = '(max-width: 767px), (max-aspect-ratio: 1/1)';
 
 export const POSES = {
-  intro: {
+  hero: {
     camera: {
-      view: { azimuth: 0, polar: 90, distance: 5, target: [-1, -0.3, 0] },
+      view: {
+        azimuth: 0,
+        polar: 90,
+        distance: 6,
+        target: [-1.7, -0.4, 0],
+        fov: 50,
+      },
     },
     object: 'reset',
     interact: true,
   },
 
-  hero: {
+  power: {
     camera: {
-      view: { azimuth: 0, polar: 90, distance: 4, target: [0, 0, 0] },
+      view: { azimuth: 0, polar: 90, distance: 4, target: [-1.7, -0.4, 0] },
     },
     object: 'reset',
     interact: false,
@@ -26,9 +38,11 @@ export const POSES = {
     explode: 0,
   },
 
-  detail: {
+  durability: {
     camera: {
-      view: { azimuth: 15, polar: 142, distance: 4, target: [0, 0, 0] },
+      view: { azimuth: 15, polar: 142, distance: 4, target: [-1.7, -0.4, 0] },
+      ease: 'easeInOutQuart',
+      duration: 0.7,
     },
     object: {
       rotation: [0, 0, -15],
@@ -38,13 +52,13 @@ export const POSES = {
     annotation: 'explodedLabels',
   },
 
-  cut: {
+  modern: {
     camera: {
       view: {
         azimuth: 4.5,
         polar: 140,
         distance: 2,
-        target: [-0.7, -0.4, -0.1],
+        target: [-1.7, -0.4, 0],
       },
     },
     object: { rotation: [0, 0, 20] },
@@ -52,9 +66,9 @@ export const POSES = {
     explode: 0,
   },
 
-  wide: {
+  safety: {
     camera: {
-      view: { azimuth: 0, polar: 117, distance: 4, target: [0.5, 0, 0] },
+      view: { azimuth: 0, polar: 100, distance: 4, target: [-1.7, -0.4, 0] },
       ease: 'easeInOutCubic',
       duration: 0.8,
     },
@@ -66,19 +80,19 @@ export const POSES = {
 export type PoseName = keyof typeof POSES;
 
 export const MOBILE_POSES: Partial<Record<PoseName, ScenePose>> = {
-  intro: {
+  hero: {
     camera: 'reset',
     object: 'reset',
   },
 
-  hero: {
+  power: {
     camera: {
       view: { azimuth: 0, polar: 90, distance: 4, target: [0, 0, 0] },
     },
     object: 'reset',
   },
 
-  detail: {
+  durability: {
     camera: {
       view: { azimuth: 15, polar: 142, distance: 4, target: [0, 0, 0] },
     },
@@ -87,7 +101,7 @@ export const MOBILE_POSES: Partial<Record<PoseName, ScenePose>> = {
     },
   },
 
-  cut: {
+  modern: {
     camera: {
       view: {
         azimuth: 4.5,
@@ -101,7 +115,7 @@ export const MOBILE_POSES: Partial<Record<PoseName, ScenePose>> = {
     },
   },
 
-  wide: {
+  safety: {
     camera: {
       view: { azimuth: 0, polar: 117, distance: 4, target: [0, -0.2, 0] },
     },
@@ -138,6 +152,59 @@ let currentPose: PoseName | null = null;
 export function goToPose(name: PoseName, shared?: SharedOptions) {
   currentPose = name;
   animateScene(resolvePose(name), shared);
+}
+
+export type ScenePose = {
+  camera?: CameraAnimate | 'reset';
+  object?: ObjectAnimate | 'reset';
+  annotation?: AnnotationId;
+
+  interact?: boolean;
+  tilt?: boolean;
+  explode?: number;
+};
+
+export type SharedOptions = {
+  /** Forces an instant jump on both camera and object. */
+  immediate?: boolean;
+};
+
+export function animateScene(pose: ScenePose, shared: SharedOptions = {}) {
+  const { camera, object, interact, tilt, annotation, explode } = pose;
+  const cam = useCameraStore.getState();
+  const obj = useObjectStore.getState();
+
+  if (camera === 'reset') cam.reset({ immediate: shared.immediate });
+  else if (camera)
+    cam.animate({
+      ...camera,
+      immediate: shared.immediate ?? camera.immediate,
+    });
+
+  if (object === 'reset') obj.reset({ immediate: shared.immediate });
+  else if (object)
+    obj.animate({
+      ...object,
+      immediate: shared.immediate ?? object.immediate,
+    });
+
+  if (interact !== undefined) {
+    obj.setConfig({ enabled: interact });
+  }
+
+  if (tilt !== undefined) {
+    useTiltStore.getState().setEnabled(tilt);
+  }
+
+  if (explode !== undefined) {
+    obj.explode(explode, { immediate: shared.immediate });
+  }
+
+  useAnnotationStore.getState().show(annotation);
+}
+
+export function resetScene() {
+  animateScene({ camera: 'reset', object: 'reset', explode: 0 });
 }
 
 /** Re-applies the current pose when the mobile/desktop breakpoint flips. */

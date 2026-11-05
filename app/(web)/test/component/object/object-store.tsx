@@ -190,7 +190,7 @@ export const useObjectStore = create<ObjectState>((set, get) => ({
 
   explode: (
     to,
-    { duration = 0.8, ease = 'power4.inOut', immediate }: ExplodeOptions = {},
+    { duration = 1.2, ease = 'expo.inOut', immediate }: ExplodeOptions = {},
   ) => {
     explodeTween?.kill();
 

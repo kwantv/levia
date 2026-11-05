@@ -5,7 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useRef } from 'react';
 import { goToPose, type PoseName } from './poses';
-import { SectionHeader } from './showcase-section';
+import { Section, SectionHeader } from './showcase-section';
 import { X } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -22,13 +22,6 @@ const TEXTS = [
 const R = 180; // circle radius (px)
 const STEM = 36; // stem length (px)
 const SPIN = 360; // clockwise degrees across the section
-
-type Section = {
-  pose: PoseName;
-  title: string;
-  body: string;
-  options: string[];
-};
 
 export default function SafetySection({ s }: { s: Section }) {
   const root = useRef<HTMLElement>(null);
@@ -74,18 +67,28 @@ export default function SafetySection({ s }: { s: Section }) {
 
       /* ---------- enter: dashed -> solid, subtle scale ---------- */
       const swap = gsap
-        .timeline({ paused: true, delay: 0.8 })
+        .timeline({ paused: true })
         .to(dashed, { autoAlpha: 0, duration: 0.01 }, 0)
         .to(solid, { autoAlpha: 1, duration: 0.01 }, 0)
         .to(box, { scale: 1.1, duration: 0.2, ease: 'power2.out' }, 0);
+
+      let pending: gsap.core.Tween | undefined;
+      const play = () => {
+        pending?.kill();
+        pending = gsap.delayedCall(0.8, () => swap.play());
+      };
+      const back = () => {
+        pending?.kill(); // cancel a swap that hasn't started yet
+        swap.reverse(); // reverses immediately, with no delay
+      };
 
       ScrollTrigger.create({
         trigger: root.current,
         start: 'top top+=10%',
         end: 'bottom top+=10%',
-        onEnter: () => swap.play(),
-        onEnterBack: () => swap.play(),
-        onLeaveBack: () => swap.reverse(),
+        onEnter: play,
+        onEnterBack: play,
+        onLeaveBack: back,
       });
 
       /* ---------- scroll: rotate clockwise + reveal one by one ---------- */
@@ -130,10 +133,10 @@ export default function SafetySection({ s }: { s: Section }) {
     <section
       ref={root}
       data-pose={s.pose}
-      className="relative mx-auto px-4 sm:px-6 lg:px-8 h-[300vh] container"
+      className="relative grid-12 mx-auto h-[300vh] container"
     >
       {/* stage: spans the whole section, sticky child stays on screen while scrolling */}
-      <div className="-z-10 absolute inset-0 pointer-events-none">
+      <div className="z-2 absolute inset-0 pointer-events-auto">
         <div className="top-16 lg:top-32 sticky h-screen">
           <div
             data-circle
@@ -176,7 +179,7 @@ export default function SafetySection({ s }: { s: Section }) {
                   />
                   <p
                     data-label
-                    className="top-0 left-0 absolute w-max max-w-48 text-sm"
+                    className="top-0 left-0 absolute w-max max-w-48 text-sm pointer-events-auto"
                   >
                     {t}
                   </p>

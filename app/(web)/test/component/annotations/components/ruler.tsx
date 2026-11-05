@@ -8,7 +8,6 @@ import { useGSAP } from '@gsap/react';
 
 const GAP = 0.05; // distance from the object
 const TICK = 0.02; // end tick length
-const UNIT = 1; // display units per scene unit (1000 for mm if the model is in metres)
 
 type Ref<T> = React.RefObject<T | null>;
 
@@ -57,14 +56,14 @@ function Registrar({
             .fromTo(
               [wLabel.current, hLabel.current],
               { autoAlpha: 0 },
-              { autoAlpha: 1, duration: 0.3 },
+              { autoAlpha: 1, duration: 0.3, pointerEvents: 'auto' },
               '<0.2',
             )
             .to(
               c,
               {
-                w: w * UNIT,
-                h: h * UNIT,
+                w: 730,
+                h: 430,
                 duration: 0.9,
                 onUpdate: () => {
                   wNum.current!.textContent = `${c.w.toFixed(1)} mm`;
@@ -85,6 +84,7 @@ function Registrar({
             .to([wLabel.current, hLabel.current], {
               autoAlpha: 0,
               duration: 0.15,
+              pointerEvents: 'none',
             })
             .to(wGroup.current!.scale, { x: 0, duration: 0.25 }, '<')
             .to(hGroup.current!.scale, { y: 0, duration: 0.25 }, '<'),
@@ -131,7 +131,7 @@ export function Ruler() {
           color="gray"
         />
         <group position={[w / 2, -GAP, 0]}>
-          <Html center style={{ pointerEvents: 'none' }}>
+          <Html center className="pointer-events-none">
             <div ref={wLabel} className="invisible whitespace-nowrap">
               <span ref={wNum} className="font-mono tabular-nums text-sm">
                 0.0 mm
@@ -158,11 +158,7 @@ export function Ruler() {
           color="gray"
         />
         <group position={[GAP, h / 2, 0]}>
-          <Html
-            center
-            style={{ pointerEvents: 'none' }}
-            className="-translate-x-full"
-          >
+          <Html center className="-translate-x-full">
             <Registrar
               root={root}
               wGroup={wGroup}

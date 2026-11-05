@@ -1,27 +1,23 @@
 'use client';
 
-import {
-  Environment,
-  Grid,
-  Lightformer,
-  OrbitControls,
-} from '@react-three/drei';
+import { Environment, Lightformer, OrbitControls } from '@react-three/drei';
 import { Canvas as R3FCanvas } from '@react-three/fiber';
 import { AnnotationLayer } from './annotations/annotation-layer';
-import { CameraDebugHUD, CameraRig } from './camera/camera-rig';
+import { CameraRig } from './camera/camera-rig';
 import { Object } from './object/object';
-import { ObjectControls, ObjectDebugHUD } from './object/object-controls';
+import { ObjectControls } from './object/object-controls';
 import { ObjectTilt } from './object/object-tilt';
 import { ResponsiveScale } from './responsive-scale';
 
 function Canvas() {
   return (
-    <div className="relative size-full pointer-events-none">
+    <>
       <R3FCanvas
-        style={{ width: '100%', height: '100%', pointerEvents: 'auto' }}
+        style={{ width: '100%', height: '100%' }}
         camera={{ fov: 45 }}
         gl={{ alpha: true }}
         dpr={[1, 2]}
+        resize={{ offsetSize: true, scroll: false }}
       >
         <ambientLight intensity={0.15} />
         <spotLight
@@ -51,7 +47,12 @@ function Canvas() {
 
         <ResponsiveScale>
           <CameraRig />
-          <OrbitControls makeDefault enabled={false} enableDamping />
+          <OrbitControls
+            makeDefault
+            enableDamping
+            enableRotate={false}
+            enabled={false}
+          />
 
           <ObjectTilt>
             <ObjectControls>
@@ -68,7 +69,7 @@ function Canvas() {
           <CameraDebugHUD />
         </div>
       )} */}
-    </div>
+    </>
   );
 }
 
