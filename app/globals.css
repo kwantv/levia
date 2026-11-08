@@ -136,6 +136,10 @@
   }
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 @keyframes stage-reveal {
   from {
     opacity: 0;

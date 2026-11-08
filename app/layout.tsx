@@ -19,6 +19,17 @@ export const metadata: Metadata = {
   appleWebApp: { title: 'Levia' },
 };
 
+const transitionDone = `
+window.__vtDone = new Promise(function (resolve) {
+  var t = setTimeout(resolve, 2500);
+  function done() { clearTimeout(t); resolve(); }
+  if (!('onpagereveal' in window)) return done();
+  addEventListener('pagereveal', function (e) {
+    if (e.viewTransition) e.viewTransition.finished.then(done, done);
+    else done(); // refresh / direct load: no transition, start immediately
+  });
+});`;
+
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
@@ -33,6 +44,9 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         lora.variable,
       )}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: transitionDone }} />
+      </head>
       <body className="flex flex-col min-h-full">{children}</body>
     </html>
   );

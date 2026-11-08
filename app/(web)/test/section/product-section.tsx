@@ -7,7 +7,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { ArrowUpRight } from 'lucide-react';
 import { useRef } from 'react';
-import Canvas from '../component/canvas';
+import { useAfterTransition } from '@/lib/use-after-transition';
+
+import dynamic from 'next/dynamic';
+const Canvas = dynamic(() => import('../component/canvas'), { ssr: false });
 
 gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
@@ -23,6 +26,8 @@ const products = [
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 export default function ProductSection() {
+  const entered = useAfterTransition();
+
   const container = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const slotRef = useRef<HTMLDivElement>(null); // empty placeholder for card 1
@@ -113,7 +118,6 @@ export default function ProductSection() {
       let remaining = texts.length;
 
       const allDone = () => {
-        // runs once, after the last text has finished and reverted
         gsap.set(links, { pointerEvents: 'auto' });
         gsap.to(icons, { autoAlpha: 1, duration: 0.3, stagger: 0.1 });
       };
@@ -168,7 +172,7 @@ export default function ProductSection() {
           ref={innerRef}
           className="top-0 left-0 absolute w-dvw h-dvh will-change-transform"
         >
-          <Canvas />
+          {entered && <Canvas />}
         </div>
       </div>
 

@@ -1,47 +1,49 @@
 'use client';
 
-import { useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useStore } from '@/lib/store';
 
-if (typeof window !== 'undefined') gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger);
 
-export default function SmoothScrollProvider({
+const LenisContext = createContext<Lenis | null>(null);
+
+export const useLenis = () => useContext(LenisContext);
+
+export default function SmoothScroll({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [lenis, setLenis] = useState<Lenis | null>(null);
+
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
+    const instance = new Lenis({
+      autoRaf: false,
+      lerp: 0.1,
       smoothWheel: true,
     });
 
-    // Every time Lenis updates scroll position, tell ScrollTrigger to
-    // recalculate — this is what keeps pinned/scrubbed sections accurate.
-    lenis.on('scroll', ScrollTrigger.update);
+    instance.on('scroll', ScrollTrigger.update);
 
-    // Drive Lenis from GSAP's ticker (which is already a rAF loop) instead
-    // of running a second, separate rAF loop. `lenis.raf` expects
-    // milliseconds; GSAP's ticker gives seconds, so we multiply by 1000.
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
+    const update = (time: number) => {
+      instance.raf(time * 1000);
+    };
 
-    // Lenis fakes smoothing by lagging behind real scroll input, which
-    // GSAP's ticker lag-smoothing (meant for dropped frames) would fight.
-    // Disabling it here avoids the two systems correcting against each other.
+    gsap.ticker.add(update);
     gsap.ticker.lagSmoothing(0);
 
-    useStore.getState().setLenis(lenis);
+    setLenis(instance);
 
     return () => {
-      lenis.destroy();
-      useStore.getState().setLenis(null);
+      gsap.ticker.remove(update);
+      instance.destroy();
+      setLenis(null);
     };
   }, []);
 
-  return <>{children}</>;
+  return (
+    <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>
+  );
 }

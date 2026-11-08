@@ -3,6 +3,7 @@ import { Header } from '@/components/header';
 import SmoothScrollProvider from '@/components/provider/smooth-scroll';
 import { SanityLive } from '@/sanity/lib/live';
 import StudioLink from '@/sanity/lib/studio-link';
+import 'lenis/dist/lenis.css';
 
 export default function WebLayout({ children }: LayoutProps<'/'>) {
   return (

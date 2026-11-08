@@ -1,6 +1,11 @@
 'use client';
 
-import { Environment, Lightformer, OrbitControls } from '@react-three/drei';
+import {
+  Environment,
+  Lightformer,
+  OrbitControls,
+  useProgress,
+} from '@react-three/drei';
 import { Canvas as R3FCanvas } from '@react-three/fiber';
 import { AnnotationLayer } from './annotations/annotation-layer';
 import { CameraRig } from './camera/camera-rig';
@@ -8,10 +13,22 @@ import { Object } from './object/object';
 import { ObjectControls } from './object/object-controls';
 import { ObjectTilt } from './object/object-tilt';
 import { ResponsiveScale } from './responsive-scale';
+import { Suspense, useEffect } from 'react';
+import { SceneReady } from './scene-ready';
+import { useSceneReady } from '../scene-ready';
+
+function ProgressBridge() {
+  const { progress } = useProgress();
+  useEffect(() => {
+    useSceneReady.getState().setProgress(progress);
+  }, [progress]);
+  return null;
+}
 
 function Canvas() {
   return (
     <>
+      <ProgressBridge />
       <R3FCanvas
         style={{ width: '100%', height: '100%' }}
         camera={{ fov: 45 }}
@@ -19,48 +36,52 @@ function Canvas() {
         dpr={[1, 2]}
         resize={{ offsetSize: true, scroll: false }}
       >
-        <ambientLight intensity={0.15} />
-        <spotLight
-          position={[4, 5, 4]}
-          angle={0.4}
-          penumbra={1}
-          intensity={80}
-          castShadow
-        />
-        <pointLight position={[-4, -2, -3]} intensity={20} color="#d5c09e" />
-
-        <Environment resolution={512}>
-          <Lightformer
-            form="rect"
-            intensity={2.5}
-            position={[0, 5, -5]}
-            scale={[10, 2, 1]}
+        <Suspense fallback={null}>
+          <ambientLight intensity={0.15} />
+          <spotLight
+            position={[4, 5, 4]}
+            angle={0.4}
+            penumbra={1}
+            intensity={80}
+            castShadow
           />
-          <Lightformer
-            form="rect"
-            intensity={1.5}
-            position={[-5, 1, 2]}
-            rotation-y={Math.PI / 2}
-            scale={[8, 3, 1]}
-          />
-        </Environment>
+          <pointLight position={[-4, -2, -3]} intensity={20} color="#d5c09e" />
 
-        <ResponsiveScale>
-          <CameraRig />
-          <OrbitControls
-            makeDefault
-            enableDamping
-            enableRotate={false}
-            enabled={false}
-          />
+          <Environment resolution={512}>
+            <Lightformer
+              form="rect"
+              intensity={2.5}
+              position={[0, 5, -5]}
+              scale={[10, 2, 1]}
+            />
+            <Lightformer
+              form="rect"
+              intensity={1.5}
+              position={[-5, 1, 2]}
+              rotation-y={Math.PI / 2}
+              scale={[8, 3, 1]}
+            />
+          </Environment>
 
-          <ObjectTilt>
-            <ObjectControls>
-              <Object />
-              <AnnotationLayer />
-            </ObjectControls>
-          </ObjectTilt>
-        </ResponsiveScale>
+          <ResponsiveScale>
+            <CameraRig />
+            <OrbitControls
+              makeDefault
+              enableDamping
+              enableRotate={false}
+              enabled={false}
+            />
+
+            <ObjectTilt>
+              <ObjectControls>
+                <Object />
+                <AnnotationLayer />
+              </ObjectControls>
+            </ObjectTilt>
+          </ResponsiveScale>
+
+          <SceneReady />
+        </Suspense>
       </R3FCanvas>
 
       {/* {process.env.NODE_ENV === 'development' && (

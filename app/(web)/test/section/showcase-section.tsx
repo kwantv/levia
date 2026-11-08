@@ -112,7 +112,7 @@ export default function Page() {
           <SectionHeader s={s} />
         </section>
       ))}
-      <SafetySection s={SECTIONS[SECTIONS.length - 1]} />
+      {/* <SafetySection s={SECTIONS[SECTIONS.length - 1]} /> */}
     </div>
   );
 }
