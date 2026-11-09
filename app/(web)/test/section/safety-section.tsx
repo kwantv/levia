@@ -3,10 +3,10 @@
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useRef } from 'react';
-import { goToPose, type PoseName } from './poses';
-import { Section, SectionHeader } from './showcase-section';
 import { X } from 'lucide-react';
+import { useRef } from 'react';
+import { goToPose } from './poses';
+import { Section, SectionHeader } from './showcase-section';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -136,11 +136,11 @@ export default function SafetySection({ s }: { s: Section }) {
       className="relative grid-12 mx-auto h-[300vh] container"
     >
       {/* stage: spans the whole section, sticky child stays on screen while scrolling */}
-      <div className="z-2 absolute inset-0 pointer-events-auto">
-        <div className="top-16 lg:top-32 sticky h-screen">
+      <div className="z-2 absolute inset-0 grid-12 pointer-events-auto">
+        <div className="top-0 sticky col-span-full lg:col-span-6 lg:col-start-7 h-screen">
           <div
             data-circle
-            className="top-[calc(50%-4rem)] lg:top-[calc(50%-8rem)] left-2/3 absolute size-90 -translate-x-1/2 -translate-y-1/2"
+            className="top-1/2 left-1/2 absolute size-90 -translate-1/2"
           >
             <svg viewBox="0 0 360 360" className="size-full overflow-visible">
               <circle
@@ -164,7 +164,6 @@ export default function SafetySection({ s }: { s: Section }) {
               />
             </svg>
 
-            {/* origin = circle center */}
             <div className="top-1/2 left-1/2 absolute font-mono text-foreground">
               {TEXTS.map((t) => (
                 <div

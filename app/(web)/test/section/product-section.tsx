@@ -172,7 +172,7 @@ export default function ProductSection() {
           ref={innerRef}
           className="top-0 left-0 absolute w-dvw h-dvh will-change-transform"
         >
-          {entered && <Canvas />}
+          {/* {entered && <Canvas />} */}
         </div>
       </div>
 

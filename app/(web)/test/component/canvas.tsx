@@ -2,15 +2,16 @@
 
 import {
   Environment,
+  Grid,
   Lightformer,
   OrbitControls,
   useProgress,
 } from '@react-three/drei';
 import { Canvas as R3FCanvas } from '@react-three/fiber';
 import { AnnotationLayer } from './annotations/annotation-layer';
-import { CameraRig } from './camera/camera-rig';
+import { CameraDebugHUD, CameraRig } from './camera/camera-rig';
 import { Object } from './object/object';
-import { ObjectControls } from './object/object-controls';
+import { ObjectControls, ObjectDebugHUD } from './object/object-controls';
 import { ObjectTilt } from './object/object-tilt';
 import { ResponsiveScale } from './responsive-scale';
 import { Suspense, useEffect } from 'react';
@@ -31,7 +32,7 @@ function Canvas() {
       <ProgressBridge />
       <R3FCanvas
         style={{ width: '100%', height: '100%' }}
-        camera={{ fov: 45 }}
+        camera={{ fov: 30 }}
         gl={{ alpha: true }}
         dpr={[1, 2]}
         resize={{ offsetSize: true, scroll: false }}
@@ -68,9 +69,11 @@ function Canvas() {
             <OrbitControls
               makeDefault
               enableDamping
+              enableZoom={false}
               enableRotate={false}
               enabled={false}
             />
+            <Grid args={[10, 10]} />
 
             <ObjectTilt>
               <ObjectControls>
@@ -83,13 +86,6 @@ function Canvas() {
           <SceneReady />
         </Suspense>
       </R3FCanvas>
-
-      {/* {process.env.NODE_ENV === 'development' && (
-        <div className="bottom-4 left-4 absolute flex gap-16 pointer-events-auto">
-          <ObjectDebugHUD />
-          <CameraDebugHUD />
-        </div>
-      )} */}
     </>
   );
 }

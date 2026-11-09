@@ -18,10 +18,9 @@ export const POSES = {
     camera: {
       view: {
         azimuth: 0,
-        polar: 90,
-        distance: 6,
-        target: [-1.7, -0.4, 0],
-        fov: 50,
+        polar: 140,
+        distance: 9,
+        target: [-2, -0.6, 0],
       },
     },
     object: 'reset',
@@ -30,9 +29,16 @@ export const POSES = {
 
   power: {
     camera: {
-      view: { azimuth: 0, polar: 90, distance: 4, target: [-1.7, -0.4, 0] },
+      view: {
+        azimuth: 0,
+        polar: 140,
+        distance: 9,
+        target: [-2, -0.4, 0],
+      },
     },
-    object: 'reset',
+    object: {
+      rotation: [-5, -15, -45],
+    },
     interact: false,
     annotation: 'ruler',
     explode: 0,
@@ -40,12 +46,17 @@ export const POSES = {
 
   durability: {
     camera: {
-      view: { azimuth: 15, polar: 142, distance: 4, target: [-1.7, -0.4, 0] },
+      view: {
+        azimuth: 0,
+        polar: 140,
+        distance: 9,
+        target: [-2, -0.4, 0],
+      },
       ease: 'easeInOutQuart',
       duration: 0.7,
     },
     object: {
-      rotation: [0, 0, -15],
+      rotation: [-5, -15, -45],
     },
     interact: false,
     explode: 1,
@@ -55,10 +66,10 @@ export const POSES = {
   modern: {
     camera: {
       view: {
-        azimuth: 4.5,
+        azimuth: 0,
         polar: 140,
-        distance: 2,
-        target: [-1.7, -0.4, 0],
+        distance: 5,
+        target: [-1.3, -0.4, 0],
       },
     },
     object: { rotation: [0, 0, 20] },
@@ -68,11 +79,16 @@ export const POSES = {
 
   safety: {
     camera: {
-      view: { azimuth: 0, polar: 100, distance: 4, target: [-1.7, -0.4, 0] },
+      view: {
+        azimuth: 0,
+        polar: 140,
+        distance: 9,
+        target: [-2.1, -0.2, 0.1],
+      },
       ease: 'easeInOutCubic',
       duration: 0.8,
     },
-    object: { rotation: [0, 0, 0] },
+    object: { rotation: [0, 0, 20] },
     interact: false,
   },
 } satisfies Record<string, ScenePose>;
@@ -82,47 +98,46 @@ export type PoseName = keyof typeof POSES;
 export const MOBILE_POSES: Partial<Record<PoseName, ScenePose>> = {
   hero: {
     camera: 'reset',
-    object: 'reset',
   },
-
-  power: {
-    camera: {
-      view: { azimuth: 0, polar: 90, distance: 4, target: [0, 0, 0] },
-    },
-    object: 'reset',
-  },
-
-  durability: {
-    camera: {
-      view: { azimuth: 15, polar: 142, distance: 4, target: [0, 0, 0] },
-    },
-    object: {
-      rotation: [0, 0, -15],
-    },
-  },
-
-  modern: {
-    camera: {
-      view: {
-        azimuth: 4.5,
-        polar: 140,
-        distance: 2,
-        target: [-0.4, -0.3, 0],
-      },
-    },
-    object: {
-      rotation: [0, 0, 20],
-    },
-  },
-
-  safety: {
-    camera: {
-      view: { azimuth: 0, polar: 117, distance: 4, target: [0, -0.2, 0] },
-    },
-    object: {
-      rotation: [0, 0, 0],
-    },
-  },
+  // hero: {
+  //   camera: 'reset',
+  //   object: 'reset',
+  // },
+  // power: {
+  //   camera: {
+  //     view: { azimuth: 0, polar: 90, distance: 4, target: [0, 0, 0] },
+  //   },
+  //   object: 'reset',
+  // },
+  // durability: {
+  //   camera: {
+  //     view: { azimuth: 15, polar: 142, distance: 4, target: [0, 0, 0] },
+  //   },
+  //   object: {
+  //     rotation: [0, 0, -15],
+  //   },
+  // },
+  // modern: {
+  //   camera: {
+  //     view: {
+  //       azimuth: 4.5,
+  //       polar: 140,
+  //       distance: 2,
+  //       target: [-0.4, -0.3, 0],
+  //     },
+  //   },
+  //   object: {
+  //     rotation: [0, 0, 20],
+  //   },
+  // },
+  // safety: {
+  //   camera: {
+  //     view: { azimuth: 0, polar: 117, distance: 4, target: [0, -0.2, 0] },
+  //   },
+  //   object: {
+  //     rotation: [0, 0, 0],
+  //   },
+  // },
 };
 
 /* ------------------------------ Resolve ------------------------------ */

@@ -17,7 +17,7 @@ export function GridBackground({
     <div
       aria-hidden="true"
       className={cn(
-        'z-0 fixed inset-0 mx-auto overflow-hidden pointer-events-none container',
+        'z-50 fixed inset-0 mx-auto overflow-hidden pointer-events-none container',
         className,
       )}
     >

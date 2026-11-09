@@ -23,7 +23,7 @@ export default function PageLoader() {
 
   useEffect(() => {
     t0.current = performance.now();
-    const t = setTimeout(setReady, 15000); // never trap the user
+    const t = setTimeout(setReady, 100); // never trap the user
     return () => clearTimeout(t);
   }, [setReady]);
 

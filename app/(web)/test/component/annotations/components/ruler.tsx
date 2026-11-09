@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { Group } from 'three';
 import { Html, Line } from '@react-three/drei';
@@ -6,8 +6,8 @@ import { useAnnotationStore } from '../annotation-store';
 import { useObjectStore } from '../../object/object-store';
 import { useGSAP } from '@gsap/react';
 
-const GAP = 0.05; // distance from the object
-const TICK = 0.02; // end tick length
+const GAP = 0.07; // distance from the object
+const TICK = 0.04; // end tick length
 
 type Ref<T> = React.RefObject<T | null>;
 
@@ -32,26 +32,30 @@ function Registrar({
   w: number;
   h: number;
 }) {
-  useGSAP(
+  useEffect(
     () =>
       useAnnotationStore.getState().register('ruler', {
         root,
         enter: () => {
           const c = { w: 0, h: 0 };
-          wGroup.current!.visible = true;
-          hGroup.current!.visible = true;
 
           return gsap
             .timeline()
-            .to(wGroup.current!.scale, {
-              x: 1,
-              duration: 0.7,
+            .set(hGroup.current, { visible: true })
+            .to(hGroup.current!.scale, {
+              y: 1,
+              duration: 0.5,
               ease: 'power3.out',
             })
+            .set(wGroup.current, { visible: true }, '<0.2')
             .to(
-              hGroup.current!.scale,
-              { y: 1, duration: 0.7, ease: 'power3.out' },
-              '<0.15',
+              wGroup.current!.scale,
+              {
+                x: 1,
+                duration: 0.6,
+                ease: 'power3.out',
+              },
+              '<0.2',
             )
             .fromTo(
               [wLabel.current, hLabel.current],
@@ -117,21 +121,21 @@ export function Ruler() {
       {/* width: under the object, collapsed along x */}
       <group
         ref={wGroup}
-        position={[min[0], min[1] - GAP, max[2]]}
+        position={[min[0], max[1] + GAP, max[2]]}
         scale={[0, 1, 1]}
         visible={false}
       >
         <Line
           points={[
-            [0, TICK, 0],
+            [0, -TICK, 0],
             [0, 0, 0],
             [w, 0, 0],
-            [w, TICK, 0],
+            [w, -TICK, 0],
           ]}
           color="gray"
         />
-        <group position={[w / 2, -GAP, 0]}>
-          <Html center className="pointer-events-none">
+        <group position={[w / 2, GAP, 0]}>
+          <Html center className="-translate-y-full">
             <div ref={wLabel} className="invisible whitespace-nowrap">
               <span ref={wNum} className="font-mono tabular-nums text-sm">
                 0.0 mm
@@ -158,7 +162,7 @@ export function Ruler() {
           color="gray"
         />
         <group position={[GAP, h / 2, 0]}>
-          <Html center className="-translate-x-full">
+          <Html center className="-translate-full">
             <Registrar
               root={root}
               wGroup={wGroup}
