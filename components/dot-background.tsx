@@ -103,7 +103,7 @@ export default function DotBackground({
     <canvas
       ref={ref}
       aria-hidden="true"
-      className="fixed inset-0 size-full text-muted-foreground/30 pointer-events-none"
+      className="fixed inset-0 size-full text-muted-foreground/30"
     />
   );
 }

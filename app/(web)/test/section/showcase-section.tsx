@@ -107,7 +107,7 @@ export default function Page() {
         <section
           key={s.pose}
           data-pose={s.pose}
-          className="relative grid-12 mx-auto h-[200dvh] container"
+          className="relative grid-12 mx-auto h-[200vh] container"
         >
           <SectionHeader s={s} />
         </section>

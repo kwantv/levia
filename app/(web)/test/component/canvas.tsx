@@ -2,21 +2,20 @@
 
 import {
   Environment,
-  Grid,
   Lightformer,
   OrbitControls,
   useProgress,
 } from '@react-three/drei';
 import { Canvas as R3FCanvas } from '@react-three/fiber';
+import { Suspense, useEffect, useState } from 'react';
+import { useSceneReady } from '../scene-ready';
 import { AnnotationLayer } from './annotations/annotation-layer';
-import { CameraDebugHUD, CameraRig } from './camera/camera-rig';
+import { CameraRig } from './camera/camera-rig';
 import { Object } from './object/object';
-import { ObjectControls, ObjectDebugHUD } from './object/object-controls';
+import { ObjectControls } from './object/object-controls';
 import { ObjectTilt } from './object/object-tilt';
 import { ResponsiveScale } from './responsive-scale';
-import { Suspense, useEffect } from 'react';
 import { SceneReady } from './scene-ready';
-import { useSceneReady } from '../scene-ready';
 
 function ProgressBridge() {
   const { progress } = useProgress();
@@ -26,12 +25,32 @@ function ProgressBridge() {
   return null;
 }
 
+function useTouchOnly() {
+  const [touch, setTouch] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: none), (pointer: coarse)');
+    const update = () => setTouch(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  return touch;
+}
+
 function Canvas() {
+  const touch = useTouchOnly();
+
   return (
     <>
       <ProgressBridge />
       <R3FCanvas
-        style={{ width: '100%', height: '100%' }}
+        style={{
+          width: '100%',
+          height: '100%',
+          ...(touch && { pointerEvents: 'none' }),
+        }}
         camera={{ fov: 30 }}
         gl={{ alpha: true }}
         dpr={[1, 2]}
@@ -73,7 +92,6 @@ function Canvas() {
               enableRotate={false}
               enabled={false}
             />
-            <Grid args={[10, 10]} />
 
             <ObjectTilt>
               <ObjectControls>

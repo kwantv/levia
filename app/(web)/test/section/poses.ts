@@ -97,47 +97,30 @@ export type PoseName = keyof typeof POSES;
 
 export const MOBILE_POSES: Partial<Record<PoseName, ScenePose>> = {
   hero: {
-    camera: 'reset',
+    camera: {
+      view: { azimuth: 0, polar: 140, distance: 7, target: [0, -1, 0] },
+    },
   },
-  // hero: {
-  //   camera: 'reset',
-  //   object: 'reset',
-  // },
-  // power: {
-  //   camera: {
-  //     view: { azimuth: 0, polar: 90, distance: 4, target: [0, 0, 0] },
-  //   },
-  //   object: 'reset',
-  // },
-  // durability: {
-  //   camera: {
-  //     view: { azimuth: 15, polar: 142, distance: 4, target: [0, 0, 0] },
-  //   },
-  //   object: {
-  //     rotation: [0, 0, -15],
-  //   },
-  // },
-  // modern: {
-  //   camera: {
-  //     view: {
-  //       azimuth: 4.5,
-  //       polar: 140,
-  //       distance: 2,
-  //       target: [-0.4, -0.3, 0],
-  //     },
-  //   },
-  //   object: {
-  //     rotation: [0, 0, 20],
-  //   },
-  // },
-  // safety: {
-  //   camera: {
-  //     view: { azimuth: 0, polar: 117, distance: 4, target: [0, -0.2, 0] },
-  //   },
-  //   object: {
-  //     rotation: [0, 0, 0],
-  //   },
-  // },
+  power: {
+    camera: {
+      view: { azimuth: 0, polar: 140, distance: 7, target: [0, -1, 0] },
+    },
+  },
+  durability: {
+    camera: {
+      view: { azimuth: 0, polar: 140, distance: 7, target: [0, -1, 0] },
+    },
+  },
+  modern: {
+    camera: {
+      view: { azimuth: 0, polar: 140, distance: 7, target: [0, -1, 0] },
+    },
+  },
+  safety: {
+    camera: {
+      view: { azimuth: 0, polar: 140, distance: 7, target: [0, -1, 0] },
+    },
+  },
 };
 
 /* ------------------------------ Resolve ------------------------------ */

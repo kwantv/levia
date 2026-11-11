@@ -19,8 +19,8 @@ const TEXTS = [
   'Khóa trẻ em an toàn tuyệt đối',
 ];
 
-const R = 180; // circle radius (px)
-const STEM = 36; // stem length (px)
+const MAX_R = 180; // max circle radius (px)
+const MIN_R = 60; // min circle radius (px)
 const SPIN = 360; // clockwise degrees across the section
 
 export default function SafetySection({ s }: { s: Section }) {
@@ -29,20 +29,20 @@ export default function SafetySection({ s }: { s: Section }) {
   useGSAP(
     () => {
       const q = gsap.utils.selector(root);
+      const stage = q('[data-stage]')[0] as HTMLElement;
       const box = q('[data-circle]');
       const dashed = q('[data-dashed]');
       const solid = q('[data-solid]');
       const items = q('[data-item]');
       const n = items.length;
 
-      /* ---------- items follow an angle around the circle ---------- */
+      /* ---------- responsive dimensions (mutable, read by place) ---------- */
+      const dim = { R: MAX_R, STEM: 36 };
+      const angle = { v: 0 };
+
       const parts = items.map((el) => {
         const p = gsap.utils.selector(el);
-        return {
-          el,
-          dot: p('[data-dot]'),
-          label: p('[data-label]'),
-        };
+        return { el, dot: p('[data-dot]'), label: p('[data-label]') };
       });
 
       parts.forEach(({ dot }) => {
@@ -53,17 +53,41 @@ export default function SafetySection({ s }: { s: Section }) {
         parts.forEach(({ el, label }, i) => {
           const a = ((deg + (i * 360) / n - 90) * Math.PI) / 180;
           const c = Math.cos(a);
-          const s = Math.sin(a);
-          gsap.set(el, { x: c * R, y: s * R });
+          const sn = Math.sin(a);
+          gsap.set(el, { x: c * dim.R, y: sn * dim.R });
           // anchors the label's nearest edge to the stem tip, so it never flips
           gsap.set(label, {
-            x: c * STEM,
-            y: s * STEM,
+            x: c * dim.STEM,
+            y: sn * dim.STEM,
             xPercent: -50 + 50 * c,
-            yPercent: -50 + 50 * s,
+            yPercent: -50 + 50 * sn,
           });
         });
-      place(0);
+
+      const layout = () => {
+        const w = stage.clientWidth;
+        const h = stage.clientHeight;
+        if (!w || !h) return;
+
+        const labelW = w < 480 ? 80 : w < 720 ? 128 : 192;
+        const stem = w < 480 ? 14 : w < 720 ? 24 : 36;
+
+        // leave room on both axes for stem + label
+        const fitW = w / 2 - stem - labelW - 16;
+        const fitH = h / 2 - stem - 24;
+        const R = gsap.utils.clamp(MIN_R, MAX_R, Math.min(fitW, fitH));
+
+        dim.R = R;
+        dim.STEM = stem;
+
+        gsap.set(box, { width: R * 2, height: R * 2 });
+        parts.forEach(({ label }) => gsap.set(label, { maxWidth: labelW }));
+        place(angle.v);
+      };
+
+      const ro = new ResizeObserver(layout);
+      ro.observe(stage);
+      layout();
 
       /* ---------- enter: dashed -> solid, subtle scale ---------- */
       const swap = gsap
@@ -78,8 +102,8 @@ export default function SafetySection({ s }: { s: Section }) {
         pending = gsap.delayedCall(0.8, () => swap.play());
       };
       const back = () => {
-        pending?.kill(); // cancel a swap that hasn't started yet
-        swap.reverse(); // reverses immediately, with no delay
+        pending?.kill();
+        swap.reverse();
       };
 
       ScrollTrigger.create({
@@ -92,7 +116,6 @@ export default function SafetySection({ s }: { s: Section }) {
       });
 
       /* ---------- scroll: rotate clockwise + reveal one by one ---------- */
-      const angle = { v: 0 };
       const tl = gsap.timeline({
         defaults: { ease: 'none' },
         scrollTrigger: {
@@ -117,7 +140,6 @@ export default function SafetySection({ s }: { s: Section }) {
         );
       });
 
-      // keep the pose behavior the other sections have
       ScrollTrigger.create({
         trigger: root.current,
         start: 'top top+=10%',
@@ -125,6 +147,8 @@ export default function SafetySection({ s }: { s: Section }) {
         onEnter: () => goToPose(s.pose),
         onEnterBack: () => goToPose(s.pose),
       });
+
+      return () => ro.disconnect();
     },
     { scope: root },
   );
@@ -135,32 +159,38 @@ export default function SafetySection({ s }: { s: Section }) {
       data-pose={s.pose}
       className="relative grid-12 mx-auto h-[300vh] container"
     >
-      {/* stage: spans the whole section, sticky child stays on screen while scrolling */}
       <div className="z-2 absolute inset-0 grid-12 pointer-events-auto">
-        <div className="top-0 sticky col-span-full lg:col-span-6 lg:col-start-7 h-screen">
+        {/* full width on small screens, right half from lg up */}
+        <div
+          data-stage
+          className="top-0 sticky col-span-full lg:col-span-6 lg:col-start-7 h-screen"
+        >
+          {/* size-90 is only a fallback; layout() sets width/height from the stage */}
           <div
             data-circle
-            className="top-1/2 left-1/2 absolute size-90 -translate-1/2"
+            className="top-1/3 lg:top-1/2 left-1/2 absolute size-90 -translate-1/2"
           >
             <svg viewBox="0 0 360 360" className="size-full overflow-visible">
               <circle
                 data-dashed
                 cx={180}
                 cy={180}
-                r={R - 1}
+                r={179}
                 fill="none"
                 className="text-muted-foreground/60"
                 stroke="currentColor"
                 strokeDasharray="4 8"
+                vectorEffect="non-scaling-stroke"
               />
               <circle
                 data-solid
                 cx={180}
                 cy={180}
-                r={R - 1}
+                r={179}
                 fill="none"
                 stroke="currentColor"
                 className="invisible text-muted-foreground"
+                vectorEffect="non-scaling-stroke"
               />
             </svg>
 
@@ -174,11 +204,11 @@ export default function SafetySection({ s }: { s: Section }) {
                   <X
                     data-dot
                     strokeWidth={1}
-                    className="top-0 left-0 absolute size-4 origin-center"
+                    className="top-0 left-0 absolute size-3 sm:size-4 origin-center"
                   />
                   <p
                     data-label
-                    className="top-0 left-0 absolute w-max max-w-48 text-sm pointer-events-auto"
+                    className="top-0 left-0 absolute w-[12ch] text-muted-foreground text-xs lg:text-sm pointer-events-auto"
                   >
                     {t}
                   </p>

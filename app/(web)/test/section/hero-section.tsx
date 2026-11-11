@@ -31,7 +31,7 @@ export default function HeroSection() {
   return (
     <section
       ref={root}
-      className="z-10 relative flex flex-col gap-6 lg:gap-8 mx-auto pb-6 sm:pb-10 lg:pb-16 h-[calc(100dvh-4rem)] pointer-events-none container"
+      className="z-10 relative flex flex-col gap-6 lg:gap-8 mx-auto pb-6 sm:pb-10 lg:pb-16 h-[calc(100vh-4rem)] lg:pointer-events-none container"
     >
       {/* Texts around object (desktop only; on smaller screens this space is left for the object) */}
       <div className="flex-1 grid-12">
@@ -89,7 +89,7 @@ export default function HeroSection() {
             </Link>
           </div>
 
-          <p className="inline-flex lg:justify-self-end items-center gap-4 col-span-full text-muted-foreground text-xs lg:text-right uppercase tracking-widest pointer-events-auto">
+          <p className="inline-flex lg:justify-self-end items-center gap-4 col-span-full text-muted-foreground/60 text-xs lg:text-right uppercase tracking-widest">
             <ArrowDown className="size-4" />
             Cuộn xuống để khám phá
           </p>

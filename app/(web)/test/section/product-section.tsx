@@ -159,26 +159,23 @@ export default function ProductSection() {
   return (
     <>
       {/* Always fixed to the viewport, sized/positioned by JS */}
-      <div
-        ref={bgFrameRef}
-        className="z-1 fixed inset-0 bg-background pointer-events-none"
-      >
+      <div ref={bgFrameRef} className="z-1 fixed inset-0 bg-background">
         <DotBackground />
       </div>
 
       {/* canvas layer: above the annotations, below headers */}
-      <div ref={frameRef} className="z-3 fixed inset-0 pointer-events-none">
+      <div ref={frameRef} className="z-3 fixed inset-0">
         <div
           ref={innerRef}
-          className="top-0 left-0 absolute w-dvw h-dvh will-change-transform"
+          className="top-0 left-0 absolute w-dvw h-screen will-change-transform"
         >
-          {/* {entered && <Canvas />} */}
+          {entered && <Canvas />}
         </div>
       </div>
 
       <section
         ref={container}
-        className="relative bg-black mx-auto pt-[24vh] h-max lg:h-screen lg:overflow-hidden"
+        className="relative bg-black mx-auto pt-[10vh] h-max lg:h-screen lg:overflow-hidden"
       >
         <header className="top-[24vh] lg:absolute inset-x-0 items-start grid-12 mx-auto container">
           <h2
@@ -198,25 +195,25 @@ export default function ProductSection() {
           <a
             href="/product"
             data-link
-            className="group inline-flex flex-nowrap justify-between justify-self-end items-center gap-4 -col-end-1 hover:border-primary hover:border-b w-max transition-colors pointer-events-none"
+            className="group inline-flex justify-between gap-2 col-span-full lg:col-span-1 lg:-col-end-1 pb-1 border-primary border-b transition-colors"
           >
             <span
               data-reveal
-              className="font-medium text-muted-foreground text-sm uppercase"
+              className="font-mono text-muted-foreground text-xs lg:text-sm uppercase"
             >
               Khám phá các sản phẩm
             </span>
 
             <ArrowUpRight
               data-icon
-              className="invisible size-4 text-primary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              className="invisible size-[1.5cap] text-primary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             />
           </a>
         </header>
 
         <div
           ref={track}
-          className="top-[46vh] lg:absolute inset-x-0 grid-12 mx-auto mt-6 w-full will-change-transform container"
+          className="top-[46vh] lg:absolute inset-x-0 grid-12 mx-auto mt-10 w-full will-change-transform container"
         >
           {products.map((p, i) => (
             <article key={p.title} className="col-span-4">

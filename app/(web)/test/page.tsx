@@ -22,7 +22,7 @@ const Page = () => {
       <HeroSection />
       <ShowcaseSection />
       <ProductSection />
-      <GridBackground />
+      {/* <GridBackground /> */}
 
       {/* {process.env.NODE_ENV === 'development' && (
         <div className="right-4 bottom-4 z-40 fixed flex gap-16 pointer-events-auto">
